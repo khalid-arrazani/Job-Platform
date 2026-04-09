@@ -1,6 +1,9 @@
 import express from 'express';
-import user from '../models/User.js';
+import User from '../models/User.js';
+import { validateUserRegistration } from '../models/User.js';
 const router = express.Router();
+import bcrypt from 'bcryptjs';
+import asyncHandler from 'express-async-handler';
 
 
 
@@ -11,46 +14,48 @@ router.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
-router.post('/register', (req, res) => {
-    try {
+router.post('/register',asyncHandler(async(req, res) => {
+   
     const { email, password, username } = req.body;
 
-    if (!email || !password || !username) {
-        return res.status(400).json({ message: 'All fields are required' });
+    const { error } = validateUserRegistration({ email, password, username });
+
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message });
     }
-    
-    const userExists = user.findOne({ email });
+
+
+    const userExists = await User.findOne({ email });
+
     if (userExists) {
         return res.status(400).json({ message: 'User already exists' });
     }
-    const newUser = new user({
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const newUser = new User({
         email,
-        password,
+        password: hashedPassword,
         username
     });
-   const user = newUser.save()
+  const savedUser = await newUser.save();
 
-    res.status(201).json({ message: 'User registered successfully' },user);
+    const userObj = savedUser.toObject();
+    delete userObj.password;
 
-}
-    catch (error) {
-        console.error("Error registering user:", error);
-        res.status(500).json({ message: 'Server error' });
-    }
-   
+    res.status(201).json(userObj);
+}));
+
+router.post('/login',asyncHandler(async (req, res) => {
     
-});
-
-router.post('/login', (req, res) => {
     const { email, password } = req.body;
+    const user = await User.findOne({ email });
 
-    // For demonstration purposes, we'll use hardcoded values
-    if (email === 'user@example.com' && password === 'password123') {
-        res.json({ message: 'Login successful!' });
-    } else {
-        res.status(401).json({ message: 'Invalid credentials' });
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
     }
-});
 
+
+    res.json({ message: 'Login successful!' });
+}));
 
 export default router;

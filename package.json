@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-   "start": "node --watch server.js"
+    "start": "node --watch server.js"
   },
   "keywords": [],
   "author": "",
@@ -13,8 +13,11 @@
   "type": "module",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
+    "express-async-handler": "^1.2.0",
+    "joi": "^18.1.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.4.1",
     "nodemon": "^3.1.14"

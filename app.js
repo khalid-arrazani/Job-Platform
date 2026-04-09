@@ -12,5 +12,4 @@ app.use(express.json());
 
 app.use("/",authRouter);
 
-
 export default app;
