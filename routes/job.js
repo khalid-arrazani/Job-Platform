@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 import asyncHandler from "express-async-handler";
 
 import {protect} from "../middlewares/check.js"
-import {recruiterOnly}"../middlewares/role.js"
+import {recruiterOnly} from "../middlewares/role.js"
 
 
 
