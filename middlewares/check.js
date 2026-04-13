@@ -1,4 +1,4 @@
-const protect = async (req, res, next) => {
+export const protect = async (req, res, next) => {
   const token = req.cookies.token;
 
   if (!token) {

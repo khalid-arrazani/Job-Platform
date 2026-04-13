@@ -51,8 +51,7 @@ router.get(
 
 router.post(
   "/jobs",
-  protect,
-  recruiterOnly,
+
   asyncHandler(async (req, res) => {
     const { error } = validateJobsDetails(req.body);
     if (error) {
@@ -60,8 +59,7 @@ router.post(
     }
 
     const job = await Job.create({
-      ...req.body,
-      createdBy: req.user.id 
+      ...req.body
     });
 
     res.status(201).json(job);
@@ -103,7 +101,7 @@ router.post(
 );
 
 
-
+export default router;
 
 
 

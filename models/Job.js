@@ -34,7 +34,8 @@ const jobSchema = new mongoose.Schema({
 
   experienceLevel: {
     type: String,
-    enum: ["junior", "mid", "senior"]
+    enum: ["junior", "mid", "senior"],
+    default: "junior"
   },
 
   skills: [String], 
@@ -58,8 +59,7 @@ export const validateJobsDetails = (job) => {
     company: Joi.string().required(),
 
     jobType: Joi.string()
-      .valid("full-time", "part-time", "remote", "internship")
-      .required(),
+      .valid("full-time", "part-time", "remote", "internship"),
 
     experienceLevel: Joi.string()
       .valid("junior", "mid", "senior"),
