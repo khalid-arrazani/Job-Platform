@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 import Joi from "joi";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
       required: true,
-      unique: true,
     },
     email: {
       type: String,
@@ -37,13 +37,11 @@ userSchema.methods.generateToken = function( ){
   return jwt.sign({id: this._id, isAdmin: this.isAdmin},process.env.JWT_SECRET_KEY,{ expiresIn: "7d" })
 };
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-
-  next();
 });
 
 export const validateUserRegistration = (user) => {

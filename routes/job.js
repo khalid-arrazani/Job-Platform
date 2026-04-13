@@ -1,5 +1,6 @@
 import express from "express";
 import Job from "../models/Job.js";
+import Apply from "../models/Apply.js";
 
 const router = express.Router();
 import asyncHandler from "express-async-handler";
@@ -38,11 +39,11 @@ router.get(
   "/jobs/:id",
   protect,
   asyncHandler(async (req, res) => {
-   const job = await Job.findById(req.params.id).populate("createdBy", "username email");;
-   if(!job){
+   const jobById = await Job.findById(req.params.id).populate("createdBy", "username email");;
+   if(!jobById){
     return res.status(404).json({message:"No job found"})
    }
-    res.json(job);
+    res.json(jobById);
   }),
 );
 
@@ -67,6 +68,39 @@ router.post(
   })
 );
 
+
+router.post(
+  "/jobs/:id/apply",
+  protect,
+  asyncHandler(async (req, res) => {
+
+    const jobId = req.params.id;
+
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    const alreadyApplied = await Apply.findOne({
+      job: jobId,
+      applicant: req.user.id
+    });
+
+    if (alreadyApplied) {
+      return res.status(400).json({ message: "Already applied" });
+    }
+
+    const application = await Apply.create({
+      job: jobId,
+      applicant: req.user.id
+    });
+
+    res.status(201).json({
+      message: "Applied successfully",
+      application
+    });
+  })
+);
 
 
 
