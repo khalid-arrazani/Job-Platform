@@ -4,13 +4,14 @@ import { validateUserRegistration } from "../models/User.js";
 const router = express.Router();
 import bcrypt from "bcryptjs";
 import asyncHandler from "express-async-handler";
+import upload from "../middlewares/uploadCv.js";
 
 router.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
 router.post(
-  "/register",
+  "/register",upload.single("cv"),
   asyncHandler(async (req, res) => {
     const { email, password, username, role } = req.body;
 
@@ -31,6 +32,8 @@ router.post(
       password,
       username,
       role,
+      cv: req.file ? req.file.path : null,
+      cvPublicId: req.file ? req.file.filename : null
     });
     const savedUser = await newUser.save();
 

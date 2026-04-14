@@ -24,11 +24,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    cv: String,
+    cvPublicId: String,
     role: {
   type: String,
   enum: ["jobSeeker", "recruiter"],
   default: "jobSeeker"
 },
+
     resetCode: String,
 
     resetCodeExpire: Date,
@@ -36,7 +39,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 userSchema.methods.generateToken = function( ){
-  return jwt.sign({id: this._id, isAdmin: this.isAdmin},process.env.JWT_SECRET_KEY,{ expiresIn: "7d" })
+  return jwt.sign({id: this._id, isAdmin: this.isAdmin, role: this.role},process.env.JWT_SECRET_KEY,{ expiresIn: "7d" })
 };
 
 userSchema.pre("save", async function () {
@@ -51,7 +54,9 @@ export const validateUserRegistration = (user) => {
     username: Joi.string().min(3).max(30).required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(6).max(124).required(),
-    role: Joi.string().valid("jobSeeker", "recruiter").default("jobSeeker")
+    role: Joi.string().valid("jobSeeker", "recruiter").default("jobSeeker"),
+    cv: Joi.string(),
+    cvPublicId: Joi.string()
   });
   return schema.validate(user);
 };

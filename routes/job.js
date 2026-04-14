@@ -7,7 +7,11 @@ import asyncHandler from "express-async-handler";
 
 import { protect } from "../middlewares/check.js";
 import { recruiterOnly } from "../middlewares/role.js";
-import {validateJobsDetails} from "../models/Job.js"
+import { validateJobsDetails } from "../models/Job.js"
+
+import authorizeRoles from "../middlewares/authorizeApply.js";
+import upload from "../middlewares/upload.js";
+
 
 router.get(
   "/jobs",
@@ -21,16 +25,16 @@ router.get(
       .limit(limit)
       .populate("createdBy", "username");
 
-    if(jobs.length === 0){
-    return res.status(404).json({message:"No jobs found"})
-   }
+    if (jobs.length === 0) {
+      return res.status(404).json({ message: "No jobs found" })
+    }
     const total = await Job.countDocuments();
     res.json({
-  total,
-  page,
-  results: jobs.length,
-  jobs
-});
+      total,
+      page,
+      results: jobs.length,
+      jobs
+    });
   }),
 );
 
@@ -39,10 +43,10 @@ router.get(
   "/jobs/:id",
   protect,
   asyncHandler(async (req, res) => {
-   const jobById = await Job.findById(req.params.id).populate("createdBy", "username email");;
-   if(!jobById){
-    return res.status(404).json({message:"No job found"})
-   }
+    const jobById = await Job.findById(req.params.id).populate("createdBy", "username email");
+    if (!jobById) {
+      return res.status(404).json({ message: "No job found" })
+    }
     res.json(jobById);
   }),
 );
@@ -50,8 +54,9 @@ router.get(
 
 
 router.post(
-  "/jobs",
-
+  "/PostJob",
+  protect,
+  recruiterOnly,
   asyncHandler(async (req, res) => {
     const { error } = validateJobsDetails(req.body);
     if (error) {
@@ -59,7 +64,8 @@ router.post(
     }
 
     const job = await Job.create({
-      ...req.body
+      ...req.body,
+      createdBy: req.user.id
     });
 
     res.status(201).json(job);
@@ -69,7 +75,8 @@ router.post(
 
 router.post(
   "/jobs/:id/apply",
-  protect,
+  protect, authorizeRoles("jobseeker"),
+  upload.single("cv"),
   asyncHandler(async (req, res) => {
 
     const jobId = req.params.id;
@@ -87,15 +94,26 @@ router.post(
     if (alreadyApplied) {
       return res.status(400).json({ message: "Already applied" });
     }
+    let cvUrl = req.user.cv || null;
+    let cvPublicId = req.user.cvPublicId || null;
 
+    if (req.file) {
+      cvUrl = req.file.path;
+      cvPublicId = req.file.filename;
+    }
     const application = await Apply.create({
       job: jobId,
-      applicant: req.user.id
+      applicant: req.user.id,
+      cv: cvUrl,
+      cvPublicId: cvPublicId
     });
 
     res.status(201).json({
       message: "Applied successfully",
-      application
+      application: {
+        ...application._doc,
+        cvSource: req.file ? "uploaded" : "profile"
+      }
     });
   })
 );
