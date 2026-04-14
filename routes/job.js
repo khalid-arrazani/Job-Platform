@@ -11,6 +11,7 @@ import { validateJobsDetails } from "../models/Job.js"
 
 import authorizeRoles from "../middlewares/authorizeApply.js";
 import upload from "../middlewares/upload.js";
+import isAlreadyApplied from "../middlewares/IsAlreadyApplied.js";
 
 
 router.get(
@@ -76,24 +77,11 @@ router.post(
 router.post(
   "/jobs/:id/apply",
   protect, authorizeRoles("jobseeker"),
+  isAlreadyApplied,
   upload.single("cv"),
   asyncHandler(async (req, res) => {
-
     const jobId = req.params.id;
 
-    const job = await Job.findById(jobId);
-    if (!job) {
-      return res.status(404).json({ message: "Job not found" });
-    }
-
-    const alreadyApplied = await Apply.findOne({
-      job: jobId,
-      applicant: req.user.id
-    });
-
-    if (alreadyApplied) {
-      return res.status(400).json({ message: "Already applied" });
-    }
     let cvUrl = req.user.cv || null;
     let cvPublicId = req.user.cvPublicId || null;
 
