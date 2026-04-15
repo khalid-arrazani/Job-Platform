@@ -74,6 +74,7 @@ router.post(
 );
 
 
+
 router.post(
   "/jobs/:id/apply",
   protect, authorizeRoles("jobseeker"),
