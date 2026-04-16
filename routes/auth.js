@@ -52,6 +52,7 @@ router.post(
   "/login",
   asyncHandler(async (req, res) => {
     const { email, password } = req.body;
+
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -63,16 +64,66 @@ router.post(
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    const token = user.generateToken();
 
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none"
-      })
-      .json({ message: "Login successful!" });
-  }),
+    // 🟡 access token (short life)
+    const accessToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    // 🔵 refresh token (long life)
+    const refreshToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // cookie = refresh token فقط
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+    res.json({
+      message: "Login successful!",
+      accessToken,
+    });
+  })
+);
+
+
+
+//refresh token
+router.post(
+  "/refresh-token",
+  asyncHandler(async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: "No refresh token provided" });
+    }
+    try {
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+      const user = await User.findById(decoded.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const newAccessToken = jwt.sign(
+        { id: user._id },
+        process.env.JWT_SECRET,
+        { expiresIn: "15m" }
+      );
+      res.json({
+        accessToken: newAccessToken,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(401).json({ message: "Invalid refresh token" });
+    }
+  })
 );
 
 // Logout

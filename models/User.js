@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Joi from "joi";
+import Joi, { ref } from "joi";
 
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
@@ -42,6 +42,7 @@ const userSchema = new mongoose.Schema(
     resetCode: String,
 
     resetCodeExpire: Date,
+    refreshToken: String,
   },
   { timestamps: true },
 );
@@ -67,7 +68,8 @@ export const validateUserRegistration = (user) => {
     verificationCode: Joi.string(),
     verificationCodeExpires: Joi.date(),
     resetPasswordToken: Joi.string(),
-    resetPasswordExpires: Joi.date()
+    resetPasswordExpires: Joi.date(),
+    refreshToken: Joi.string(),
   });
   return schema.validate(user);
 };
