@@ -57,14 +57,29 @@ router.patch(
   recruiterOnly,
   asyncHandler(async (req, res) => {
 
+   
     const { status } = req.body;
+    const allowedStatus = ["pending", "accepted", "rejected"];
+    if (!allowedStatus.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
 
-    const application = await Apply.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    );
+ const application = await Apply.findById(req.params.id).populate("job");
 
-    res.json(application);
+    if (!application) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    if (application.job.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    application.status = status;
+    await application.save();
+    res.json({
+      message: "Application updated",
+      application
+    });
+
   })
 );

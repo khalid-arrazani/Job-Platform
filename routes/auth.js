@@ -5,13 +5,16 @@ const router = express.Router();
 import bcrypt from "bcryptjs";
 import asyncHandler from "express-async-handler";
 import upload from "../middlewares/uploadCv.js";
+import { protect } from "../middlewares/check.js";
+import { sendVerificationCode , sendPasswordResetEmail } from "../service/emailServiece.js";
+import crypto from "crypto";
+import resend from "../config/resend.js";
+import { link } from "joi";
 
-router.get("/", (req, res) => {
-  res.send("Hello World!");
-});
 
+// Register
 router.post(
-  "/register",upload.single("cv"),
+  "/register", upload.single("cv"),
   asyncHandler(async (req, res) => {
     const { email, password, username, role } = req.body;
 
@@ -44,6 +47,7 @@ router.post(
   }),
 );
 
+// Login
 router.post(
   "/login",
   asyncHandler(async (req, res) => {
@@ -55,7 +59,7 @@ router.post(
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    
+
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -65,10 +69,138 @@ router.post(
       .cookie("token", token, {
         httpOnly: true,
         secure: true,
-        sameSite:"none"
+        sameSite: "none"
       })
       .json({ message: "Login successful!" });
   }),
 );
+
+// Logout
+router.post(
+  "/logout",
+  asyncHandler(async (req, res) => {
+    res.clearCookie("token");
+    res.json({ message: "Logout successful!" });
+  })
+);
+
+
+//verify email
+router.get(
+  "/verify-email",
+  protect,
+  asyncHandler(async (req, res) => {
+    const user = req.user;
+    const code = Math.floor(100000 + Math.random() * 900000);
+    user.verificationCode = code;
+    user.verificationCodeExpires = Date.now() + 10 * 60 * 1000; // 10 min
+
+    await user.save();
+
+    await sendVerificationCode(user.email, code);
+    res.json({ message: "Verification code sent to email!" });
+  })
+);
+
+
+// verify email code
+router.post(
+  "/verify-code",
+  protect,
+  asyncHandler(async (req, res) => {
+    const { code } = req.body;
+
+    const user = req.user;
+
+    if (!user.verificationCode || user.verificationCode !== code) {
+      return res.status(400).json({ message: "Invalid verification code" });
+    }
+
+    if (Date.now() > user.verificationCodeExpires) {
+      return res.status(400).json({ message: "Verification code expired" });
+    }
+
+    user.emailVerified = true;
+    user.verificationCode = undefined;
+    user.verificationCodeExpires = undefined;
+    await user.save();
+
+    res.json({ message: "Email verified successfully!" });
+  })
+);
+
+
+//change password
+router.post(
+  "/change-password",protect,
+  asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user.id);
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 12);
+    await user.save();
+
+    res.json({ message: "Password changed successfully!" });
+  })
+);
+
+// Request password reset link
+router.post(
+  "/forgot-password",
+  asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const token = crypto.randomBytes(32).toString("hex");
+
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
+
+    await user.save();
+
+    const resetLink = `http://localhost:3000/reset-password/${token}`;
+  
+
+    await sendPasswordResetEmail(user.email, resetLink);
+
+    res.json({ message: "Password reset link sent to email!" });
+  })
+);
+
+// Reset password
+router.post(
+  "/reset-password/:token",
+  asyncHandler(async (req, res) => {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 12);
+
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+
+    res.json({ message: "Password reset successful!" });
+  })
+);
+
 
 export default router;
