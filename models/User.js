@@ -31,18 +31,24 @@ const userSchema = new mongoose.Schema(
       enum: ["jobSeeker", "recruiter"],
       default: "jobSeeker",
 
-      isVerified: { type: Boolean, default: false },
 
-      verificationCode: String,
-      verificationCodeExpires: Date,
-      resetPasswordToken: String,
-      resetPasswordExpires: Date
     },
+    isVerified: { type: Boolean, default: false },
 
+    verificationCode: String,
+    verificationCodeExpires: Date,
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
     resetCode: String,
 
     resetCodeExpire: Date,
-    refreshToken: String,
+    refreshTokens: [
+      {
+        token: String,
+        createdAt: Date,
+        device: String
+      }
+    ]
   },
   { timestamps: true },
 );
@@ -69,7 +75,13 @@ export const validateUserRegistration = (user) => {
     verificationCodeExpires: Joi.date(),
     resetPasswordToken: Joi.string(),
     resetPasswordExpires: Joi.date(),
-    refreshToken: Joi.string(),
+    refreshTokens: Joi.array().items(
+      Joi.object({
+        token: Joi.string().required(),
+        createdAt: Joi.date().required(),
+        device: Joi.string().required()
+      })
+    ),
   });
   return schema.validate(user);
 };

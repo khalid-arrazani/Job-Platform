@@ -6,10 +6,9 @@ import bcrypt from "bcryptjs";
 import asyncHandler from "express-async-handler";
 import upload from "../middlewares/uploadCv.js";
 import { protect } from "../middlewares/check.js";
-import { sendVerificationCode , sendPasswordResetEmail } from "../service/emailServiece.js";
+import { sendVerificationCode, sendPasswordResetEmail } from "../service/emailServiece.js";
 import crypto from "crypto";
-import resend from "../config/resend.js";
-import { link } from "joi";
+
 
 
 // Register
@@ -65,21 +64,38 @@ router.post(
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // 🟡 access token (short life)
+
     const accessToken = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "15m" }
     );
 
-    // 🔵 refresh token (long life)
+
     const refreshToken = jwt.sign(
       { id: user._id },
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: "7d" }
     );
 
-    // cookie = refresh token فقط
+
+
+
+    if (!user.refreshTokens) {
+      user.refreshTokens = [];
+    }
+
+    user.refreshTokens = user.refreshTokens.filter(
+      (t) => t.device !== req.headers["user-agent"]
+    );
+
+    user.refreshTokens.push({
+      token: refreshToken,
+      createdAt: new Date(),
+      device: req.headers["user-agent"]
+    });
+    await user.save();
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
@@ -96,41 +112,77 @@ router.post(
 
 
 //refresh token
-router.post(
-  "/refresh-token",
-  asyncHandler(async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
+router.post("/refresh-token", asyncHandler(async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
 
-    if (!refreshToken) {
-      return res.status(401).json({ message: "No refresh token provided" });
-    }
-    try {
-      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  if (!refreshToken) {
+    return res.status(401).json({ message: "No refresh token" });
+  }
+ 
+  // 1. verify JWT first
+  const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
-      const user = await User.findById(decoded.id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      const newAccessToken = jwt.sign(
-        { id: user._id },
-        process.env.JWT_SECRET,
-        { expiresIn: "15m" }
-      );
-      res.json({
-        accessToken: newAccessToken,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(401).json({ message: "Invalid refresh token" });
-    }
-  })
-);
+  const user = await User.findById(decoded.id);
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  // 2. check session
+  const valid = user.refreshTokens.some(
+    (t) => t.token === refreshToken
+  );
+
+  if (!valid) {
+    return res.status(401).json({ message: "Invalid session" });
+  }
+
+  // 3. generate new access token
+  const newAccessToken = jwt.sign(
+    { id: user._id },
+    process.env.JWT_SECRET,
+    { expiresIn: "15m" }
+  );
+
+  const newRefreshToken = jwt.sign(
+    { id: user._id },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  // 4. update refresh token in db
+  user.refreshTokens = user.refreshTokens.filter(
+    (t) => t.token !== refreshToken
+  );
+
+  user.refreshTokens.push({
+    token: newRefreshToken,
+    createdAt: new Date(),
+    device: req.headers["user-agent"]
+  });
+
+  await user.save();
+  
+  res.cookie("refreshToken", newRefreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+
+  res.json({ accessToken: newAccessToken });
+}));
 
 // Logout
 router.post(
-  "/logout",
+  "/logout", protect,
   asyncHandler(async (req, res) => {
-    res.clearCookie("token");
+    const user = req.user;
+
+    user.refreshTokens = user.refreshTokens.filter(
+      (t) => t.token !== req.cookies.refreshToken
+    );
+    await user.save();
+    res.clearCookie("refreshToken");
     res.json({ message: "Logout successful!" });
   })
 );
@@ -181,26 +233,6 @@ router.post(
 );
 
 
-//change password
-router.post(
-  "/change-password",protect,
-  asyncHandler(async (req, res) => {
-    const { currentPassword, newPassword } = req.body;
-    const user = await User.findById(req.user.id);
-
-    const isMatch = await bcrypt.compare(currentPassword, user.password);
-
-    if (!isMatch) {
-      return res.status(400).json({ message: "Current password is incorrect" });
-    }
-
-    user.password = await bcrypt.hash(newPassword, 12);
-    await user.save();
-
-    res.json({ message: "Password changed successfully!" });
-  })
-);
-
 // Request password reset link
 router.post(
   "/forgot-password",
@@ -218,7 +250,7 @@ router.post(
     await user.save();
 
     const resetLink = `http://localhost:3000/reset-password/${token}`;
-  
+
 
     await sendPasswordResetEmail(user.email, resetLink);
 

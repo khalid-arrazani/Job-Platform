@@ -1,6 +1,5 @@
 import express from "express";
 import Job from "../models/Job.js";
-import Apply from "../models/Apply.js";
 
 const router = express.Router();
 import asyncHandler from "express-async-handler";
@@ -9,11 +8,8 @@ import { protect } from "../middlewares/check.js";
 import { recruiterOnly } from "../middlewares/role.js";
 import { validateJobsDetails } from "../models/Job.js"
 
-import authorizeRoles from "../middlewares/authorizeApply.js";
-import upload from "../middlewares/upload.js";
-import isAlreadyApplied from "../middlewares/IsAlreadyApplied.js";
 
-
+// get all jobs for jobseeker with pagination
 router.get(
   "/jobs",
   protect,
@@ -30,7 +26,7 @@ router.get(
       return res.status(404).json({ message: "No jobs found" })
     }
     const total = await Job.countDocuments();
-    res.json({
+    res.status(200).json({
       total,
       page,
       results: jobs.length,
@@ -39,7 +35,35 @@ router.get(
   }),
 );
 
+// get my jobs for recruiter with pagination
+router.get(
+  "/jobs",
+  protect,
+  recruiterOnly,
+  asyncHandler(async (req, res) => {
 
+
+     const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+
+    const jobs = await Job.find({ createdBy: req.user.id })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    if (jobs.length === 0) {return res.status(404).json({ message: "No jobs found" })
+    }
+    const total = await Job.countDocuments();
+
+    res.status(200).json({
+      total,
+      page,
+      results: jobs.length,
+      jobs
+    });
+  })
+);
+
+// get job by id for jobseeker and recruiter
 router.get(
   "/jobs/:id",
   protect,
@@ -53,7 +77,7 @@ router.get(
 );
 
 
-
+// post job for recruiter
 router.post(
   "/PostJob",
   protect,
@@ -73,39 +97,6 @@ router.post(
   })
 );
 
-
-
-router.post(
-  "/jobs/:id/apply",
-  protect, authorizeRoles("jobseeker"),
-  isAlreadyApplied,
-  upload.single("cv"),
-  asyncHandler(async (req, res) => {
-    const jobId = req.params.id;
-
-    let cvUrl = req.user.cv || null;
-    let cvPublicId = req.user.cvPublicId || null;
-
-    if (req.file) {
-      cvUrl = req.file.path;
-      cvPublicId = req.file.filename;
-    }
-    const application = await Apply.create({
-      job: jobId,
-      applicant: req.user.id,
-      cv: cvUrl,
-      cvPublicId: cvPublicId
-    });
-
-    res.status(201).json({
-      message: "Applied successfully",
-      application: {
-        ...application._doc,
-        cvSource: req.file ? "uploaded" : "profile"
-      }
-    });
-  })
-);
 
 
 export default router;
