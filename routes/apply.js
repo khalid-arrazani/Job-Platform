@@ -6,9 +6,10 @@ import Apply from "../models/Apply.js";
 import Job from "../models/Job.js";
 
 const router = express.Router();
-import { authorizeRoles } from "../middlewares/role.js";
-import { isAlreadyApplied } from "../middlewares/apply.js";
-import upload from "../utils/multer.js";
+import  authorizeRoles from "../middlewares/authorizeApply.js";
+
+import isAlreadyApplied  from "../middlewares/IsAlreadyApplied.js";
+import upload from "../middlewares/uploadCv.js";
 
 
 // apply for a job with cv upload or use cv from profile for jobSeeker
@@ -114,6 +115,8 @@ router.delete(
     res.json({ message: "Application removed" });
   })
 );
+
+export default router;
 
 
 

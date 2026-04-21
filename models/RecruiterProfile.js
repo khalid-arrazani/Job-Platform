@@ -49,31 +49,30 @@ const recruiterProfileSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const RecruiterProfile = mongoose.model(
-  "RecruiterProfile",
-  recruiterProfileSchema
-);
 
 /* ======================
-   JOI VALIDATION
+JOI VALIDATION
 ====================== */
 
 export const validateRecruiterProfile = (data) => {
   const schema = Joi.object({
     fullName: Joi.string().min(3).max(100).required(),
-
+    
     companyName: Joi.string().min(2).max(150).required(),
-
+    
     companyDescription: Joi.string().allow("").max(1000),
-
+    
     website: Joi.string().uri().allow(""),
-
+    
     industry: Joi.string().allow("").max(100),
-
+    
     location: Joi.string().allow("").max(100),
   });
-
+  
   return schema.validate(data);
 };
+const RecruiterProfile =
+  mongoose.models.RecruiterProfile ||
+  mongoose.model("RecruiterProfile", recruiterProfileSchema);
 
 export default RecruiterProfile;

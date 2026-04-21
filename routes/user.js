@@ -2,7 +2,7 @@ import express from "express";
 import asyncHandler from "express-async-handler";
 import User from "../models/User.js";
 import JobSeekerProfile from "../models/JobSeekerProfile.js";
-import RecruiterProfile from "../models/recruiterProfile.model.js";
+import RecruiterProfile from "../models/recruiterProfile.js";
 
 import Job from "../models/Job.js";
 import Apply from "../models/Apply.js";

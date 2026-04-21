@@ -1,6 +1,6 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
-import RecruiterProfile, { validateRecruiterProfile } from "../models/recruiterProfile.model.js";
+import RecruiterProfile, { validateRecruiterProfile } from "../models/RecruiterProfile.js";
 import { protect } from "../middlewares/check.js";
 import { recruiterOnly } from "../middlewares/role.js";
 const router = express.Router();

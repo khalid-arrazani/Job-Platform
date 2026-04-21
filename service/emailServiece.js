@@ -1,11 +1,11 @@
 import { resend } from "../config/resend.js";
 
-export const sendVerificationEmail = async (email) => {
+export const sendVerificationCode = async (email ,code) => {
   return  resend.emails.send({
     from: "onboarding@resend.dev",
     to: email,
     subject: "Verify your email",
-    html: "<p>Click to verify your account</p>",
+    html: `<p>Click <a href="${code}">here</a> to verify your email.</p>`,
   });
 };
 

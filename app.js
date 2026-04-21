@@ -1,14 +1,19 @@
 import express from 'express';
 import dotenv from "dotenv";
+dotenv.config();
+
+
 import connectDB from './config/db.js';
+
 import authRouter from "./routes/auth.js";
 import jobRouter from "./routes/job.js";
-import jobSeekerProfileRoutes from "./routes/jobSeekerProfile.routes.js";
-import recruiterProfileRoutes from "./routes/recruiterProfile.routes.js";
 
+import jobSeekerProfile from "./routes/jobseekerProfile.js";
+import recruiterProfile from "./routes/recruiterProfile.js";
 
-import recruiterRouter from "./routes/recruiter.js";
-dotenv.config();
+import userRouter from "./routes/user.js";
+import apply from './routes/apply.js';
+
 
 const app = express();
 
@@ -20,10 +25,12 @@ app.use("/",authRouter);
 
 app.use("/list",jobRouter);
 
-app.use("/api/jobseeker/profile", jobSeekerProfileRoutes);
+app.use("/api/jobseeker/profile", jobSeekerProfile);
 
-app.use("/api/recruiter/profile", recruiterProfileRoutes);
+app.use("/api/recruiter/profile", recruiterProfile);
 
-app.use("/recruiter",recruiterRouter);
+app.use("/api/user",userRouter);
+
+app.use("/api/apply",apply);
 
 export default app;

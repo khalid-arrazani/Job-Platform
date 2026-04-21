@@ -4,7 +4,7 @@ import asyncHandler from "express-async-handler";
 import { protect } from "../middlewares/check.js";
 import JobSeekerProfile from "../models/JobSeekerProfile.js";
 import { validateJobSeekerProfile } from "../models/JobSeekerProfile.js";
-import { jobSeekerOnly } from "../middlewares/role.js";
+import authorizeRoles from "../middlewares/authorizeApply.js";
 
 /* ======================
    JOB SEEKER PROFILE
@@ -14,7 +14,7 @@ import { jobSeekerOnly } from "../middlewares/role.js";
 router.get(
   "/me",
   protect,
-  jobSeekerOnly,
+  authorizeRoles("jobSeeker"),
   asyncHandler(async (req, res) => {
     const profile = await JobSeekerProfile.findOne({ userId: req.user.id });
 
@@ -31,7 +31,7 @@ router.get(
 router.post(
   "/",
   protect,
-    jobSeekerOnly,
+    authorizeRoles("jobSeeker"),
   asyncHandler(async (req, res) => {
     const { error } = validateJobSeekerProfile(req.body);
     if (error) return res.status(400).json({ message: error.message });
@@ -56,7 +56,7 @@ router.post(
 router.patch(
   "/me",
   protect,
-    jobSeekerOnly,
+    authorizeRoles("jobSeeker"),
   asyncHandler(async (req, res) => {
     if (req.user.role !== "jobSeeker") {
       return res.status(403).json({ message: "Access denied" });

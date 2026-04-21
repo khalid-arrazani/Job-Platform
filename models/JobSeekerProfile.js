@@ -59,13 +59,9 @@ const jobSeekerProfileSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const JobSeekerProfile = mongoose.model(
-  "JobSeekerProfile",
-  jobSeekerProfileSchema
-);
 
 /* ======================
-   JOI VALIDATION
+JOI VALIDATION
 ====================== */
 
 export const validateJobSeekerProfile = (data, isUpdate = false) => {
@@ -73,9 +69,9 @@ export const validateJobSeekerProfile = (data, isUpdate = false) => {
     fullName: Joi.string().min(3).max(100),
 
     bio: Joi.string().allow("").max(500),
-
+    
     skills: Joi.array().items(Joi.string()),
-
+    
     location: Joi.string().allow("").max(100),
 
     cv: Joi.string().allow(""),
@@ -96,7 +92,7 @@ export const validateJobSeekerProfile = (data, isUpdate = false) => {
       })
     ),
   });
-
+  
   // 👇 هنا الفرق
   if (!isUpdate) {
     schema = schema.fork(
@@ -104,8 +100,12 @@ export const validateJobSeekerProfile = (data, isUpdate = false) => {
       (field) => field.required()
     );
   }
-
+  
   return schema.validate(data);
 };
 
+const JobSeekerProfile =mongoose.models.JobSeekerProfile || mongoose.model(
+  "JobSeekerProfile",
+  jobSeekerProfileSchema
+);
 export default JobSeekerProfile;

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Joi, { ref } from "joi";
+import Joi from "joi";
 
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
@@ -85,5 +85,5 @@ export const validateUserRegistration = (user) => {
   });
   return schema.validate(user);
 };
-
-export default mongoose.model("User", userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+export default User

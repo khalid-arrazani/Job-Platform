@@ -69,5 +69,5 @@ export const validateJobsDetails = (job) => {
 
   return schema.validate(job);
 };
-
-export default mongoose.model("job", jobSchema);
+const Job = mongoose.models.Job || mongoose.model("Job", jobSchema);
+export default Job
