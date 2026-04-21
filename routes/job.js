@@ -11,7 +11,7 @@ import { validateJobsDetails } from "../models/Job.js"
 
 // get all jobs for jobseeker with pagination
 router.get(
-  "/jobs",
+  "/Jobs",
   protect,
   asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
@@ -37,7 +37,7 @@ router.get(
 
 // get my jobs for recruiter with pagination
 router.get(
-  "/jobs",
+  "/My-Jobs",
   protect,
   recruiterOnly,
   asyncHandler(async (req, res) => {
@@ -65,7 +65,7 @@ router.get(
 
 // get job by id for jobseeker and recruiter
 router.get(
-  "/jobs/:id",
+  "/Jobs/:id",
   protect,
   asyncHandler(async (req, res) => {
     const jobById = await Job.findById(req.params.id).populate("createdBy", "username email");

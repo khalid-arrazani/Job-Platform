@@ -8,11 +8,11 @@ import connectDB from './config/db.js';
 import authRouter from "./routes/auth.js";
 import jobRouter from "./routes/job.js";
 
-import jobSeekerProfile from "./routes/jobseekerProfile.js";
-import recruiterProfile from "./routes/recruiterProfile.js";
+import jobSeekerProfileRouter from "./routes/jobseekerProfile.js";
+import recruiterProfileRouter from "./routes/recruiterProfile.js";
 
 import userRouter from "./routes/user.js";
-import apply from './routes/apply.js';
+import applyRouter from './routes/apply.js';
 
 
 const app = express();
@@ -21,16 +21,13 @@ connectDB();
 
 app.use(express.json());
 
-app.use("/",authRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/jobs", jobRouter);
 
-app.use("/list",jobRouter);
+app.use("/api/jobseeker", jobSeekerProfileRouter);
+app.use("/api/recuiter", recruiterProfileRouter);
 
-app.use("/api/jobseeker/profile", jobSeekerProfile);
-
-app.use("/api/recruiter/profile", recruiterProfile);
-
-app.use("/api/user",userRouter);
-
-app.use("/api/apply",apply);
+app.use("/api/users", userRouter);
+app.use("/api/applications", applyRouter);
 
 export default app;

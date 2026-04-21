@@ -58,11 +58,9 @@ router.patch(
   protect,
     authorizeRoles("jobSeeker"),
   asyncHandler(async (req, res) => {
-    if (req.user.role !== "jobSeeker") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
+ 
     const { error } = validateJobSeekerProfile(req.body, true);
+
     if (error) return res.status(400).json({ message: error.message });
 
     const allowedFields = [
@@ -93,7 +91,7 @@ router.patch(
       return res.status(404).json({ message: "Profile not found" });
     }
 
-    res.json(profile);
+    res.status(200).json(profile);
   })
 );
 
