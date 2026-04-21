@@ -27,6 +27,7 @@ app.use("/api/jobs", jobRouter);
 app.use("/api/jobseeker", jobSeekerProfileRouter);
 app.use("/api/recuiter", recruiterProfileRouter);
 
+
 app.use("/api/users", userRouter);
 app.use("/api/applications", applyRouter);
 
