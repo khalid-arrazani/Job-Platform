@@ -44,7 +44,8 @@ router.patch(
 
     const isEmailTaken = await User.findOne({ email: data.email, _id: { $ne: req.user.id } });
     if (isEmailTaken) {
-      return res.status(400).json({ message: "Email already in use" });}
+      return res.status(400).json({ message: "Email already in use" });
+    };
 
 
     const user = await User.findByIdAndUpdate(
@@ -53,7 +54,7 @@ router.patch(
       { new: true }
     ).select("-password");
 
-    res.json(user);
+    res.status(200).json(user);
   })
 );
 

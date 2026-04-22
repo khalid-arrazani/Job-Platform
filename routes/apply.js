@@ -16,7 +16,7 @@ import upload from "../middlewares/uploadCv.js";
 router.post(
   "/:jobId",
   protect,
-  authorizeRoles("jobseeker"),
+  authorizeRoles("jobSeeker"),
   isAlreadyApplied,
   upload.single("cv"),
   asyncHandler(async (req, res) => {
@@ -52,7 +52,7 @@ router.post(
 router.get(
   "/my-applications",
   protect,
-  authorizeRoles("jobseeker"),
+  authorizeRoles("jobSeeker"),
   asyncHandler(async (req, res) => {
     if (req.user.role !== "jobSeeker") {
       return res.status(403).json({ message: "Access denied" });
@@ -98,20 +98,13 @@ router.get(
 router.delete(
   "/:id",
   protect,
-  authorizeRoles("jobseeker"),
+  authorizeRoles("jobSeeker"),
   asyncHandler(async (req, res) => {
-    const application = await Apply.findById(req.params.id);
+    const application = await Apply.findOneAndDelete({_id:req.params.id , applicant : req.user.id});
 
     if (!application) {
       return res.status(404).json({ message: "Not found" });
     }
-
-    if (application.applicant.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not allowed" });
-    }
-
-    await application.deleteOne();
-
     res.json({ message: "Application removed" });
   })
 );

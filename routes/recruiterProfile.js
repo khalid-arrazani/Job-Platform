@@ -88,7 +88,9 @@ router.put(
     if (req.user.role !== "recruiter") {
      return res.status(403).json({ message: "Access denied" });
     }
-    const { error } = validateRecruiterProfile(req.body);
+
+    const { error } = validateRecruiterProfile(req.body,true);
+    
     if (error) return res.status(400).json({ message: error.message });
 
     const profile = await RecruiterProfile.findOneAndUpdate(

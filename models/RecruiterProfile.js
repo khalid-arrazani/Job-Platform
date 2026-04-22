@@ -54,11 +54,11 @@ const recruiterProfileSchema = new mongoose.Schema(
 JOI VALIDATION
 ====================== */
 
-export const validateRecruiterProfile = (data) => {
-  const schema = Joi.object({
-    fullName: Joi.string().min(3).max(100).required(),
+export const validateRecruiterProfile = (data, isUpdate = false) => {
+  let schema = Joi.object({
+    fullName: Joi.string().min(3).max(100),
     
-    companyName: Joi.string().min(2).max(150).required(),
+    companyName: Joi.string().min(2).max(150),
     
     companyDescription: Joi.string().allow("").max(1000),
     
@@ -68,7 +68,13 @@ export const validateRecruiterProfile = (data) => {
     
     location: Joi.string().allow("").max(100),
   });
-  
+
+    if (!isUpdate) {
+    schema = schema.fork(
+      ["fullName","companyName"], 
+      (field) => field.required()
+    );
+  }
   return schema.validate(data);
 };
 const RecruiterProfile =

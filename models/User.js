@@ -68,7 +68,7 @@ export const validateUserRegistration = (user) => {
     username: Joi.string().min(3).max(30).required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(6).max(124).required(),
-    role: Joi.string().valid("jobSeeker", "recruiter").default("jobSeeker"),
+    role: Joi.string().trim().valid("jobSeeker", "recruiter").default("jobSeeker"),
     cv: Joi.string(),
     cvPublicId: Joi.string(),
     verificationCode: Joi.string(),

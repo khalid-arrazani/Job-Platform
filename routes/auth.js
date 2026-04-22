@@ -8,6 +8,7 @@ import upload from "../middlewares/uploadCv.js";
 import { protect } from "../middlewares/check.js";
 import { sendVerificationCode, sendPasswordResetEmail } from "../service/emailServiece.js";
 import crypto from "crypto";
+import jwt  from "jsonwebtoken"
 
 
 
@@ -68,7 +69,7 @@ router.post(
     const accessToken = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
-      { expiresIn: "15m" }
+      { expiresIn: "7d" }
     );
 
 

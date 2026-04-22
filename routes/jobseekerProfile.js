@@ -53,7 +53,7 @@ router.post(
 
 
 // update profile for jobSeeker
-router.patch(
+router.put(
   "/me",
   protect,
     authorizeRoles("jobSeeker"),
