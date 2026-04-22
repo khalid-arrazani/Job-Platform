@@ -87,9 +87,26 @@ router.post(
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
+const allowedFields = [
+      "title",
+      "description",
+      "location",
+      "salary",
+      "company",
+      "jobType",
+      "experienceLevel",
+      "skills"
+    ];
 
+    const data = {};
+
+    allowedFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        data[field] = req.body[field];
+      }
+    });
     const job = await Job.create({
-      ...req.body,
+      ...data,
       createdBy: req.user.id
     });
 

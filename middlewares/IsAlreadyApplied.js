@@ -6,7 +6,7 @@ import Apply from "../models/Apply.js";
 const isAlreadyApplied = async (req, res, next) => {
     const jobId = req.params.id;
 
-    const job = await Job.findById(jobId);
+    const job = await Job.findOne({id : jobId});
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }

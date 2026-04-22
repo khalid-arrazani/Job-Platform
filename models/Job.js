@@ -2,6 +2,10 @@ import Joi from "joi";
 import mongoose from "mongoose";
 
 const jobSchema = new mongoose.Schema({
+    createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
   title: {
     type: String,
     required: true
@@ -39,24 +43,19 @@ const jobSchema = new mongoose.Schema({
   },
 
   skills: [String], 
-
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  }
 },{timestamps:true})
 
-export const validateJobsDetails = (job) => {
-  const schema = Joi.object({
-    title: Joi.string().required(),
+export const validateJobsDetails = (job , isUpdate=false) => {
+  let schema = Joi.object({
+    title: Joi.string(),
 
-    description: Joi.string().required(),
+    description: Joi.string(),
 
-    location: Joi.string().required(),
+    location: Joi.string(),
 
     salary: Joi.number(),
 
-    company: Joi.string().required(),
+    company: Joi.string(),
 
     jobType: Joi.string()
       .valid("full-time", "part-time", "remote", "internship"),
@@ -66,7 +65,11 @@ export const validateJobsDetails = (job) => {
 
     skills: Joi.array().items(Joi.string()) 
   });
-
+     if (!isUpdate) {
+    schema = schema.fork(
+      ["title","description","location","company"], 
+      (field) => field.required()
+    );}
   return schema.validate(job);
 };
 const Job = mongoose.models.Job || mongoose.model("Job", jobSchema);
