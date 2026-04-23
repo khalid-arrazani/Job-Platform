@@ -13,7 +13,11 @@ const ApplicationSchema = new mongoose.Schema(
       ref: "User",
       required: true
     },
-
+    profile:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref:"JobSeekerProfile",
+      required :true
+    },
     status: {
       type: String,
       enum: ["pending", "accepted", "rejected"],

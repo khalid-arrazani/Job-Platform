@@ -4,6 +4,7 @@ import { protect } from "../middlewares/check.js";
 
 import Apply from "../models/Apply.js";
 import Job from "../models/Job.js";
+import JobSeekerProfile from "../models/JobSeekerProfile.js";
 
 const router = express.Router();
 import  authorizeRoles from "../middlewares/authorizeApply.js";
@@ -25,12 +26,16 @@ router.post(
     let cvUrl = req.user.cv || null;
     let cvPublicId = req.user.cvPublicId || null;
 
+    const idProfile =await JobSeekerProfile.findOne({userId : req.user.id})
+
     if (req.file) {
       cvUrl = req.file.path;
       cvPublicId = req.file.filename;
     }
     const application = await Apply.create({
       job: jobId,
+      profile:idProfile.id,
+
       applicant: req.user.id,
       cv: cvUrl,
       cvPublicId: cvPublicId
@@ -90,6 +95,45 @@ router.get(
     res.json({
       job,
       applications
+    });
+  })
+);
+
+//accepted or rejected application
+
+router.patch(
+  "/:id/status",
+  protect,
+  authorizeRoles("recruiter"),
+  asyncHandler(async (req, res) => {
+
+    const { status } = req.body;
+
+    
+    if (!["accepted", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    
+    const application = await Apply.findById(req.params.id).populate("job" , "title createdBy company") 
+    .populate("applicant", "-password ").populate("profile");
+
+    if (!application) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    
+    if (application.job.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    
+    application.status = status;
+    await application.save();
+
+    res.json({
+      message: `Application ${status}`,
+      application
     });
   })
 );
