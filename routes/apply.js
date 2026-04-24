@@ -26,16 +26,16 @@ router.post(
     let cvUrl = req.user.cv || null;
     let cvPublicId = req.user.cvPublicId || null;
 
-    const idProfile =await JobSeekerProfile.findOne({userId : req.user.id})
+    const idProfile = await JobSeekerProfile.findOne({userId : req.user.id})
 
     if (req.file) {
       cvUrl = req.file.path;
       cvPublicId = req.file.filename;
     }
+
     const application = await Apply.create({
       job: jobId,
       profile:idProfile.id,
-
       applicant: req.user.id,
       cv: cvUrl,
       cvPublicId: cvPublicId
@@ -63,8 +63,8 @@ router.get(
       return res.status(403).json({ message: "Access denied" });
     }
 
-    const applications = await Apply.find({ applicant: req.user.id })
-      .populate("job");
+    const applications = await Apply.find({ applicant: req.user.id },"status")
+      .populate("job","title description company jobType experienceLevel");
 
     res.json(applications);
   })
@@ -88,19 +88,18 @@ router.get(
 
     const applications = await Apply.find({
       job: req.params.jobId
-    })
+    },"status")
     .populate("applicant", "username email")
     .populate("job", "title");
 
     res.json({
-      job,
       applications
     });
   })
 );
 
-//accepted or rejected application
 
+//accepted or rejected application
 router.patch(
   "/:id/status",
   protect,
@@ -112,20 +111,19 @@ router.patch(
     
     if (!["accepted", "rejected"].includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
-    }
+    };
 
     
-    const application = await Apply.findById(req.params.id).populate("job" , "title createdBy company") 
-    .populate("applicant", "-password ").populate("profile");
+    const application = await Apply.findById(req.params.id,"cv").populate("job" , "title createdBy company") 
+    .populate("applicant", "username email role").populate("profile","fullName location");
 
     if (!application) {
       return res.status(404).json({ message: "Application not found" });
-    }
-
-    
+    };
+  
     if (application.job.createdBy.toString() !== req.user.id) {
       return res.status(403).json({ message: "Not allowed" });
-    }
+    };
 
     
     application.status = status;
@@ -144,11 +142,13 @@ router.delete(
   protect,
   authorizeRoles("jobSeeker"),
   asyncHandler(async (req, res) => {
-    const application = await Apply.findOneAndDelete({_id:req.params.id , applicant : req.user.id});
+  console.log(req.params.id,req.user.id);
+  const application = await Apply.findOneAndDelete({job:req.params.id , applicant : req.user.id});
 
     if (!application) {
       return res.status(404).json({ message: "Not found" });
-    }
+    };
+  
     res.json({ message: "Application removed" });
   })
 );

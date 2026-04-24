@@ -33,13 +33,14 @@ const userSchema = new mongoose.Schema(
 
 
     },
-    isVerified: { type: Boolean, default: false },
+    emailVerified: { type: Boolean, default: false },
 
     verificationCode: String,
     verificationCodeExpires: Date,
     resetPasswordToken: String,
     resetPasswordExpires: Date,
     resetCode: String,
+    sentAt:Date,
 
     resetCodeExpire: Date,
     refreshTokens: [
@@ -72,7 +73,9 @@ export const validateUserRegistration = (user) => {
     cv: Joi.string(),
     cvPublicId: Joi.string(),
     verificationCode: Joi.string(),
+    sentAt:Joi.date(),
     verificationCodeExpires: Joi.date(),
+    emailVerified:Joi.boolean(),
     resetPasswordToken: Joi.string(),
     resetPasswordExpires: Joi.date(),
     refreshTokens: Joi.array().items(

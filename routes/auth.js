@@ -8,7 +8,7 @@ import upload from "../middlewares/uploadCv.js";
 import { protect } from "../middlewares/check.js";
 import { sendVerificationCode, sendPasswordResetEmail } from "../service/emailServiece.js";
 import crypto from "crypto";
-import jwt  from "jsonwebtoken"
+import jwt from "jsonwebtoken"
 
 
 
@@ -119,7 +119,7 @@ router.post("/refresh-token", asyncHandler(async (req, res) => {
   if (!refreshToken) {
     return res.status(401).json({ message: "No refresh token" });
   }
- 
+
   // 1. verify JWT first
   const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
@@ -163,7 +163,7 @@ router.post("/refresh-token", asyncHandler(async (req, res) => {
   });
 
   await user.save();
-  
+
   res.cookie("refreshToken", newRefreshToken, {
     httpOnly: true,
     secure: true,
@@ -190,19 +190,28 @@ router.post(
 
 
 //verify email
-router.get(
+router.post(
   "/verify-email",
   protect,
   asyncHandler(async (req, res) => {
     const user = req.user;
-    const code = Math.floor(100000 + Math.random() * 900000);
+
+    if (user.emailVerified) {
+      return res.json({ message: "Email already verified" });
+    };
+
+    if (Date.now() < user.sentAt) {
+      return res.status(429).json({ message: "Wait before requesting again" });
+    };
+    const code = crypto.randomInt(100000, 999999).toString();
     user.verificationCode = code;
-    user.verificationCodeExpires = Date.now() + 10 * 60 * 1000; // 10 min
+    user.verificationCodeExpires = Date.now() + 10 * 60 * 1000; 
+    user.sentAt = Date.now() + 90000 ;
 
     await user.save();
-
     await sendVerificationCode(user.email, code);
-    res.json({ message: "Verification code sent to email!" });
+
+    res.status(200).json({ message: "Verification code sent to email!" });
   })
 );
 
@@ -212,9 +221,14 @@ router.post(
   "/verify-code",
   protect,
   asyncHandler(async (req, res) => {
-    const { code } = req.body;
+    const code = req.body.code.trim();
 
     const user = req.user;
+
+    if (user.emailVerified) {
+      return res.json({ message: "Email already verified" });
+    };
+
 
     if (!user.verificationCode || user.verificationCode !== code) {
       return res.status(400).json({ message: "Invalid verification code" });
@@ -251,7 +265,6 @@ router.post(
     await user.save();
 
     const resetLink = `http://localhost:3000/reset-password/${token}`;
-
 
     await sendPasswordResetEmail(user.email, resetLink);
 
