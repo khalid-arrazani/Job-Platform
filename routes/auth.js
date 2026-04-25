@@ -58,9 +58,9 @@ router.post(
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    
     const isMatch = await bcrypt.compare(password, user.password);
-
+   console.log(isMatch,email,password,user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -261,10 +261,9 @@ router.post(
 
     user.resetPasswordToken = token;
     user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
-
     await user.save();
 
-    const resetLink = `http://localhost:3000/reset-password/${token}`;
+    const resetLink = `http://localhost:5000/api/auth/reset-password/${token}`;
 
     await sendPasswordResetEmail(user.email, resetLink);
 
@@ -277,18 +276,25 @@ router.post(
   "/reset-password/:token",
   asyncHandler(async (req, res) => {
     const { token } = req.params;
-    const { newPassword } = req.body;
-
+    const { newPassword, confirmPassword } = req.body;
+    
+    if (!newPassword || newPassword.length < 6) {
+  return res.status(400).json({ message: "Password too short" });
+}
+if (newPassword !== confirmPassword) {
+  return res.status(400).json({ message: "Passwords do not match" });
+}
     const user = await User.findOne({
       resetPasswordToken: token,
       resetPasswordExpires: { $gt: Date.now() },
     });
-
+   
     if (!user) {
       return res.status(400).json({ message: "Invalid or expired token" });
     }
-
+ console.log(user.password );
     user.password = await bcrypt.hash(newPassword, 12);
+    console.log(user.password , user);
 
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
