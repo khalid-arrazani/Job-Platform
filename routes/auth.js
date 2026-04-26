@@ -1,6 +1,6 @@
 import express from "express";
 import User from "../models/User.js";
-import { validateUserRegistration } from "../models/User.js";
+import { validateUserRegistration, loginSchema } from "../models/User.js";
 const router = express.Router();
 import bcrypt from "bcryptjs";
 import asyncHandler from "express-async-handler";
@@ -51,35 +51,31 @@ router.post(
 router.post(
   "/login",
   asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
 
+    const { error } = loginSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        message: error.details[0].message
+      });
+    }
+    const { email, password } = req.body;
     const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    
+
     const isMatch = await bcrypt.compare(password, user.password);
-   console.log(isMatch,email,password,user.password);
+
+
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-
-
-    const accessToken = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+    user.refreshTokens = user.refreshTokens.filter(
+      (t) => t.expiresAt > Date.now()
     );
 
-
-    const refreshToken = jwt.sign(
-      { id: user._id },
-      process.env.JWT_REFRESH_SECRET,
-      { expiresIn: "7d" }
-    );
-
-
+   const { accessToken, refreshToken } = user.generateTokens();
 
 
     if (!user.refreshTokens) {
@@ -93,8 +89,10 @@ router.post(
     user.refreshTokens.push({
       token: refreshToken,
       createdAt: new Date(),
-      device: req.headers["user-agent"]
+      device: req.headers["user-agent"],
+      expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
     });
+
     await user.save();
 
     res.cookie("refreshToken", refreshToken, {
@@ -103,9 +101,9 @@ router.post(
       sameSite: "none",
     });
 
-    res.json({
+    res.status(200).json({
       message: "Login successful!",
-      accessToken,
+      accessToken
     });
   })
 );
@@ -114,6 +112,7 @@ router.post(
 
 //refresh token
 router.post("/refresh-token", asyncHandler(async (req, res) => {
+
   const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {
@@ -127,7 +126,7 @@ router.post("/refresh-token", asyncHandler(async (req, res) => {
 
   if (!user) {
     return res.status(404).json({ message: "User not found" });
-  }
+  };
 
   // 2. check session
   const valid = user.refreshTokens.some(
@@ -155,11 +154,16 @@ router.post("/refresh-token", asyncHandler(async (req, res) => {
   user.refreshTokens = user.refreshTokens.filter(
     (t) => t.token !== refreshToken
   );
+  user.refreshTokens = user.refreshTokens.filter(
+    (t) => t.expiresAt > Date.now()
+  );
 
   user.refreshTokens.push({
     token: newRefreshToken,
     createdAt: new Date(),
-    device: req.headers["user-agent"]
+    device: req.headers["user-agent"],
+    ip: req.ip,
+    expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
   });
 
   await user.save();
@@ -170,7 +174,7 @@ router.post("/refresh-token", asyncHandler(async (req, res) => {
     sameSite: "none",
   });
 
-  res.json({ accessToken: newAccessToken });
+  res.status(200).json({ accessToken: newAccessToken });
 }));
 
 // Logout
@@ -181,6 +185,10 @@ router.post(
 
     user.refreshTokens = user.refreshTokens.filter(
       (t) => t.token !== req.cookies.refreshToken
+    );
+
+    user.refreshTokens = user.refreshTokens.filter(
+      (t) => t.expiresAt > Date.now()
     );
     await user.save();
     res.clearCookie("refreshToken");
@@ -194,7 +202,14 @@ router.post(
   "/verify-email",
   protect,
   asyncHandler(async (req, res) => {
+
+    const { email } = req.body
+
     const user = req.user;
+
+    if (!email || user.email != email) {
+      return res.status(401).json({ message: "Email is not match or not defined" })
+    }
 
     if (user.emailVerified) {
       return res.json({ message: "Email already verified" });
@@ -204,9 +219,12 @@ router.post(
       return res.status(429).json({ message: "Wait before requesting again" });
     };
     const code = crypto.randomInt(100000, 999999).toString();
-    user.verificationCode = code;
-    user.verificationCodeExpires = Date.now() + 10 * 60 * 1000; 
-    user.sentAt = Date.now() + 90000 ;
+
+
+    user.verificationCode = crypto.createHash("sha256").update(code).digest("hex");
+
+    user.verificationCodeExpires = Date.now() + 10 * 60 * 1000;
+    user.sentAt = Date.now() + 90000;
 
     await user.save();
     await sendVerificationCode(user.email, code);
@@ -221,22 +239,28 @@ router.post(
   "/verify-code",
   protect,
   asyncHandler(async (req, res) => {
+
     const code = req.body.code.trim();
 
     const user = req.user;
 
-    if (user.emailVerified) {
-      return res.json({ message: "Email already verified" });
+    if (!code || code.length < 6) {
+      return res.status(400).json({ message: "Code is short or undifined " });
     };
 
+    if (user.emailVerified) {
+      return res.status(400).json({ message: "Email already verified" });
+    };
 
-    if (!user.verificationCode || user.verificationCode !== code) {
+    const codeHush = crypto.createHash("sha256").update(code).digest("hex")
+
+    if (!user.verificationCode || user.verificationCode !== codeHush) {
       return res.status(400).json({ message: "Invalid verification code" });
-    }
+    };
 
     if (Date.now() > user.verificationCodeExpires) {
       return res.status(400).json({ message: "Verification code expired" });
-    }
+    };
 
     user.emailVerified = true;
     user.verificationCode = undefined;
@@ -258,8 +282,9 @@ router.post(
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const token = crypto.randomBytes(32).toString("hex");
+    const t = crypto.createHash("sha256").update(token).digest("hex");
 
-    user.resetPasswordToken = token;
+    user.resetPasswordToken = t;
     user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
     await user.save();
 
@@ -275,26 +300,29 @@ router.post(
 router.post(
   "/reset-password/:token",
   asyncHandler(async (req, res) => {
+
     const { token } = req.params;
     const { newPassword, confirmPassword } = req.body;
-    
+
+    //check if password length big enough 
     if (!newPassword || newPassword.length < 6) {
-  return res.status(400).json({ message: "Password too short" });
-}
-if (newPassword !== confirmPassword) {
-  return res.status(400).json({ message: "Passwords do not match" });
-}
+      return res.status(400).json({ message: "Password too short" });
+    }
+    //check if newPassword and confirmPassword are the same
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+    //check if ther is user whit the same resetPasswordToken and its resetPasswordExpires not expired
+    const t = crypto.createHash("sha256").update(token).digest("hex");
     const user = await User.findOne({
-      resetPasswordToken: token,
+      resetPasswordToken: t,
       resetPasswordExpires: { $gt: Date.now() },
     });
-   
     if (!user) {
       return res.status(400).json({ message: "Invalid or expired token" });
     }
- console.log(user.password );
-    user.password = await bcrypt.hash(newPassword, 12);
-    console.log(user.password , user);
+    user.password = newPassword
+    //i don't need to hush the password here because it wull be hushed  before save it in dataBase 
 
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;

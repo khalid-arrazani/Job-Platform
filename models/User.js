@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Joi from "joi";
+import Joi, { date } from "joi";
 
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
@@ -47,14 +47,29 @@ const userSchema = new mongoose.Schema(
       {
         token: String,
         createdAt: Date,
-        device: String
+        device: String,
+        expiresAt:Date
       }
     ]
   },
   { timestamps: true },
 );
 userSchema.methods.generateToken = function () {
-  return jwt.sign({ id: this._id, isAdmin: this.isAdmin, role: this.role }, process.env.JWT_SECRET_KEY, { expiresIn: "7d" })
+
+  const accessToken = jwt.sign(
+    { id: this._id },
+    process.env.JWT_SECRET,
+    { expiresIn: "5m" }
+  );
+
+  const refreshToken = jwt.sign(
+    { id: this._id },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  return { accessToken, refreshToken };
+
 };
 
 userSchema.pre("save", async function () {
@@ -80,11 +95,17 @@ export const validateUserRegistration = (user) => {
       Joi.object({
         token: Joi.string().required(),
         createdAt: Joi.date().required(),
-        device: Joi.string().required()
+        device: Joi.string().required(),
+        expiresAt : Joi.date().required()
       })
     ),
   });
   return schema.validate(user);
 };
+export const loginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().min(6).required(),
+});
+
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 export default User
