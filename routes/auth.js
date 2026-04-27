@@ -137,15 +137,12 @@ router.post("/refresh-token", asyncHandler(async (req, res) => {
     return res.status(401).json({ message: "Invalid session" });
   }
   const { accessToken, refreshToken } = user.generateTokens();
-  // 3. generate new access token
-
-
-
 
   // 4. update refresh token in db
   user.refreshTokens = user.refreshTokens.filter(
     (t) => t.token !== oldrefreshToken
   );
+
   user.refreshTokens = user.refreshTokens.filter(
     (t) => t.expiresAt > Date.now()
   );
@@ -183,6 +180,7 @@ router.post(
       (t) => t.expiresAt > Date.now()
     );
     await user.save();
+    
     res.clearCookie("refreshToken");
     res.json({ message: "Logout successful!" });
   })
