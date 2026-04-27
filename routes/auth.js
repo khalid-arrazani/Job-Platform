@@ -142,7 +142,7 @@ router.post("/refresh-token", asyncHandler(async (req, res) => {
   user.refreshTokens = user.refreshTokens.filter(
     (t) => t.token !== oldrefreshToken
   );
-
+  
   user.refreshTokens = user.refreshTokens.filter(
     (t) => t.expiresAt > Date.now()
   );
@@ -180,7 +180,6 @@ router.post(
       (t) => t.expiresAt > Date.now()
     );
     await user.save();
-    
     res.clearCookie("refreshToken");
     res.json({ message: "Logout successful!" });
   })
