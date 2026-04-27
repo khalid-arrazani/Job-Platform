@@ -113,14 +113,14 @@ router.post(
 //refresh token
 router.post("/refresh-token", asyncHandler(async (req, res) => {
 
-  const refreshToken = req.cookies.refreshToken;
-
-  if (!refreshToken) {
+  const oldrefreshToken = req.cookies.refreshToken;
+  
+  if (!oldrefreshToken) {
     return res.status(401).json({ message: "No refresh token" });
   }
 
   // 1. verify JWT first
-  const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  const decoded = jwt.verify(oldrefreshToken, process.env.JWT_REFRESH_SECRET);
 
   const user = await User.findById(decoded.id);
 
@@ -130,36 +130,28 @@ router.post("/refresh-token", asyncHandler(async (req, res) => {
 
   // 2. check session
   const valid = user.refreshTokens.some(
-    (t) => t.token === refreshToken
+    (t) => t.token === oldrefreshToken
   );
 
   if (!valid) {
     return res.status(401).json({ message: "Invalid session" });
   }
-
+  const { accessToken, refreshToken } = user.generateTokens();
   // 3. generate new access token
-  const newAccessToken = jwt.sign(
-    { id: user._id },
-    process.env.JWT_SECRET,
-    { expiresIn: "15m" }
-  );
 
-  const newRefreshToken = jwt.sign(
-    { id: user._id },
-    process.env.JWT_REFRESH_SECRET,
-    { expiresIn: "7d" }
-  );
+
+
 
   // 4. update refresh token in db
   user.refreshTokens = user.refreshTokens.filter(
-    (t) => t.token !== refreshToken
+    (t) => t.token !== oldrefreshToken
   );
   user.refreshTokens = user.refreshTokens.filter(
     (t) => t.expiresAt > Date.now()
   );
 
   user.refreshTokens.push({
-    token: newRefreshToken,
+    token: refreshToken,
     createdAt: new Date(),
     device: req.headers["user-agent"],
     ip: req.ip,
@@ -168,13 +160,13 @@ router.post("/refresh-token", asyncHandler(async (req, res) => {
 
   await user.save();
 
-  res.cookie("refreshToken", newRefreshToken, {
+  res.cookie("refreshToken", accessToken, {
     httpOnly: true,
     secure: true,
     sameSite: "none",
   });
 
-  res.status(200).json({ accessToken: newAccessToken });
+  res.status(200).json({ accessToken });
 }));
 
 // Logout
