@@ -4,30 +4,43 @@ import jwt from "jsonwebtoken";
 export const protect = async (req, res, next) => {
 
   try {
-    const token = req.headers.authorization?.startsWith("Bearer")
-      ? req.headers.authorization.split(" ")[1]
-      : null;
+
+    // Get access token from cookies
+    const token = req.cookies.accessToken;
 
     if (!token) {
-      return res.status(401).json({ message: "Access token missing or invalid" });
+      return res.status(401).json({
+        message: "Access token missing"
+      });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify JWT token
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
 
-    const user = await User.findById(decoded.id).select("-password");
-
-
+    // Find authenticated user
+    const user = await User.findById(decoded.id)
+      .select("-password");
 
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      return res.status(401).json({
+        message: "User not found"
+      });
     }
 
+    // Attach user to request object
     req.user = user;
 
-    return next();
+    next();
 
   } catch (error) {
+
     console.error(error);
-    return res.status(401).json({ message: "Invalid or expired token" });
+
+    return res.status(401).json({
+      message: "Invalid or expired token"
+    });
   }
 };

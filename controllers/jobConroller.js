@@ -1,76 +1,122 @@
-import Joi from "joi";
-import mongoose from "mongoose";
+import Job from "../models/Job.js";
+import asyncHandler from "express-async-handler";
+import { validateJobsDetails } from "../models/Job.js";
 
-const jobSchema = new mongoose.Schema({
-    createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  },
-  title: {
-    type: String,
-    required: true
-  },
 
-  description: {
-    type: String,
-    required: true
-  },
 
-  location: {
-    type: String,
-    required: true
-  },
+// Get all jobs for job seekers with pagination
+export const getAllJobs = asyncHandler(async (req, res) => {
 
-  salary: {
-    type: Number
-  },
+  const page = parseInt(req.query.page) || 1;
 
-  company: {
-    type: String,
-    required: true
-  },
+  const limit = 10;
 
-  jobType: {
-    type: String,
-    enum: ["full-time", "part-time", "remote", "internship"],
-    default: "full-time"
-  },
+  const jobs = await Job.find()
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .populate("createdBy", "username");
 
-  experienceLevel: {
-    type: String,
-    enum: ["junior", "mid", "senior"],
-    default: "junior"
-  },
+  if (jobs.length === 0) {
+    return res.status(404).json({
+      message: "No jobs found"
+    });
+  }
 
-  skills: [String], 
-},{timestamps:true})
+  const total = await Job.countDocuments();
 
-export const validateJobsDetails = (job , isUpdate=false) => {
-  let schema = Joi.object({
-    title: Joi.string(),
-
-    description: Joi.string(),
-
-    location: Joi.string(),
-
-    salary: Joi.number(),
-
-    company: Joi.string(),
-
-    jobType: Joi.string()
-      .valid("full-time", "part-time", "remote", "internship"),
-
-    experienceLevel: Joi.string()
-      .valid("junior", "mid", "senior"),
-
-    skills: Joi.array().items(Joi.string()) 
+  res.status(200).json({
+    total,
+    page,
+    results: jobs.length,
+    jobs
   });
-     if (!isUpdate) {
-    schema = schema.fork(
-      ["title","description","location","company"], 
-      (field) => field.required()
-    );}
-  return schema.validate(job);
-};
-const Job = mongoose.models.Job || mongoose.model("Job", jobSchema);
-export default Job
+});
+
+
+
+// Get all recruiter jobs with pagination
+export const getMyJobs = asyncHandler(async (req, res) => {
+
+  const page = parseInt(req.query.page) || 1;
+
+  const limit = 10;
+
+  const jobs = await Job.find({
+    createdBy: req.user.id
+  })
+    .skip((page - 1) * limit)
+    .limit(limit);
+
+  if (jobs.length === 0) {
+    return res.status(404).json({
+      message: "No jobs found"
+    });
+  }
+
+  const total = await Job.countDocuments();
+
+  res.status(200).json({
+    total,
+    page,
+    results: jobs.length,
+    jobs
+  });
+});
+
+
+
+// Get single job by id
+export const getJobById = asyncHandler(async (req, res) => {
+
+  const jobById = await Job.findById(req.params.id)
+    .populate("createdBy", "username email");
+
+  if (!jobById) {
+    return res.status(404).json({
+      message: "No job found"
+    });
+  }
+
+  res.status(200).json(jobById);
+});
+
+
+
+// Create new job for recruiter
+export const createJob = asyncHandler(async (req, res) => {
+
+  const { error } = validateJobsDetails(req.body);
+
+  if (error) {
+    return res.status(400).json({
+      message: error.details[0].message
+    });
+  }
+
+  const allowedFields = [
+    "title",
+    "description",
+    "location",
+    "salary",
+    "company",
+    "jobType",
+    "experienceLevel",
+    "skills"
+  ];
+
+  const data = {};
+
+  allowedFields.forEach((field) => {
+
+    if (req.body[field] !== undefined) {
+      data[field] = req.body[field];
+    }
+  });
+
+  const job = await Job.create({
+    ...data,
+    createdBy: req.user.id
+  });
+
+  res.status(201).json(job);
+});

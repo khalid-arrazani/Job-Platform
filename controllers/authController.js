@@ -1,148 +1,183 @@
-import express from "express";
 import User from "../models/User.js";
-import { validateUserRegistration, loginSchema } from "../models/User.js";
-const router = express.Router();
 import bcrypt from "bcryptjs";
 import asyncHandler from "express-async-handler";
-import upload from "../middlewares/uploadCv.js";
-import { protect } from "../middlewares/check.js";
-import { sendVerificationCode, sendPasswordResetEmail } from "../service/emailServiece.js";
+import {
+  validateUserRegistration,
+  loginSchema
+} from "../models/User.js";
+import {
+  sendVerificationCode,
+  sendPasswordResetEmail
+} from "../service/emailServiece.js";
 import crypto from "crypto";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 
 
-// Register
-router.post(
-  "/register", upload.single("cv"),
-  asyncHandler(async (req, res) => {
-    const { email, password, username, role } = req.body;
+// Register controller
+export const registerUser = asyncHandler(async (req, res) => {
 
-    const { error } = validateUserRegistration({ email, password, username });
+  const { email, password, username, role } = req.body;
 
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message });
-    }
+  const { error } = validateUserRegistration({
+    email,
+    password,
+    username
+  });
 
-    const userExists = await User.findOne({ email });
-
-    if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const newUser = new User({
-      email,
-      password,
-      username,
-      role,
-      cv: req.file ? req.file.path : null,
-      cvPublicId: req.file ? req.file.filename : null
+  if (error) {
+    return res.status(400).json({
+      message: error.details[0].message
     });
-    const savedUser = await newUser.save();
-
-    const userObj = savedUser.toObject();
-    delete userObj.password;
-
-    res.status(201).json(userObj);
-  }),
-);
-
-// Login
-router.post(
-  "/login",
-  asyncHandler(async (req, res) => {
-
-    const { error } = loginSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({
-        message: error.details[0].message
-      });
-    }
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-    user.refreshTokens = user.refreshTokens.filter(
-      (t) => t.expiresAt > Date.now()
-    );
-
-   const { accessToken, refreshToken } = user.generateTokens();
-
-
-    if (!user.refreshTokens) {
-      user.refreshTokens = [];
-    }
-
-    user.refreshTokens = user.refreshTokens.filter(
-      (t) => t.device !== req.headers["user-agent"]
-    );
-
-    user.refreshTokens.push({
-      token: refreshToken,
-      createdAt: new Date(),
-      device: req.headers["user-agent"],
-      expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
-    });
-
-    await user.save();
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
-
-    res.status(200).json({
-      message: "Login successful!",
-      accessToken
-    });
-  })
-);
-
-
-
-//refresh token
-router.post("/refresh-token", asyncHandler(async (req, res) => {
-
-  const oldrefreshToken = req.cookies.refreshToken;
-  
-  if (!oldrefreshToken) {
-    return res.status(401).json({ message: "No refresh token" });
   }
 
-  // 1. verify JWT first
-  const decoded = jwt.verify(oldrefreshToken, process.env.JWT_REFRESH_SECRET);
+  const userExists = await User.findOne({ email });
+
+  if (userExists) {
+    return res.status(400).json({
+      message: "User already exists"
+    });
+  }
+
+  const newUser = new User({
+    email,
+    password,
+    username,
+    role,
+    cv: req.file ? req.file.path : null,
+    cvPublicId: req.file ? req.file.filename : null
+  });
+
+  const savedUser = await newUser.save();
+
+  const userObj = savedUser.toObject();
+
+  delete userObj.password;
+
+  res.status(201).json(userObj);
+});
+
+
+
+// Login controller
+export const loginUser = asyncHandler(async (req, res) => {
+
+  const { error } = loginSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({
+      message: error.details[0].message
+    });
+  }
+
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found"
+    });
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    return res.status(401).json({
+      message: "Invalid credentials"
+    });
+  }
+
+  user.refreshTokens = user.refreshTokens.filter(
+    (t) => t.expiresAt > Date.now()
+  );
+
+  const { accessToken, refreshToken } = user.generateTokens();
+
+  if (!user.refreshTokens) {
+    user.refreshTokens = [];
+  }
+
+  user.refreshTokens = user.refreshTokens.filter(
+    (t) => t.device !== req.headers["user-agent"]
+  );
+
+  user.refreshTokens.push({
+    token: refreshToken,
+    createdAt: new Date(),
+    device: req.headers["user-agent"],
+    expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
+  });
+
+  await user.save();
+
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 15 * 60 * 1000 // 15 minutes
+  });
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Login successful",
+    user: {
+      id: user._id,
+      username: user.username,
+      role: user.role
+    }
+  });
+});
+
+
+
+// Refresh token controller
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+
+  const oldrefreshToken = req.cookies.refreshToken;
+
+  if (!oldrefreshToken) {
+    return res.status(401).json({
+      message: "No refresh token"
+    });
+  }
+
+  const decoded = jwt.verify(
+    oldrefreshToken,
+    process.env.JWT_REFRESH_SECRET
+  );
 
   const user = await User.findById(decoded.id);
 
   if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  };
+    return res.status(404).json({
+      message: "User not found"
+    });
+  }
 
-  // 2. check session
   const valid = user.refreshTokens.some(
     (t) => t.token === oldrefreshToken
   );
 
   if (!valid) {
-    return res.status(401).json({ message: "Invalid session" });
+    return res.status(401).json({
+      message: "Invalid session"
+    });
   }
+
   const { accessToken, refreshToken } = user.generateTokens();
 
-  // 4. update refresh token in db
   user.refreshTokens = user.refreshTokens.filter(
     (t) => t.token !== oldrefreshToken
   );
-  
+
   user.refreshTokens = user.refreshTokens.filter(
     (t) => t.expiresAt > Date.now()
   );
@@ -157,170 +192,235 @@ router.post("/refresh-token", asyncHandler(async (req, res) => {
 
   await user.save();
 
-  res.cookie("refreshToken", accessToken, {
+  res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: true,
     sameSite: "none",
+     maxAge: 7 * 24 * 60 * 60 * 1000
+  });
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+     maxAge: 15 * 60 * 1000 // 15 minutes
   });
 
-  res.status(200).json({ accessToken });
-}));
 
-// Logout
-router.post(
-  "/logout", protect,
-  asyncHandler(async (req, res) => {
-    const user = req.user;
-
-    user.refreshTokens = user.refreshTokens.filter(
-      (t) => t.token !== req.cookies.refreshToken
-    );
-
-    user.refreshTokens = user.refreshTokens.filter(
-      (t) => t.expiresAt > Date.now()
-    );
-    await user.save();
-    res.clearCookie("refreshToken");
-    res.json({ message: "Logout successful!" });
-  })
-);
+  res.status(200).json({
+    success: true,
+    message: "Tokens refreshed successfully"
+  });
+});
 
 
-//verify email
-router.post(
-  "/verify-email",
-  protect,
-  asyncHandler(async (req, res) => {
 
-    const { email } = req.body
+// Logout controller
+export const logoutUser = asyncHandler(async (req, res) => {
 
-    const user = req.user;
+  const user = req.user;
 
-    if (!email || user.email != email) {
-      return res.status(401).json({ message: "Email is not match or not defined" })
-    }
+  user.refreshTokens = user.refreshTokens.filter(
+    (t) => t.token !== req.cookies.refreshToken
+  );
 
-    if (user.emailVerified) {
-      return res.json({ message: "Email already verified" });
-    };
+  user.refreshTokens = user.refreshTokens.filter(
+    (t) => t.expiresAt > Date.now()
+  );
 
-    if (Date.now() < user.sentAt) {
-      return res.status(429).json({ message: "Wait before requesting again" });
-    };
-    const code = crypto.randomInt(100000, 999999).toString();
+  await user.save();
 
+  res.clearCookie("refreshToken");
 
-    user.verificationCode = crypto.createHash("sha256").update(code).digest("hex");
-
-    user.verificationCodeExpires = Date.now() + 10 * 60 * 1000;
-    user.sentAt = Date.now() + 90000;
-
-    await user.save();
-    await sendVerificationCode(user.email, code);
-
-    res.status(200).json({ message: "Verification code sent to email!" });
-  })
-);
+  res.json({
+    message: "Logout successful!"
+  });
+});
 
 
-// verify email code
-router.post(
-  "/verify-code",
-  protect,
-  asyncHandler(async (req, res) => {
 
-    const code = req.body.code.trim();
+// Send verification email controller
+export const sendVerificationEmail = asyncHandler(async (req, res) => {
 
-    const user = req.user;
+  const { email } = req.body;
 
-    if (!code || code.length < 6) {
-      return res.status(400).json({ message: "Code is short or undifined " });
-    };
+  const user = req.user;
 
-    if (user.emailVerified) {
-      return res.status(400).json({ message: "Email already verified" });
-    };
-
-    const codeHush = crypto.createHash("sha256").update(code).digest("hex")
-
-    if (!user.verificationCode || user.verificationCode !== codeHush) {
-      return res.status(400).json({ message: "Invalid verification code" });
-    };
-
-    if (Date.now() > user.verificationCodeExpires) {
-      return res.status(400).json({ message: "Verification code expired" });
-    };
-
-    user.emailVerified = true;
-    user.verificationCode = undefined;
-    user.verificationCodeExpires = undefined;
-    await user.save();
-
-    res.json({ message: "Email verified successfully!" });
-  })
-);
-
-
-// Request password reset link
-router.post(
-  "/forgot-password",
-  asyncHandler(async (req, res) => {
-    const { email } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const token = crypto.randomBytes(32).toString("hex");
-    const t = crypto.createHash("sha256").update(token).digest("hex");
-
-    user.resetPasswordToken = t;
-    user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
-    await user.save();
-
-    const resetLink = `http://localhost:5000/api/auth/reset-password/${token}`;
-
-    await sendPasswordResetEmail(user.email, resetLink);
-
-    res.json({ message: "Password reset link sent to email!" });
-  })
-);
-
-// Reset password
-router.post(
-  "/reset-password/:token",
-  asyncHandler(async (req, res) => {
-
-    const { token } = req.params;
-    const { newPassword, confirmPassword } = req.body;
-
-    //check if password length big enough 
-    if (!newPassword || newPassword.length < 6) {
-      return res.status(400).json({ message: "Password too short" });
-    }
-    //check if newPassword and confirmPassword are the same
-    if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
-    }
-    //check if ther is user whit the same resetPasswordToken and its resetPasswordExpires not expired
-    const t = crypto.createHash("sha256").update(token).digest("hex");
-    const user = await User.findOne({
-      resetPasswordToken: t,
-      resetPasswordExpires: { $gt: Date.now() },
+  if (!email || user.email != email) {
+    return res.status(401).json({
+      message: "Email is not match or not defined"
     });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid or expired token" });
+  }
+
+  if (user.emailVerified) {
+    return res.json({
+      message: "Email already verified"
+    });
+  }
+
+  if (Date.now() < user.sentAt) {
+    return res.status(429).json({
+      message: "Wait before requesting again"
+    });
+  }
+
+  const code = crypto.randomInt(100000, 999999).toString();
+
+  user.verificationCode = crypto
+    .createHash("sha256")
+    .update(code)
+    .digest("hex");
+
+  user.verificationCodeExpires = Date.now() + 10 * 60 * 1000;
+
+  user.sentAt = Date.now() + 90000;
+
+  await user.save();
+
+  await sendVerificationCode(user.email, code);
+
+  res.status(200).json({
+    message: "Verification code sent to email!"
+  });
+});
+
+
+
+// Verify email code controller
+export const verifyEmailCode = asyncHandler(async (req, res) => {
+
+  const code = req.body.code.trim();
+
+  const user = req.user;
+
+  if (!code || code.length < 6) {
+    return res.status(400).json({
+      message: "Code is short or undifined"
+    });
+  }
+
+  if (user.emailVerified) {
+    return res.status(400).json({
+      message: "Email already verified"
+    });
+  }
+
+  const codeHash = crypto
+    .createHash("sha256")
+    .update(code)
+    .digest("hex");
+
+  if (
+    !user.verificationCode ||
+    user.verificationCode !== codeHash
+  ) {
+    return res.status(400).json({
+      message: "Invalid verification code"
+    });
+  }
+
+  if (Date.now() > user.verificationCodeExpires) {
+    return res.status(400).json({
+      message: "Verification code expired"
+    });
+  }
+
+  user.emailVerified = true;
+
+  user.verificationCode = undefined;
+  user.verificationCodeExpires = undefined;
+
+  await user.save();
+
+  res.json({
+    message: "Email verified successfully!"
+  });
+});
+
+
+
+// Forgot password controller
+export const forgotPassword = asyncHandler(async (req, res) => {
+
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found"
+    });
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+  user.resetPasswordToken = hashedToken;
+
+  user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
+
+  await user.save();
+
+  const resetLink =
+    `http://localhost:5000/api/auth/reset-password/${token}`;
+
+  await sendPasswordResetEmail(user.email, resetLink);
+
+  res.json({
+    message: "Password reset link sent to email!"
+  });
+});
+
+
+
+// Reset password controller
+export const resetPassword = asyncHandler(async (req, res) => {
+
+  const { token } = req.params;
+
+  const { newPassword, confirmPassword } = req.body;
+
+  if (!newPassword || newPassword.length < 6) {
+    return res.status(400).json({
+      message: "Password too short"
+    });
+  }
+
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({
+      message: "Passwords do not match"
+    });
+  }
+
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    resetPasswordToken: hashedToken,
+    resetPasswordExpires: {
+      $gt: Date.now()
     }
-    user.password = newPassword
-    //i don't need to hush the password here because it wull be hushed  before save it in dataBase 
+  });
 
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+  if (!user) {
+    return res.status(400).json({
+      message: "Invalid or expired token"
+    });
+  }
 
-    await user.save();
+  user.password = newPassword;
 
-    res.json({ message: "Password reset successful!" });
-  })
-);
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpires = undefined;
 
+  await user.save();
 
-export default router;
+  res.json({
+    message: "Password reset successful!"
+  });
+});
