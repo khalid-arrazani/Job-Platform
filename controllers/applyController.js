@@ -1,24 +1,27 @@
 import asyncHandler from "express-async-handler";
+
 import Apply from "../models/Apply.js";
 import Job from "../models/Job.js";
 import JobSeekerProfile from "../models/JobSeekerProfile.js";
 
 
-// ===============================
-// Apply for a job
-// This controller allows a job seeker to apply for a job.
-// It uses the CV from the user's profile by default,
-// but replaces it if a new CV is uploaded.
-// Then it creates a new application linked to the job,
-// the user's profile, and the applicant.
-// ===============================
-export const applyForJobs = asyncHandler(async (req, res) => {
+
+/* ======================
+   JOB APPLICATIONS
+====================== */
+
+
+
+// Apply for a job using uploaded CV or profile CV
+export const applyForJob = asyncHandler(async (req, res) => {
+
   const jobId = req.params.jobId;
 
   let cvUrl = req.user.cv || null;
+
   let cvPublicId = req.user.cvPublicId || null;
 
-  const jobSeekerProfile = await JobSeekerProfile.findOne({
+  const idProfile = await JobSeekerProfile.findOne({
     userId: req.user.id
   });
 
@@ -27,18 +30,18 @@ export const applyForJobs = asyncHandler(async (req, res) => {
     cvPublicId = req.file.filename;
   }
 
-  const newApplication = await Apply.create({
+  const application = await Apply.create({
     job: jobId,
-    profile: jobSeekerProfile._id,
+    profile: idProfile.id,
     applicant: req.user.id,
     cv: cvUrl,
-    cvPublicId: cvPublicId
+    cvPublicId
   });
 
   res.status(201).json({
     message: "Applied successfully",
     application: {
-      ...newApplication._doc,
+      ...application._doc,
       cvSource: req.file ? "uploaded" : "profile"
     }
   });
@@ -46,115 +49,111 @@ export const applyForJobs = asyncHandler(async (req, res) => {
 
 
 
-// ===============================
-// Get my applications (JobSeeker)
-// This controller returns all applications of the logged-in job seeker.
-// It only allows users with role "jobSeeker".
-// It also populates job information for better response.
-// ===============================
-export const getMyApplicationForJobSeeker = asyncHandler(async (req, res) => {
-  if (req.user.role !== "jobSeeker") {
-    return res.status(403).json({ message: "Access denied" });
-  }
+// Get all authenticated job seeker applications
+export const getMyApplications = asyncHandler(async (req, res) => {
 
-  const userApplications = await Apply.find(
+  const applications = await Apply.find(
     { applicant: req.user.id },
     "status"
-  ).populate(
-    "job",
-    "title description company jobType experienceLevel"
-  );
+  )
+    .populate(
+      "job",
+      "title description company jobType experienceLevel"
+    );
 
-  res.json(userApplications);
+  res.status(200).json(applications);
 });
 
 
 
-// ===============================
-// Get applicants for a recruiter's job
-// This controller allows a recruiter to fetch all applications
-// for a job they created. It first verifies job ownership,
-// then returns all related applications with applicant data.
-// ===============================
-export const getApplicantForMyJobForRecruter = asyncHandler(async (req, res) => {
-  const recruiterJob = await Job.findOne({
+// Get all applications for a recruiter job
+export const getJobApplications = asyncHandler(async (req, res) => {
+
+  const job = await Job.findOne({
     _id: req.params.jobId,
     createdBy: req.user.id
   });
 
-  if (!recruiterJob) {
-    return res.status(404).json({ message: "Job not found" });
+  if (!job) {
+    return res.status(404).json({
+      message: "Job not found"
+    });
   }
 
-  const jobApplications = await Apply.find(
+  const applications = await Apply.find(
     { job: req.params.jobId },
     "status"
   )
     .populate("applicant", "username email")
     .populate("job", "title");
 
-  res.json({
-    applications: jobApplications
+  res.status(200).json({
+    applications
   });
 });
 
 
 
-// ===============================
-// Accept or reject an application
-// This controller allows a recruiter to update the status
-// of an application (accepted or rejected).
-// It validates the status, checks ownership of the job,
-// then updates and saves the application.
-// ===============================
-export const acceptedOrRejectedApplication = asyncHandler(async (req, res) => {
+// Accept or reject application
+export const updateApplicationStatus = asyncHandler(async (req, res) => {
+
   const { status } = req.body;
 
   if (!["accepted", "rejected"].includes(status)) {
-    return res.status(400).json({ message: "Invalid status" });
+    return res.status(400).json({
+      message: "Invalid status"
+    });
   }
 
-  const applicationToUpdate = await Apply.findById(req.params.id)
+  const application = await Apply.findById(
+    req.params.id,
+    "cv"
+  )
     .populate("job", "title createdBy company")
     .populate("applicant", "username email role")
     .populate("profile", "fullName location");
 
-  if (!applicationToUpdate) {
-    return res.status(404).json({ message: "Application not found" });
+  if (!application) {
+    return res.status(404).json({
+      message: "Application not found"
+    });
   }
 
-  if (applicationToUpdate.job.createdBy.toString() !== req.user.id) {
-    return res.status(403).json({ message: "Not allowed" });
+  if (
+    application.job.createdBy.toString() !== req.user.id
+  ) {
+    return res.status(403).json({
+      message: "Not allowed"
+    });
   }
 
-  applicationToUpdate.status = status;
-  await applicationToUpdate.save();
+  application.status = status;
 
-  res.json({
+  await application.save();
+
+  res.status(200).json({
     message: `Application ${status}`,
-    application: applicationToUpdate
+    application
   });
 });
 
 
 
-// ===============================
-// Cancel my application
-// This controller allows a job seeker to delete their application
-// for a specific job. It ensures that the application belongs
-// to the logged-in user before deleting it.
-// ===============================
-export const cancelMyApplication = asyncHandler(async (req, res) => {
-  const jobId = req.params.id;
+// Delete authenticated job seeker application
+export const deleteApplication = asyncHandler(async (req, res) => {
 
-  const deletedApplication = await Apply.findOneAndDelete({
-    job: jobId,
+  const application = await Apply.findOneAndDelete({
+    job: req.params.id,
     applicant: req.user.id
   });
 
-  if (!deletedApplication) {
-    return res.status(404).json({ message: "Not found" });
+  if (!application) {
+    return res.status(404).json({
+      message: "Not found"
+    });
   }
 
-  res.json({ message: "Application removed" });
+  res.status(200).json({
+    message: "Application removed"
+  });
 });

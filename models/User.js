@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Joi, { date } from "joi";
 
+import Joi from "joi";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
