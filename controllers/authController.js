@@ -147,7 +147,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     return res.status(401).json({
       message: "No refresh token"
     });
-  }
+  };
 
   const decoded = jwt.verify(
     oldrefreshToken,
@@ -160,7 +160,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     return res.status(404).json({
       message: "User not found"
     });
-  }
+  };
 
   const valid = user.refreshTokens.some(
     (t) => t.token === oldrefreshToken
@@ -170,7 +170,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     return res.status(401).json({
       message: "Invalid session"
     });
-  }
+  };
 
   const { accessToken, refreshToken } = user.generateTokens();
 
@@ -308,7 +308,7 @@ export const verifyEmailCode = asyncHandler(async (req, res) => {
     .createHash("sha256")
     .update(code)
     .digest("hex");
-
+ 
   if (
     !user.verificationCode ||
     user.verificationCode !== codeHash
@@ -336,6 +336,10 @@ export const verifyEmailCode = asyncHandler(async (req, res) => {
   });
 });
 
+// Get Forgot password View controller
+export const getForgotPasswordView = asyncHandler(async (req, res) => {
+  res.render("forgot-password");
+})
 
 
 // Forgot password controller
@@ -361,7 +365,6 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   user.resetPasswordToken = hashedToken;
 
   user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
-
   await user.save();
 
   const resetLink =
@@ -369,10 +372,14 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
   await sendPasswordResetEmail(user.email, resetLink);
 
-  res.json({
-    message: "Password reset link sent to email!"
-  });
+res.render("forgot-password-success");
 });
+
+
+export const getResetPasswordView = asyncHandler(async (req, res) => {
+  res.render("reset-password");
+})
+
 
 
 
@@ -399,7 +406,6 @@ export const resetPassword = asyncHandler(async (req, res) => {
     .createHash("sha256")
     .update(token)
     .digest("hex");
-
   const user = await User.findOne({
     resetPasswordToken: hashedToken,
     resetPasswordExpires: {
@@ -420,7 +426,5 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   await user.save();
 
-  res.json({
-    message: "Password reset successful!"
-  });
+  res.render("reset-password-success");
 });

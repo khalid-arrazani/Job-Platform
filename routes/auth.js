@@ -12,7 +12,9 @@ import {
   logoutUser,
   sendVerificationEmail,
   verifyEmailCode,
+  getForgotPasswordView,
   forgotPassword,
+  getResetPasswordView,
   resetPassword
 } from "../controllers/authController.js";
 
@@ -52,9 +54,19 @@ router.post(
   verifyEmailCode
 );
 
+router.get(
+  "/forgot-password",
+  getForgotPasswordView
+);
+
 router.post(
   "/forgot-password",
   forgotPassword
+);
+
+router.get(
+  "/reset-password/:token",
+  getResetPasswordView
 );
 
 router.post(

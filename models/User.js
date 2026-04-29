@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
-userSchema.methods.generateToken = function () {
+userSchema.methods.generateTokens = function () {
 
   const accessToken = jwt.sign(
     { id: this._id },
