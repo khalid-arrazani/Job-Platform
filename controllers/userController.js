@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 
 import User from "../models/User.js";
 import JobSeekerProfile from "../models/JobSeekerProfile.js";
-import RecruiterProfile from "../models/recruiterProfile.js";
+import RecruiterProfile from "../models/RecruiterProfile.js";
 import Job from "../models/Job.js";
 import Apply from "../models/Apply.js";
 

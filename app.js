@@ -13,9 +13,9 @@ import recruiterProfileRouter from "./routes/recruiterProfile.js";
 
 import userRouter from "./routes/user.js";
 import applyRouter from './routes/apply.js';
+
+
 import cookieParser from "cookie-parser";
-
-
 
 const app = express();
 
