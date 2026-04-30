@@ -368,7 +368,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   await user.save();
 
   const resetLink =
-    `http://localhost:5000/api/auth/reset-password/${token}`;
+    `https://job-platform-production-d619.up.railway.app/api/auth/reset-password/${token}`;
 
   await sendPasswordResetEmail(user.email, resetLink);
 
