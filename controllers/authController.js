@@ -19,6 +19,12 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   const { email, password, username, role } = req.body;
 
+  if(!email || !password|| !username|| !role ){
+       return res.status(400).json({
+      message:"the form is not complete"
+    });
+  }
+
 
   const { error } = validateUserRegistration({
     email,
@@ -33,9 +39,9 @@ export const registerUser = asyncHandler(async (req, res) => {
     });
   }
 
-console.log(req.body);
-
   const userExists = await User.findOne({ email });
+
+
 
   if (userExists) {
     return res.status(400).json({
@@ -55,7 +61,10 @@ console.log(req.body);
   const userObj = savedUser.toObject();
   delete userObj.password;
 
-  res.status(201).json(userObj);
+res.status(201).json({
+  message: "Registered successfully",
+  user: userObj
+});
 });
 
 
