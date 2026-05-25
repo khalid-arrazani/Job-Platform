@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
     username: {
       type: String,
       required: true,
+      unique: false,
     },
     email: {
       type: String,
@@ -102,6 +103,7 @@ export const validateUserRegistration = (user) => {
   });
   return schema.validate(user);
 };
+
 export const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),

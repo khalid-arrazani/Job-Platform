@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from "dotenv";
 dotenv.config();
 
+import cors from "cors";
 
 import connectDB from './config/db.js';
 
@@ -21,6 +22,14 @@ const app = express();
 
 connectDB();
 
+app.use(
+  cors({
+    origin:
+      "http://localhost:5173",
+
+    credentials: true,
+  })
+);
 
 app.set("view engine", "ejs");
 app.set("views", "./views");

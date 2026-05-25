@@ -19,10 +19,12 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   const { email, password, username, role } = req.body;
 
+
   const { error } = validateUserRegistration({
     email,
     password,
-    username
+    username,
+    role
   });
 
   if (error) {
@@ -30,6 +32,8 @@ export const registerUser = asyncHandler(async (req, res) => {
       message: error.details[0].message
     });
   }
+
+console.log(req.body);
 
   const userExists = await User.findOne({ email });
 
@@ -44,14 +48,11 @@ export const registerUser = asyncHandler(async (req, res) => {
     password,
     username,
     role,
-    cv: req.file ? req.file.path : null,
-    cvPublicId: req.file ? req.file.filename : null
   });
 
   const savedUser = await newUser.save();
 
   const userObj = savedUser.toObject();
-
   delete userObj.password;
 
   res.status(201).json(userObj);
@@ -113,15 +114,15 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: false,
+    sameSite: "lax",
     maxAge: 15 * 60 * 1000 // 15 minutes
   });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: false,
+    sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
 
@@ -196,13 +197,13 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "none",
-     maxAge: 7 * 24 * 60 * 60 * 1000
+    maxAge: 7 * 24 * 60 * 60 * 1000
   });
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
     secure: true,
     sameSite: "none",
-     maxAge: 15 * 60 * 1000 // 15 minutes
+    maxAge: 15 * 60 * 1000 // 15 minutes
   });
 
 
@@ -308,7 +309,7 @@ export const verifyEmailCode = asyncHandler(async (req, res) => {
     .createHash("sha256")
     .update(code)
     .digest("hex");
- 
+
   if (
     !user.verificationCode ||
     user.verificationCode !== codeHash
@@ -372,7 +373,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
   await sendPasswordResetEmail(user.email, resetLink);
 
-res.render("forgot-password-success");
+  res.render("forgot-password-success");
 });
 
 
