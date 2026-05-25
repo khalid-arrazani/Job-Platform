@@ -22,7 +22,6 @@ import {
 
 router.post(
   "/register",
-  upload.single("cv"),
   registerUser
 );
 
