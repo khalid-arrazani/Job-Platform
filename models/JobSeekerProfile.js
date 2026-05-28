@@ -134,7 +134,7 @@ export const validateJobSeekerProfile = (data, isUpdate = false) => {
     ),
   });
 
-  // 👇 هنا الفرق
+  
   if (!isUpdate) {
     schema = schema.fork(
       ["fullName"],
