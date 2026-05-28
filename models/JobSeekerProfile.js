@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Joi from "joi";
+import Joi, { string } from "joi";
 
 /* ======================
    MONGOOSE MODEL
@@ -20,12 +20,12 @@ const jobSeekerProfileSchema = new mongoose.Schema(
       trim: true,
     },
 
-    bio: {
+    Headline: {
       type: String,
       default: "",
     },
     aboutMe: {
-      bio: String,
+      about: String,
 
       availability: {
         type: String,
@@ -55,7 +55,7 @@ const jobSeekerProfileSchema = new mongoose.Schema(
           "remote",
           "internship",
           "freelance",
-           "contract"
+          "contract"
         ],
       },
     },
@@ -79,6 +79,12 @@ const jobSeekerProfileSchema = new mongoose.Schema(
         degree: String,
         year: Number,
       },
+    ],
+    socialLinks: [
+      {
+        platform: String,
+        link: String,
+      }
     ],
 
     location: {
