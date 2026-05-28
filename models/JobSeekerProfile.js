@@ -24,6 +24,41 @@ const jobSeekerProfileSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    aboutMe: {
+      bio: String,
+
+      availability: {
+        type: String,
+        enum: [
+          "immediately",
+          "1_week",
+          "1_month"
+        ],
+      },
+
+      languages: [String],
+
+      experienceLevel: {
+        type: String,
+        enum: [
+          "junior",
+          "mid",
+          "senior"
+        ],
+      },
+
+      preferredJobType: {
+        type: String,
+        enum: [
+          "full-time",
+          "part-time",
+          "remote",
+          "internship",
+          "freelance",
+           "contract"
+        ],
+      },
+    },
 
     skills: {
       type: [String],
@@ -69,9 +104,9 @@ export const validateJobSeekerProfile = (data, isUpdate = false) => {
     fullName: Joi.string().min(3).max(100),
 
     bio: Joi.string().allow("").max(500),
-    
+
     skills: Joi.array().items(Joi.string()),
-    
+
     location: Joi.string().allow("").max(100),
 
     cv: Joi.string().allow(""),
@@ -92,19 +127,19 @@ export const validateJobSeekerProfile = (data, isUpdate = false) => {
       })
     ),
   });
-  
+
   // 👇 هنا الفرق
   if (!isUpdate) {
     schema = schema.fork(
-      ["fullName"], 
+      ["fullName"],
       (field) => field.required()
     );
   }
-  
+
   return schema.validate(data);
 };
 
-const JobSeekerProfile =mongoose.models.JobSeekerProfile || mongoose.model(
+const JobSeekerProfile = mongoose.models.JobSeekerProfile || mongoose.model(
   "JobSeekerProfile",
   jobSeekerProfileSchema
 );
