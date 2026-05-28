@@ -18,7 +18,7 @@ import jwt from "jsonwebtoken";
 export const registerUser = asyncHandler(async (req, res) => {
 
   const { email, password, username, role } = req.body;
-
+  
   const { error } = validateUserRegistration({
     email,
     password,
@@ -77,7 +77,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   if (!user) {
     return res.status(404).json({
-      message: "User not found"
+      message: "Invalid email or password"
     });
   }
 
