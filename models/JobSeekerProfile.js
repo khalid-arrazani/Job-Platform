@@ -105,15 +105,67 @@ const jobSeekerProfileSchema = new mongoose.Schema(
 JOI VALIDATION
 ====================== */
 
-export const validateJobSeekerProfile = (data, isUpdate = false) => {
+export const validateJobSeekerProfile = (
+  data,
+  isUpdate = false
+) => {
   let schema = Joi.object({
-    fullName: Joi.string().min(3).max(100),
+    fullName: Joi.string()
+      .min(3)
+      .max(100),
 
-    bio: Joi.string().allow("").max(500),
+    headline: Joi.string()
+      .allow("")
+      .max(120),
 
-    skills: Joi.array().items(Joi.string()),
+    aboutMe: Joi.object({
+      about: Joi.string()
+        .allow("")
+        .max(500),
 
-    location: Joi.string().allow("").max(100),
+      availability: Joi.string().valid(
+        "immediately",
+        "1_week",
+        "1_month"
+      ),
+
+      languages: Joi.array().items(
+        Joi.string()
+      ),
+
+      experienceLevel: Joi.string().valid(
+        "junior",
+        "mid",
+        "senior"
+      ),
+
+      preferredJobType: Joi.string().valid(
+        "full-time",
+        "part-time",
+        "remote",
+        "internship",
+        "freelance",
+        "contract"
+      ),
+    }),
+
+    skills: Joi.array().items(
+      Joi.string()
+    ),
+
+    socialLinks: Joi.array().items(
+      Joi.object({
+        platform: Joi.string().required(),
+
+        link: Joi.string()
+          .uri()
+          .required(),
+      })
+    ),
+
+    location: Joi.string()
+      .allow("")
+      .max(100),
 
     cv: Joi.string().allow(""),
 
@@ -134,7 +186,6 @@ export const validateJobSeekerProfile = (data, isUpdate = false) => {
     ),
   });
 
-  
   if (!isUpdate) {
     schema = schema.fork(
       ["fullName"],
@@ -145,8 +196,11 @@ export const validateJobSeekerProfile = (data, isUpdate = false) => {
   return schema.validate(data);
 };
 
-const JobSeekerProfile = mongoose.models.JobSeekerProfile || mongoose.model(
-  "JobSeekerProfile",
-  jobSeekerProfileSchema
-);
-export default JobSeekerProfile;
+const JobSeekerProfile =
+  mongoose.models.JobSeekerProfile ||
+  mongoose.model(
+    "JobSeekerProfile",
+    jobSeekerProfileSchema
+  );
+
+export default JobSeekerProfile;rofile;
