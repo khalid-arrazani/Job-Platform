@@ -203,4 +203,4 @@ const JobSeekerProfile =
     jobSeekerProfileSchema
   );
 
-export default JobSeekerProfile;rofile;
+export default JobSeekerProfile;
