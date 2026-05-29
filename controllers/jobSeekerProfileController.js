@@ -1,6 +1,8 @@
 import asyncHandler from "express-async-handler";
 import JobSeekerProfile from "../models/JobSeekerProfile.js";
+import User from "../models/User.js";
 import { validateJobSeekerProfile } from "../models/JobSeekerProfile.js";
+
 
 
 
@@ -51,16 +53,25 @@ export const createProfile = asyncHandler(async (req, res) => {
     return res.status(400).json({
       message: "Profile already exists"
     });
-  }
+  };
+
 
   const profile = await JobSeekerProfile.create({
     userId: req.user.id,
     ...req.body
   });
 
+  await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      isComplete: true,
+    }
+  );
+
   res.status(201).json({
     success: true,
-    message: "Profile fetched successfully", profile: profile
+    message: "Profile created successfully",
+    profile: profile
   });
 });
 
