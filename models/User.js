@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import Joi from "joi";
+import Joi, { string, types } from "joi";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema(
       default: "jobSeeker",
 
 
+    },
+    isComplite:{
+     type: Boolean,
+      default: false
     },
     emailVerified: { type: Boolean, default: false },
 
