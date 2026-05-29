@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Joi  from "joi";
+import Joi from "joi";
 
 /* ======================
    MONGOOSE MODEL
@@ -25,26 +25,34 @@ const jobSeekerProfileSchema = new mongoose.Schema(
       default: "",
     },
     aboutMe: {
-      about: String,
+      about: {
+        type: String,
+        default: "",
+      },
 
       availability: {
         type: String,
         enum: [
           "immediately",
           "1_week",
-          "1_month"
+          "1_month",
         ],
+        default: "immediately",
       },
 
-      languages: [String],
+      languages: {
+        type: [String],
+        default: [],
+      },
 
       experienceLevel: {
         type: String,
         enum: [
           "junior",
           "mid",
-          "senior"
+          "senior",
         ],
+        default: "junior",
       },
 
       preferredJobType: {
@@ -55,8 +63,9 @@ const jobSeekerProfileSchema = new mongoose.Schema(
           "remote",
           "internship",
           "freelance",
-          "contract"
+          "contract",
         ],
+        default: "full-time",
       },
     },
 
@@ -121,32 +130,39 @@ export const validateJobSeekerProfile = (
     aboutMe: Joi.object({
       about: Joi.string()
         .allow("")
-        .max(500),
+        .max(500)
+        .default(""),
 
-      availability: Joi.string().valid(
-        "immediately",
-        "1_week",
-        "1_month"
-      ),
+      availability: Joi.string()
+        .valid(
+          "immediately",
+          "1_week",
+          "1_month"
+        )
+        .default("immediately"),
 
-      languages: Joi.array().items(
-        Joi.string()
-      ),
+      languages: Joi.array()
+        .items(Joi.string())
+        .default([]),
 
-      experienceLevel: Joi.string().valid(
-        "junior",
-        "mid",
-        "senior"
-      ),
+      experienceLevel: Joi.string()
+        .valid(
+          "junior",
+          "mid",
+          "senior"
+        )
+        .default("junior"),
 
-      preferredJobType: Joi.string().valid(
-        "full-time",
-        "part-time",
-        "remote",
-        "internship",
-        "freelance",
-        "contract"
-      ),
+      preferredJobType: Joi.string()
+        .valid(
+          "full-time",
+          "part-time",
+          "remote",
+          "internship",
+          "freelance",
+          "contract"
+        )
+        .default("full-time"),
     }),
 
     skills: Joi.array().items(
