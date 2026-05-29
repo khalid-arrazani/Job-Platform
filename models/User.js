@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import Joi, { string, types } from "joi";
+import Joi from "joi";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
@@ -89,6 +89,7 @@ export const validateUserRegistration = (user) => {
     password: Joi.string().min(6).max(124).required(),
     role: Joi.string().trim().valid("jobSeeker", "recruiter").default("jobSeeker"),
     cv: Joi.string(),
+    isComplete: Joi.boolean().default(false),
     cvPublicId: Joi.string(),
     verificationCode: Joi.string(),
     sentAt:Joi.date(),
