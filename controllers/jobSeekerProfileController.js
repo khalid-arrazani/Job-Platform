@@ -23,7 +23,11 @@ export const getMyProfile = asyncHandler(async (req, res) => {
     });
   }
 
-  res.status(200).json(profile);
+  res.status(200).json({
+    success: true,
+    message: "Profile fetched successfully",
+    profile: profile
+  });
 });
 
 
@@ -54,7 +58,10 @@ export const createProfile = asyncHandler(async (req, res) => {
     ...req.body
   });
 
-  res.status(201).json(profile);
+  res.status(201).json({
+    success: true,
+    message: "Profile fetched successfully", profile: profile
+  });
 });
 
 
