@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import JobSeekerProfile from "../models/JobSeekerProfile.js";
 import User from "../models/User.js";
 import { validateJobSeekerProfile } from "../models/JobSeekerProfile.js";
-
+import uploadToCloudinary from "../utils/uploadToCloudinary.js"
 
 
 
@@ -37,7 +37,7 @@ export const getMyProfile = asyncHandler(async (req, res) => {
 // Create job seeker profile for the first time
 export const createProfile = asyncHandler(async (req, res) => {
 
-
+  console.log(req.body);
   const { error } = validateJobSeekerProfile(req.body);
 
   if (error) {
@@ -56,16 +56,33 @@ export const createProfile = asyncHandler(async (req, res) => {
     });
   };
 
+ try {
+
+  const image =
+    await uploadToCloudinary(
+      req.file.buffer
+    );
+
+} catch (error) {
+
+  console.log(error);
+
+  console.log(error.message);
+
+  console.log(error.error);
+
+  console.log(error.response);
+
+}
 
   const profile = await JobSeekerProfile.create({
     userId: req.user.id,
+    ProfileImage:image.secure_url,
     ...req.body
   });
 
- const result =
-  await cloudinary.uploader.upload(
-    req.file.path
-  );
+
+ console.log(image.secure_url);
 
   await User.findByIdAndUpdate(
     req.user.id,
@@ -78,7 +95,7 @@ export const createProfile = asyncHandler(async (req, res) => {
     success: true,
     message: "Profile created successfully",
     profile: profile,
-    result:result
+    Profile:image.secure_url
   });
 });
 

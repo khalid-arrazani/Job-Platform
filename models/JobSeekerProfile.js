@@ -13,7 +13,8 @@ const jobSeekerProfileSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-
+    ProfileImage:String,
+    
     fullName: {
       type: String,
       required: true,
@@ -122,7 +123,7 @@ export const validateJobSeekerProfile = (
     fullName: Joi.string()
       .min(3)
       .max(100),
-
+      ProfileImage:Joi.string(),
     headline: Joi.string()
       .allow("")
       .max(120),

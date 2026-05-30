@@ -1,7 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
-  cloud_name: "Root",
+  cloud_name: "dzppmepd9",
   api_key: "363953666239295",
   api_secret: "CFcF_xzhLsVSozoaTsytaybeCfk"
 });
