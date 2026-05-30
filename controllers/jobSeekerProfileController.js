@@ -56,24 +56,14 @@ export const createProfile = asyncHandler(async (req, res) => {
     });
   };
 
- try {
+
 
   const image =
     await uploadToCloudinary(
       req.file.buffer
     );
 
-} catch (error) {
 
-  console.log(error);
-
-  console.log(error.message);
-
-  console.log(error.error);
-
-  console.log(error.response);
-
-}
 
   const profile = await JobSeekerProfile.create({
     userId: req.user.id,
