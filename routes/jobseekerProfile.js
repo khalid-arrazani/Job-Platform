@@ -10,6 +10,7 @@ import {
   createProfile,
   updateProfile
 } from "../controllers/jobSeekerProfileController.js";
+import { uploadImage } from "../middlewares/Multer.js";
 
 
 
@@ -24,6 +25,7 @@ router.post(
   "/",
   protect,
   authorizeRoles("jobSeeker"),
+  uploadImage,
   createProfile
 );
 

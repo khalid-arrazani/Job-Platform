@@ -37,7 +37,7 @@ export const getMyProfile = asyncHandler(async (req, res) => {
 // Create job seeker profile for the first time
 export const createProfile = asyncHandler(async (req, res) => {
 
-  console.log(req.body);
+
   const { error } = validateJobSeekerProfile(req.body);
 
   if (error) {
@@ -62,6 +62,11 @@ export const createProfile = asyncHandler(async (req, res) => {
     ...req.body
   });
 
+ const result =
+  await cloudinary.uploader.upload(
+    req.file.path
+  );
+
   await User.findByIdAndUpdate(
     req.user.id,
     {
@@ -72,7 +77,8 @@ export const createProfile = asyncHandler(async (req, res) => {
   res.status(201).json({
     success: true,
     message: "Profile created successfully",
-    profile: profile
+    profile: profile,
+    result:result
   });
 });
 
