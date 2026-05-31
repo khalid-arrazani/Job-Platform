@@ -17,7 +17,7 @@ export const getMyProfile = asyncHandler(async (req, res) => {
 
   const profile = await JobSeekerProfile.findOne({
     userId: req.user.id
-  });
+  }).populate("userId","email role isComplete");
 
   if (!profile) {
     return res.status(404).json({
@@ -107,10 +107,13 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
   const allowedFields = [
     "fullName",
-    "bio",
+    "headline",
+    "aboutMe",
     "skills",
     "experience",
     "education",
+    "ProfileImage",
+    "socialLinks",
     "location",
     "cv"
   ];
@@ -127,8 +130,8 @@ export const updateProfile = asyncHandler(async (req, res) => {
   const profile = await JobSeekerProfile.findOneAndUpdate(
     { userId: req.user.id },
     { $set: updateData },
-    { new: true }
-  );
+    {  returnDocument: "after"}
+  ).populate("userId","email role isComplete");
 
   if (!profile) {
     return res.status(404).json({
@@ -136,5 +139,5 @@ export const updateProfile = asyncHandler(async (req, res) => {
     });
   }
 
-  res.status(200).json(profile);
+  res.status(200).json({profile});
 });

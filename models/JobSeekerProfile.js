@@ -13,6 +13,7 @@ const jobSeekerProfileSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+
     ProfileImage:String,
     
     fullName: {
@@ -21,10 +22,11 @@ const jobSeekerProfileSchema = new mongoose.Schema(
       trim: true,
     },
 
-    Headline: {
+    headline: {
       type: String,
       default: "",
     },
+
     aboutMe: {
       about: {
         type: String,
@@ -90,6 +92,7 @@ const jobSeekerProfileSchema = new mongoose.Schema(
         year: Number,
       },
     ],
+    
     socialLinks: [
       {
         platform: String,
@@ -120,10 +123,13 @@ export const validateJobSeekerProfile = (
   isUpdate = false
 ) => {
   let schema = Joi.object({
+
     fullName: Joi.string()
       .min(3)
       .max(100),
-      ProfileImage:Joi.string(),
+
+    ProfileImage:Joi.string(),
+
     headline: Joi.string()
       .allow("")
       .max(120),
