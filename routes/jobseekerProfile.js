@@ -8,7 +8,8 @@ import authorizeRoles from "../middlewares/authorizeApply.js";
 import {
   getMyProfile,
   createProfile,
-  updateProfile
+  updateProfile,
+  UpdatePhotoProfile
 } from "../controllers/jobSeekerProfileController.js";
 import { uploadImage } from "../middlewares/Multer.js";
 
@@ -27,6 +28,14 @@ router.post(
   authorizeRoles("jobSeeker"),
   uploadImage,
   createProfile
+);
+
+router.put(
+  "/update-ProfilePhoto",
+  protect,
+  authorizeRoles("jobSeeker"),
+  uploadImage,
+  UpdatePhotoProfile
 );
 
 router.put(

@@ -3,6 +3,7 @@ import JobSeekerProfile from "../models/JobSeekerProfile.js";
 import User from "../models/User.js";
 import { validateJobSeekerProfile } from "../models/JobSeekerProfile.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js"
+import cloudinary from "../config/cloudinary.js";
 
 
 
@@ -17,7 +18,7 @@ export const getMyProfile = asyncHandler(async (req, res) => {
 
   const profile = await JobSeekerProfile.findOne({
     userId: req.user.id
-  }).populate("userId","email role isComplete");
+  }).populate("userId", "email role isComplete");
 
   if (!profile) {
     return res.status(404).json({
@@ -56,23 +57,19 @@ export const createProfile = asyncHandler(async (req, res) => {
     });
   };
 
-
-
   const image =
     await uploadToCloudinary(
       req.file.buffer
     );
 
-
-
   const profile = await JobSeekerProfile.create({
     userId: req.user.id,
-    ProfileImage:image.secure_url,
+    ProfileImage: image.secure_url,
     ...req.body
   });
 
 
- console.log(image.secure_url);
+  console.log(image.secure_url);
 
   await User.findByIdAndUpdate(
     req.user.id,
@@ -85,8 +82,64 @@ export const createProfile = asyncHandler(async (req, res) => {
     success: true,
     message: "Profile created successfully",
     profile: profile,
-    Profile:image.secure_url
+    Profile: image.secure_url
   });
+});
+
+
+
+// Update Profile Photo
+export const UpdatePhotoProfile = asyncHandler(async (req, res) => {
+
+  console.log(req.file);
+
+  const exists = await JobSeekerProfile.findOne({
+    userId: req.user.id
+  });
+
+  if (!exists) {
+    return res.status(400).json({
+      message: "Profile not exists"
+    });
+  };
+
+  if (!req.file) {
+    return res.status(400).json({
+      message:
+        "Image is required"
+    });
+  }
+
+  await cloudinary.uploader.destroy(
+    exists.ProfileImage.public_id
+  );
+  const image =
+    await uploadToCloudinary(
+      req.file.buffer
+    );
+
+
+
+  const profile =
+    await JobSeekerProfile.findOneAndUpdate(
+      {
+        userId: req.user.id
+      },
+      {
+        ProfileImage:
+          image.secure_url
+      },
+      {
+        returnDocument: "after"
+      }
+    );
+
+
+res.status(200).json({
+  success: true,
+  message:"Profile photo updated successfully",
+  profile : profile,
+});
 });
 
 
@@ -130,8 +183,8 @@ export const updateProfile = asyncHandler(async (req, res) => {
   const profile = await JobSeekerProfile.findOneAndUpdate(
     { userId: req.user.id },
     { $set: updateData },
-    {  returnDocument: "after"}
-  ).populate("userId","email role isComplete");
+    { returnDocument: "after" }
+  ).populate("userId", "email role isComplete");
 
   if (!profile) {
     return res.status(404).json({
@@ -139,5 +192,5 @@ export const updateProfile = asyncHandler(async (req, res) => {
     });
   }
 
-  res.status(200).json({profile});
+  res.status(200).json({ profile });
 });

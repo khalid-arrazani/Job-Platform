@@ -14,8 +14,17 @@ const jobSeekerProfileSchema = new mongoose.Schema(
       unique: true,
     },
 
-    ProfileImage:String,
-    
+    ProfileImage: {
+     url: {
+    type: String,
+    default: ""
+  },
+  public_id: {
+    type: String,
+    default: ""
+  }
+    },
+
     fullName: {
       type: String,
       required: true,
@@ -92,7 +101,7 @@ const jobSeekerProfileSchema = new mongoose.Schema(
         year: Number,
       },
     ],
-    
+
     socialLinks: [
       {
         platform: String,
@@ -128,7 +137,10 @@ export const validateJobSeekerProfile = (
       .min(3)
       .max(100),
 
-    ProfileImage:Joi.string(),
+    ProfileImage: Joi.object({
+      url: Joi.string().allow(""),
+      public_id: Joi.string().allow("")
+    }),
 
     headline: Joi.string()
       .allow("")
