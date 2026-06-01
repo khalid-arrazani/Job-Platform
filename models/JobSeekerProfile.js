@@ -15,14 +15,14 @@ const jobSeekerProfileSchema = new mongoose.Schema(
     },
 
     ProfileImage: {
-     url: {
-    type: String,
-    default: ""
-  },
-  public_id: {
-    type: String,
-    default: ""
-  }
+      url: {
+        type: String,
+        default: ""
+      },
+      public_id: {
+        type: String,
+        default: ""
+      }
     },
 
     fullName: {

@@ -110,24 +110,30 @@ export const UpdatePhotoProfile = asyncHandler(async (req, res) => {
     });
   }
 
-  await cloudinary.uploader.destroy(
-    exists.ProfileImage.public_id
-  );
-  const image =
-    await uploadToCloudinary(
-      req.file.buffer
+
+
+  if (exists.ProfileImage.public_id) {
+    await cloudinary.uploader.destroy(
+      exists.ProfileImage.public_id
     );
+  }
+
+  const image = await uploadToCloudinary(
+    req.file.buffer
+  );
 
 
 
-  const profile =
-    await JobSeekerProfile.findOneAndUpdate(
+
+  const profile = await JobSeekerProfile.findOneAndUpdate(
       {
         userId: req.user.id
       },
       {
-        ProfileImage:
-          image.secure_url
+        ProfileImage: {
+          url: image.secure_url,
+          public_id: image.public_id
+        }
       },
       {
         returnDocument: "after"
@@ -135,11 +141,11 @@ export const UpdatePhotoProfile = asyncHandler(async (req, res) => {
     );
 
 
-res.status(200).json({
-  success: true,
-  message:"Profile photo updated successfully",
-  profile : profile,
-});
+  res.status(200).json({
+    success: true,
+    message: "Profile photo updated successfully",
+    profile: profile,
+  });
 });
 
 
