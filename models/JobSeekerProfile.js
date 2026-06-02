@@ -90,7 +90,7 @@ const jobSeekerProfileSchema = new mongoose.Schema(
       {
         title: String,
         company: String,
-        years: Number,
+        years: String,
       },
     ],
 
@@ -98,7 +98,7 @@ const jobSeekerProfileSchema = new mongoose.Schema(
       {
         school: String,
         degree: String,
-        year: Number,
+        period: String,
       },
     ],
 
@@ -208,7 +208,7 @@ export const validateJobSeekerProfile = (
       Joi.object({
         title: Joi.string().required(),
         company: Joi.string().required(),
-        years: Joi.number().min(0),
+        years: Joi.String()
       })
     ),
 
@@ -216,7 +216,7 @@ export const validateJobSeekerProfile = (
       Joi.object({
         school: Joi.string().required(),
         degree: Joi.string().required(),
-        year: Joi.number(),
+        period: Joi.string(),
       })
     ),
   });

@@ -32,8 +32,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["jobSeeker", "recruiter"],
       default: "jobSeeker",
-
-
     },
     isComplete:{
      type: Boolean,
