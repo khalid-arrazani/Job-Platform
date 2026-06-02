@@ -208,7 +208,7 @@ export const validateJobSeekerProfile = (
       Joi.object({
         title: Joi.string().required(),
         company: Joi.string().required(),
-        years: Joi.String()
+        years: Joi.string()
       })
     ),
 
