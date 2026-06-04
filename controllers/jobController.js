@@ -39,7 +39,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
 
-  const limit = 10;
+  const limit = 4;
 
   const jobs = await Job.find({
     createdBy: req.user.id
