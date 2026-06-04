@@ -90,7 +90,7 @@ const jobSeekerProfileSchema = new mongoose.Schema(
       {
         title: String,
         company: String,
-        years: String,
+        period: String,
       },
     ],
 
@@ -105,7 +105,7 @@ const jobSeekerProfileSchema = new mongoose.Schema(
     socialLinks: [
       {
         platform: String,
-        link: String,
+        url: String,
       }
     ],
 
@@ -135,7 +135,7 @@ export const validateJobSeekerProfile = (
 
     fullName: Joi.string()
       .min(3)
-      .max(100),
+      .max(50),
 
     ProfileImage: Joi.object({
       url: Joi.string().allow(""),
@@ -149,7 +149,7 @@ export const validateJobSeekerProfile = (
     aboutMe: Joi.object({
       about: Joi.string()
         .allow("")
-        .max(500)
+        .max(700)
         .default(""),
 
       availability: Joi.string()
@@ -192,7 +192,7 @@ export const validateJobSeekerProfile = (
       Joi.object({
         platform: Joi.string().required(),
 
-        link: Joi.string()
+        url: Joi.string()
           .uri()
           .required(),
       })
@@ -208,16 +208,18 @@ export const validateJobSeekerProfile = (
       Joi.object({
         title: Joi.string().required(),
         company: Joi.string().required(),
-        years: Joi.string()
+        period: Joi.string()
       })
     ),
 
     education: Joi.array().items(
+
       Joi.object({
         school: Joi.string().required(),
         degree: Joi.string().required(),
         period: Joi.string(),
       })
+
     ),
   });
 
