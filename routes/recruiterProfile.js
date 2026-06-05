@@ -8,7 +8,8 @@ import { recruiterOnly } from "../middlewares/role.js";
 import {
   getRecruiterProfile,
   createRecruiterProfile,
-  updateRecruiterProfile
+  updateRecruiterProfile,
+  UpdatePhotoProfile
 } from "../controllers/recruiterProfileController.js";
 import { uploadImage } from "../middlewares/Multer.js";
 
@@ -31,6 +32,13 @@ router.post(
   createRecruiterProfile
 );
 
+router.put(
+  "/update-ProfilePhoto",
+  protect,
+  recruiterOnly,
+  uploadImage,
+  UpdatePhotoProfile
+);
 
 
 router.put(
