@@ -10,6 +10,7 @@ import {
   createRecruiterProfile,
   updateRecruiterProfile
 } from "../controllers/recruiterProfileController.js";
+import { uploadImage } from "../middlewares/Multer.js";
 
 
 
@@ -26,6 +27,7 @@ router.post(
   "/",
   protect,
   recruiterOnly,
+  uploadImage,
   createRecruiterProfile
 );
 

@@ -41,46 +41,86 @@ export const createRecruiterProfile = asyncHandler(async (req, res) => {
     });
   }
 
-  const allowedFields = [
-    "fullName",
-    "companyName",
-    "companyDescription",
-    "website",
-    "industry",
-    "location",
-    "Companylocation",
+  // const allowedFields = [
+  //   "fullName",
+  //   "companyName",
+  //   "companyDescription",
+  //   "website",
+  //   "industry",
+  //   "location",
+  //   "Companylocation",
+  //   "headline"
+  // ];
 
-  ];
 
+  // const data = {};
 
-  const data = {};
+  // allowedFields.forEach((field) => {
 
-  allowedFields.forEach((field) => {
+  //   if (req.body[field] !== undefined) {
+  //     data[field] = req.body[field];
+  //   }
+  // });
 
-    if (req.body[field] !== undefined) {
-      data[field] = req.body[field];
-    }
-  });
+  // try {
 
-  try {
+  //   const profile = await RecruiterProfile.create({
+  //     userId: req.user.id,
+  //     ...data
+  //   });
 
-    const profile = await RecruiterProfile.create({
-      userId: req.user.id,
-      ...data
+  //   res.status(201).json({
+  //     success: true,
+  //     message: "Profile created successfully",
+  //     profile: profile,
+  //   });
+
+  // } catch (err) {
+
+  //   if (err.code === 11000) {
+  //     return res.status(400).json({
+  //       message: "Profile already exists"
+  //     });
+  //   }
+
+  //   throw err;
+  // }
+  
+    const exists = await RecruiterProfile.findOne({
+      userId: req.user.id
     });
-
-    res.status(201).json(profile);
-
-  } catch (err) {
-
-    if (err.code === 11000) {
+  
+    if (exists) {
       return res.status(400).json({
         message: "Profile already exists"
       });
-    }
-
-    throw err;
-  }
+    };
+  
+    const image =
+      await uploadToCloudinary(
+        req.file.buffer
+      );
+  
+    const profile = await RecruiterProfile.create({
+      userId: req.user.id,
+      ProfileImage: image.secure_url,
+      ...req.body
+    });
+  
+  
+    await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        isComplete: true,
+      }
+    );
+  
+    res.status(201).json({
+      success: true,
+      message: "Profile created successfully",
+      profile: profile,
+      Profile: image.secure_url
+    });
 });
 
 

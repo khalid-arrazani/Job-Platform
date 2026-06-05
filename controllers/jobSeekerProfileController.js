@@ -38,7 +38,6 @@ export const getMyProfile = asyncHandler(async (req, res) => {
 // Create job seeker profile for the first time
 export const createProfile = asyncHandler(async (req, res) => {
 
-  console.log(req.body);
   const { error } = validateJobSeekerProfile(req.body);
 
   if (error) {
@@ -68,8 +67,6 @@ export const createProfile = asyncHandler(async (req, res) => {
     ...req.body
   });
 
-
-  console.log(image.secure_url);
 
   await User.findByIdAndUpdate(
     req.user.id,
