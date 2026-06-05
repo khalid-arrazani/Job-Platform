@@ -19,9 +19,15 @@ const recruiterProfileSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
+    headline: {
+      type: String,
+      default: "Unknown",
+    },
+
     location: {
       type: String,
-      default: "",
+      default: "Unknown",
     },
 
 
@@ -33,12 +39,12 @@ const recruiterProfileSchema = new mongoose.Schema(
 
     companyDescription: {
       type: String,
-      default: "",
+      default: "Unknown",
     },
 
     website: {
       type: String,
-      default: "",
+      default: "Unknown",
     },
 
     industry: {
@@ -63,6 +69,8 @@ JOI VALIDATION
 export const validateRecruiterProfile = (data, isUpdate = false) => {
   let schema = Joi.object({
     fullName: Joi.string().min(3).max(100),
+
+    headline: Joi.string().min(3).max(400),
     
     companyName: Joi.string().min(2).max(150),
     
