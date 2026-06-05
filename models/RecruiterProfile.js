@@ -14,6 +14,17 @@ const recruiterProfileSchema = new mongoose.Schema(
       unique: true,
     },
 
+      ProfileImage: {
+      url: {
+        type: String,
+        default: ""
+      },
+      public_id: {
+        type: String,
+        default: ""
+      }
+    },
+
     fullName: {
       type: String,
       required: true,
@@ -71,12 +82,17 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
     fullName: Joi.string().min(3).max(100),
 
     headline: Joi.string().min(3).max(400),
+
+     ProfileImage: Joi.object({
+          url: Joi.string().allow(""),
+          public_id: Joi.string().allow("")
+        }),
     
     companyName: Joi.string().min(2).max(150),
     
     companyDescription: Joi.string().allow("").max(1000),
     
-    website: Joi.string().uri().allow(""),
+    website: Joi.string().allow(""),
     
     industry: Joi.string().allow("").max(100),
     

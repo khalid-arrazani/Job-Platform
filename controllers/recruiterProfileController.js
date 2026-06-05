@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import RecruiterProfile, {
   validateRecruiterProfile
 } from "../models/RecruiterProfile.js";
+import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 
 
 
