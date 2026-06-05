@@ -43,12 +43,12 @@ const recruiterProfileSchema = new mongoose.Schema(
 
     industry: {
       type: String,
-      default: "",
+      default: "Unknown",
     },
 
     Companylocation: {
       type: String,
-      default: "",
+      default: "Unknown",
     },
 
   },
@@ -73,7 +73,7 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
     industry: Joi.string().allow("").max(100),
     
     location: Joi.string().allow("").max(100),
-    
+
     Companylocation: Joi.string().allow("").max(100),
 
   });
