@@ -49,6 +49,7 @@ export const createRecruiterProfile = asyncHandler(async (req, res) => {
     "industry",
     "location"
   ];
+  
 
   const data = {};
 

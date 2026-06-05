@@ -19,6 +19,11 @@ const recruiterProfileSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    location: {
+      type: String,
+      default: "",
+    },
+
 
     companyName: {
       type: String,
@@ -41,10 +46,11 @@ const recruiterProfileSchema = new mongoose.Schema(
       default: "",
     },
 
-    location: {
+    Companylocation: {
       type: String,
       default: "",
     },
+
   },
   { timestamps: true }
 );
@@ -67,6 +73,9 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
     industry: Joi.string().allow("").max(100),
     
     location: Joi.string().allow("").max(100),
+    
+    Companylocation: Joi.string().allow("").max(100),
+
   });
 
     if (!isUpdate) {
