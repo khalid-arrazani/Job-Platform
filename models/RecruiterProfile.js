@@ -182,7 +182,6 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
     location: Joi.string().allow("").max(100),
 
     Companylocation: Joi.string().allow("").max(100),
-
   });
 
   if (!isUpdate) {
