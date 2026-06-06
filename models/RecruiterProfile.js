@@ -170,7 +170,6 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
       .items(Joi.string())
       .default([]),
   }).default({}),
-
     companyName: Joi.string().min(2).max(150),
 
     companyDescription: Joi.string().allow("").max(1000),
@@ -182,6 +181,11 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
     location: Joi.string().allow("").max(100),
 
     Companylocation: Joi.string().allow("").max(100),
+
+    companyLogo: Joi.object({
+      url: Joi.string().allow(""),
+      public_id: Joi.string().allow("")
+    }),
   });
 
   if (!isUpdate) {

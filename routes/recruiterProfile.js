@@ -45,6 +45,7 @@ router.put(
   "/me",
   protect,
   recruiterOnly,
+  uploadImage,
   updateRecruiterProfile
 );
 
