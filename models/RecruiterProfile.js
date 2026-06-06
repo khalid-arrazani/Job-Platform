@@ -92,6 +92,17 @@ const recruiterProfileSchema = new mongoose.Schema(
       trim: true,
     },
 
+      companyLogo: {
+      url: {
+        type: String,
+        default: ""
+      },
+      public_id: {
+        type: String,
+        default: ""
+      }
+    },
+
     companyDescription: {
       type: String,
       default: "Unknown",
