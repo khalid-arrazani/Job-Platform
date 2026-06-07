@@ -1,6 +1,8 @@
 import Job from "../models/Job.js";
 import asyncHandler from "express-async-handler";
 import { validateJobsDetails } from "../models/Job.js";
+import JobSeekerProfile from "../models/JobSeekerProfile.js";
+import RecruiterProfile from "../models/RecruiterProfile.js";
 
 
 
@@ -104,7 +106,17 @@ export const createJob = asyncHandler(async (req, res) => {
     "skills"
   ];
   const data = {};
+
+  const profile = await RecruiterProfile.findOne({
+    userId: req.user.id
+  })
+  if (!profile){
+
+    res.status(404).json({message:"Profile not found "})
+  }
+   
   
+
   allowedFields.forEach((field) => {
     if (req.body[field] !== undefined) {
       data[field] = req.body[field];
@@ -113,8 +125,7 @@ export const createJob = asyncHandler(async (req, res) => {
 
   const job = await Job.create({
     ...data,
-    createdBy: req.user.id
+    createdBy: profile.id
   });
-
-  res.status(201).json(job);
+  res.status(201).json({ job:job ,message :"Create Job seccesfully "});
 });
