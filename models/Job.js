@@ -4,11 +4,11 @@ import mongoose from "mongoose";
 const jobSchema = new mongoose.Schema({
 
 
-    createdBy: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "RecruiterProfile",
-  required: true
-},
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "RecruiterProfile",
+    required: true
+  },
 
   title: {
     type: String,
@@ -36,8 +36,24 @@ const jobSchema = new mongoose.Schema({
 
   jobType: {
     type: String,
-    enum: ["full-time", "part-time", "remote", "internship"],
+    enum: [
+      "full-time",
+      "part-time",
+      "contract",
+      "internship",
+      "freelance",
+      "temporary"
+    ],
     default: "full-time"
+  },
+  workMode: {
+    type: String,
+    enum: [
+      "remote",
+      "hybrid",
+      "on-site"
+    ],
+    default: "on-site"
   },
 
   experienceLevel: {
@@ -46,10 +62,10 @@ const jobSchema = new mongoose.Schema({
     default: "junior"
   },
 
-  skills: [String], 
-},{timestamps:true})
+  skills: [String],
+}, { timestamps: true })
 
-export const validateJobsDetails = (job , isUpdate=false) => {
+export const validateJobsDetails = (job, isUpdate = false) => {
   let schema = Joi.object({
     title: Joi.string(),
 
@@ -62,18 +78,29 @@ export const validateJobsDetails = (job , isUpdate=false) => {
     company: Joi.string(),
 
     jobType: Joi.string()
-      .valid("full-time", "part-time", "remote", "internship"),
+      .valid("full-time",
+        "part-time",
+        "contract",
+        "internship",
+        "freelance",
+        "temporary"),
+
+    workMode: Joi.string()
+      .valid("remote",
+        "hybrid",
+        "on-site"),
 
     experienceLevel: Joi.string()
       .valid("junior", "mid", "senior"),
 
-    skills: Joi.array().items(Joi.string()) 
+    skills: Joi.array().items(Joi.string())
   });
-     if (!isUpdate) {
+  if (!isUpdate) {
     schema = schema.fork(
-      ["title","description","location","company"], 
+      ["title", "description", "location", "company"],
       (field) => field.required()
-    );}
+    );
+  }
   return schema.validate(job);
 };
 const Job = mongoose.models.Job || mongoose.model("Job", jobSchema);
