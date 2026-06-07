@@ -65,20 +65,17 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   });
 });
 
-
-
 // Get single job by id
 export const getJobById = asyncHandler(async (req, res) => {
 
   const jobById = await Job.findById(req.params.id)
-    .populate("createdBy", "username email");
+    .populate("createdBy");
 
   if (!jobById) {
     return res.status(404).json({
       message: "No job found"
     });
   }
-
   res.status(200).json(jobById);
 });
 
@@ -110,8 +107,8 @@ export const createJob = asyncHandler(async (req, res) => {
   const profile = await RecruiterProfile.findOne({
     userId: req.user.id
   })
-  if (!profile){
 
+  if (!profile){
     res.status(404).json({message:"Profile not found "})
   }
    
@@ -127,5 +124,6 @@ export const createJob = asyncHandler(async (req, res) => {
     ...data,
     createdBy: profile.id
   });
+
   res.status(201).json({ job:job ,message :"Create Job seccesfully "});
 });
