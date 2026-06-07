@@ -104,9 +104,8 @@ export const createJob = asyncHandler(async (req, res) => {
     "skills"
   ];
   const data = {};
-
+  
   allowedFields.forEach((field) => {
-
     if (req.body[field] !== undefined) {
       data[field] = req.body[field];
     }
