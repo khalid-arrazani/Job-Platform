@@ -232,6 +232,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
   await user.save();
 
   res.clearCookie("refreshToken");
+  res.clearCookie("accessToken");
 
   res.json({
     message: "Logout successful!"

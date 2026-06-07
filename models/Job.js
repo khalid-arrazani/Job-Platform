@@ -2,10 +2,14 @@ import Joi from "joi";
 import mongoose from "mongoose";
 
 const jobSchema = new mongoose.Schema({
+
+
     createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  },
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "RecruiterProfile",
+  required: true
+},
+
   title: {
     type: String,
     required: true
