@@ -107,7 +107,7 @@ export const createJob = asyncHandler(async (req, res) => {
     "experienceLevel",
     "skills"
   ];
-  
+
   const data = {};
 
   const profile = await RecruiterProfile.findOne({
@@ -128,7 +128,7 @@ export const createJob = asyncHandler(async (req, res) => {
 
   const job = await Job.create({
     ...data,
-    createdBy: profile.id
+    createdBy: profile._id
   });
 
   res.status(201).json({ job:job ,message :"Create Job seccesfully "});

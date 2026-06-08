@@ -26,10 +26,10 @@ const jobSchema = new mongoose.Schema({
   },
 
   salary: {
-    type: Number
+    type: Number,
+    required: true
   },
-
-  company: {
+  salaryCurrency: {
     type: String,
     required: true
   },
@@ -63,9 +63,10 @@ const jobSchema = new mongoose.Schema({
   },
 
   skills: [String],
+
 }, { timestamps: true })
 
-export const validateJobsDetails = (job, isUpdate = false) => {
+export const validateJobsDetails = (job, isUpdate = false) => { 
   let schema = Joi.object({
     title: Joi.string(),
 
@@ -74,8 +75,7 @@ export const validateJobsDetails = (job, isUpdate = false) => {
     location: Joi.string(),
 
     salary: Joi.number(),
-
-    company: Joi.string(),
+    salaryCurrency: Joi.string(),
 
     jobType: Joi.string()
       .valid("full-time",
