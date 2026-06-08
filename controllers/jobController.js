@@ -97,13 +97,17 @@ export const createJob = asyncHandler(async (req, res) => {
     "title",
     "description",
     "location",
+
     "salary",
     "salaryCurrency",
+
     "jobType",
     "workMode",
+
     "experienceLevel",
     "skills"
   ];
+  
   const data = {};
 
   const profile = await RecruiterProfile.findOne({
