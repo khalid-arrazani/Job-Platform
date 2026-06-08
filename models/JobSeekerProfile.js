@@ -36,7 +36,6 @@ const jobSeekerProfileSchema = new mongoose.Schema(
       default: "",
     },
     
-
     aboutMe: {
       about: {
         type: String,
