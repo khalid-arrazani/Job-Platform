@@ -84,8 +84,6 @@ export const getJobById = asyncHandler(async (req, res) => {
 // Create new job for recruiter
 
 export const createJob = asyncHandler(async (req, res) => {
-
-
   const { error } = validateJobsDetails(req.body);
   
   if (error) {

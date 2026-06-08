@@ -46,6 +46,8 @@ const jobSchema = new mongoose.Schema({
     ],
     default: "Full-time"
   },
+
+
   workMode: {
     type: String,
     enum: [
@@ -55,6 +57,7 @@ const jobSchema = new mongoose.Schema({
     ],
     default: "On-site"
   },
+  
 
   experienceLevel: {
     type: String,
