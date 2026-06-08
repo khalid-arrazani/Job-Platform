@@ -98,7 +98,7 @@ export const createJob = asyncHandler(async (req, res) => {
     "description",
     "location",
     "salary",
-  
+    "salaryCurrency",
     "jobType",
     "workMode",
     "experienceLevel",
