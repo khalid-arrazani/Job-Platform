@@ -37,29 +37,29 @@ const jobSchema = new mongoose.Schema({
   jobType: {
     type: String,
     enum: [
-      "full-time",
-      "part-time",
-      "contract",
-      "internship",
-      "freelance",
-      "temporary"
+      "Full-time",
+      "Part-time",
+      "Contract",
+      "Internship",
+      "Freelance",
+      "Temporary"
     ],
-    default: "full-time"
+    default: "Full-time"
   },
   workMode: {
     type: String,
     enum: [
-      "remote",
-      "hybrid",
-      "on-site"
+      "Remote",
+      "Hybrid",
+      "On-site"
     ],
-    default: "on-site"
+    default: "On-site"
   },
 
   experienceLevel: {
     type: String,
-    enum: ["junior", "mid", "senior"],
-    default: "junior"
+    enum: ["Junior", "Mid", "Senior"],
+    default: "Junior"
   },
 
   skills: [String],
@@ -78,26 +78,26 @@ export const validateJobsDetails = (job, isUpdate = false) => {
     salaryCurrency: Joi.string(),
 
     jobType: Joi.string()
-      .valid("full-time",
-        "part-time",
-        "contract",
-        "internship",
-        "freelance",
-        "temporary"),
+      .valid("Full-time",
+        "Part-time",
+        "Contract",
+        "Internship",
+        "Freelance",
+        "Temporary"),
 
     workMode: Joi.string()
-      .valid("remote",
-        "hybrid",
-        "on-site"),
+      .valid("Remote",
+        "Hybrid",
+        "On-site"),
 
     experienceLevel: Joi.string()
-      .valid("junior", "mid", "senior"),
+      .valid("Junior", "Mid", "Senior"),
 
     skills: Joi.array().items(Joi.string())
   });
   if (!isUpdate) {
     schema = schema.fork(
-      ["title", "description", "location", "company"],
+      ["title", "description", "location" ],
       (field) => field.required()
     );
   }

@@ -85,8 +85,9 @@ export const getJobById = asyncHandler(async (req, res) => {
 
 export const createJob = asyncHandler(async (req, res) => {
 
-  const { error } = validateJobsDetails(req.body);
 
+  const { error } = validateJobsDetails(req.body);
+  
   if (error) {
     return res.status(400).json({
       message: error.details[0].message
