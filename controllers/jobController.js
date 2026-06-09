@@ -9,14 +9,17 @@ import RecruiterProfile from "../models/RecruiterProfile.js";
 // Get all jobs for job seekers with pagination
 export const getAllJobs = asyncHandler(async (req, res) => {
 
-  const page = parseInt(req.query.page) || 1;
 
-  const limit = 10;
+
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = 4;
+
 
   const jobs = await Job.find()
     .skip((page - 1) * limit)
     .limit(limit)
-    .populate("createdBy", "username");
+    .populate("createdBy");
 
   if (jobs.length === 0) {
     return res.status(404).json({
@@ -27,9 +30,10 @@ export const getAllJobs = asyncHandler(async (req, res) => {
   const total = await Job.countDocuments();
 
   res.status(200).json({
+     success: true,
     total,
-    page,
-    results: jobs.length,
+    currentPage: page,
+    totalPages: Math.ceil(total / limit),
     jobs
   });
 });
