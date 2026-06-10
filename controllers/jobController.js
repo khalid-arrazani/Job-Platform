@@ -9,11 +9,8 @@ import RecruiterProfile from "../models/RecruiterProfile.js";
 // Get all jobs for job seekers with pagination
 export const getAllJobs = asyncHandler(async (req, res) => {
 
-
-
-
   const page = parseInt(req.query.page) || 1;
-  const limit = 4;
+  const limit = 8;
 
 
   const jobs = await Job.find()
@@ -121,8 +118,6 @@ export const createJob = asyncHandler(async (req, res) => {
     res.status(404).json({message:"Profile not found "})
   }
    
-  
-
   allowedFields.forEach((field) => {
     if (req.body[field] !== undefined) {
       data[field] = req.body[field];
