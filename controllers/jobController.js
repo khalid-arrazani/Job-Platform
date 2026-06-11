@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import { validateJobsDetails } from "../models/Job.js";
 import JobSeekerProfile from "../models/JobSeekerProfile.js";
 import RecruiterProfile from "../models/RecruiterProfile.js";
+import SavedJob from "../models/SavedJob.js";
 
 
 
@@ -26,12 +27,31 @@ export const getAllJobs = asyncHandler(async (req, res) => {
 
   const total = await Job.countDocuments();
 
+
+
+   //  GET saved jobs for this user
+  const savedJobs = await SavedJob.find({
+    user: req.user.id,
+  });
+
+
+  const savedJobIds = savedJobs.map((s) =>
+    s.job.toString()
+  );
+
+  // attach isSaved to each job
+  const jobsWithSavedState = jobs.map((job) => ({
+    ...job._doc,
+    isSaved: savedJobIds.includes(job._id.toString()),
+  }));
+
+
   res.status(200).json({
      success: true,
     total,
     currentPage: page,
     totalPages: Math.ceil(total / limit),
-    jobs
+    jobs :jobsWithSavedState,
   });
 });
 

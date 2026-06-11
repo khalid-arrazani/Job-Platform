@@ -23,7 +23,7 @@ import Joi from "joi";
 
 export const saveJobValidator = (data) => {
   const schema = Joi.object({
-    jobId: Joi.string().length(24).required(),
+    jobId: Joi.string().required(),
   });
 
   return schema.validate(data);

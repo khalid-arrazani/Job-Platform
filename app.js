@@ -43,7 +43,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRouter);
 app.use("/api/jobs", jobRouter);
 // Saved Jobs routes
-app.use("/api", sav);
+app.use("/api/savedJob", savedJob);
 
 app.use("/api/jobseeker", jobSeekerProfileRouter);
 app.use("/api/recuiter", recruiterProfileRouter);
