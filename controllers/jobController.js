@@ -114,19 +114,21 @@ export const createJob = asyncHandler(async (req, res) => {
   }
 
   const allowedFields = [
-    "title",
-    "description",
-    "location",
+  "title",
+  "description",
+  "location",
 
-    "salary",
-    "salaryCurrency",
+  "minSalary",
+  "maxSalary",
+  "salaryCurrency",
+  "salaryPeriod",
 
-    "jobType",
-    "workMode",
+  "jobType",
+  "workMode",
 
-    "experienceLevel",
-    "skills"
-  ];
+  "experienceLevel",
+  "skills",
+];
 
   const data = {};
 

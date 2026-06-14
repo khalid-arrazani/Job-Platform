@@ -25,13 +25,28 @@ const jobSchema = new mongoose.Schema({
     required: true
   },
 
-  salary: {
+  minSalary: {
     type: Number,
-    required: true
+    required: true,
+    min: 0,
   },
+
+  maxSalary: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+
   salaryCurrency: {
     type: String,
-    required: true
+    required: true,
+    default: "USD",
+  },
+
+  salaryPeriod: {
+    type: String,
+    enum: ["Per Month", "Per Year"],
+    default: "Per Year",
   },
 
   jobType: {
@@ -57,7 +72,7 @@ const jobSchema = new mongoose.Schema({
     ],
     default: "On-site"
   },
-  
+
 
   experienceLevel: {
     type: String,
@@ -69,7 +84,7 @@ const jobSchema = new mongoose.Schema({
 
 }, { timestamps: true })
 
-export const validateJobsDetails = (job, isUpdate = false) => { 
+export const validateJobsDetails = (job, isUpdate = false) => {
   let schema = Joi.object({
     title: Joi.string(),
 
@@ -77,8 +92,21 @@ export const validateJobsDetails = (job, isUpdate = false) => {
 
     location: Joi.string(),
 
-    salary: Joi.number(),
+    minSalary: Joi.number().min(0),
+
+    maxSalary: Joi.number()
+      .min(0)
+      .when("minSalary", {
+        is: Joi.exist(),
+        then: Joi.number().greater(Joi.ref("minSalary")),
+      }),
+
     salaryCurrency: Joi.string(),
+
+    salaryPeriod: Joi.string().valid(
+      "Per Month",
+      "Per Year"
+    ),
 
     jobType: Joi.string()
       .valid("Full-time",
@@ -100,7 +128,7 @@ export const validateJobsDetails = (job, isUpdate = false) => {
   });
   if (!isUpdate) {
     schema = schema.fork(
-      ["title", "description", "location" ],
+      ["title", "description", "location"],
       (field) => field.required()
     );
   }
