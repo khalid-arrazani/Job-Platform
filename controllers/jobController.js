@@ -88,15 +88,33 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
 // Get single job by id
 export const getJobById = asyncHandler(async (req, res) => {
-
-  const jobById = await Job.findById(req.params.id)
+  const jobBy_Id = await Job.findById(req.params.id)
     .populate("createdBy");
 
-  if (!jobById) {
+  if (!jobBy_Id) {
     return res.status(404).json({
-      message: "No job found"
+      message: "No job found",
     });
   }
+
+  let isSaved = false;
+
+  if (req.user) {
+    const savedJob = await SavedJob.findOne({
+      user: req.user.id,
+      job: jobBy_Id._id,
+    });
+
+    isSaved = !!savedJob;
+  }
+
+  const jobWithSavedState = {
+    ...jobBy_Id._doc,
+    isSaved,
+  };
+
+  const jobById = jobWithSavedState
+
   res.status(200).json(jobById);
 });
 
