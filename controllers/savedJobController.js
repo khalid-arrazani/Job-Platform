@@ -49,3 +49,41 @@ export const toggleSaveJob = async (req, res) => {
     });
   }
 };
+
+
+//get all saved job
+
+export const getSavedJobs = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // 1. find all saved jobs for this user
+    const savedJobs = await SavedJob.find({ user: userId })
+      .populate({
+        path: "job",
+        populate: {
+          path: "createdBy",
+        },
+      });
+
+    // 2. clean data + add isSaved flag
+    const jobs = savedJobs
+      .filter((item) => item.job) // safety check
+      .map((item) => ({
+        ...item.job._doc,
+        isSaved: true,
+      }));
+
+    // 3. response
+    return res.status(200).json({
+      count: jobs.length,
+      jobs,
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      message: "Server error",
+      error: err.message,
+    });
+  }
+};

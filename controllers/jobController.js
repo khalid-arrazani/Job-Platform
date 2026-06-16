@@ -56,6 +56,31 @@ export const getAllJobs = asyncHandler(async (req, res) => {
 });
 
 
+export const getSavedJobs = asyncHandler(async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const savedJobs = await SavedJob.find({ user: req.user.id })
+    .populate({
+      path: "job",
+      populate: {
+        path: "createdBy",
+      },
+    });
+
+  // extract only job data (clean response)
+  const jobs = savedJobs
+    .filter((item) => item.job) // avoid null jobs
+    .map((item) => ({
+      ...item.job._doc,
+      isSaved: true,
+    }));
+
+  res.status(200).json(jobs);
+});
+
+
 
 // Get all recruiter jobs with pagination
 export const getMyJobs = asyncHandler(async (req, res) => {
