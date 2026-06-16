@@ -8,6 +8,7 @@ const router = express.Router();
 
 
 router.post("/jobs/save", protect, toggleSaveJob);
-router.get("/jobs/save", protect, getSavedJobs);
+
+router.get("/jobs/save/", protect, getSavedJobs);
 
 export default router;

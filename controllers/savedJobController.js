@@ -57,25 +57,38 @@ export const getSavedJobs = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // 1. find all saved jobs for this user
+    const page = Number(req.query.page) || 1;
+    const limit = 5;
+    const skip = (page - 1) * limit;
+
+    // total count
+    const totalSavedJobs = await SavedJob.countDocuments({
+      user: userId,
+    });
+
+    // paginated data
     const savedJobs = await SavedJob.find({ user: userId })
       .populate({
         path: "job",
         populate: {
           path: "createdBy",
         },
-      });
+      })
+      .sort({ createdAt: -1 }) // latest saved first
+      .skip(skip)
+      .limit(limit);
 
-    // 2. clean data + add isSaved flag
     const jobs = savedJobs
-      .filter((item) => item.job) // safety check
+      .filter((item) => item.job)
       .map((item) => ({
         ...item.job._doc,
         isSaved: true,
       }));
 
-    // 3. response
     return res.status(200).json({
+      currentPage: page,
+      totalPages: Math.ceil(totalSavedJobs / limit),
+      totalSavedJobs,
       count: jobs.length,
       jobs,
     });
