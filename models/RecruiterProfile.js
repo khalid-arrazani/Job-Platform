@@ -83,9 +83,6 @@ const recruiterProfileSchema = new mongoose.Schema(
     },
 
 
-
-
-
     companyName: {
       type: String,
       required: true,
