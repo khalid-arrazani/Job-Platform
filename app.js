@@ -18,6 +18,7 @@ import applyRouter from './routes/apply.js';
 
 import cookieParser from "cookie-parser";
 import savedJob from './routes/savedJob.js';
+import companyRouter from "./routes/company.js";
 
 
 const app = express();
@@ -47,6 +48,7 @@ app.use("/api/savedJob", savedJob);
 
 app.use("/api/jobseeker", jobSeekerProfileRouter);
 app.use("/api/recuiter", recruiterProfileRouter);
+app.use("/api/company", companyRouter);
 
 
 app.use("/api/users", userRouter);

@@ -111,17 +111,17 @@ export const companyValidation = Joi.object({
 
   benefits: Joi.array().items(Joi.string().trim()),
 
-  companyLogo: Joi.object({
-    url: Joi.string().allow(""),
-    public_id: Joi.string().allow(""),
-  }),
+ companyLogo: Joi.object({
+  url: Joi.string().allow("").default(""),
+  public_id: Joi.string().allow("").default(""),
+}).optional(),
 
   socialLinks: Joi.array().items(
-    Joi.object({
-      platform: Joi.string().required(),
-      url: Joi.string().uri().allow("").required(),
-    })
-  ).optional(),
+  Joi.object({
+    platform: Joi.string().trim().required(),
+    url: Joi.string().uri().required(),
+  })
+).optional(),
 
   owner: Joi.string().hex().length(24).required(),
 });
