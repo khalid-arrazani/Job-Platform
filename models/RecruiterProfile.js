@@ -47,10 +47,10 @@ const recruiterProfileSchema = new mongoose.Schema(
     },
 
     experienceLevel: {
-  type: String,
-  enum: ["Entry Level", "Junior", "Mid Level", "Senior", "Lead"],
-  default: "Entry Level",
-},
+      type: String,
+      enum: ["Entry Level", "Junior", "Mid Level", "Senior", "Lead"],
+      default: "Entry Level",
+    },
 
     socialLinks: [
       {
@@ -58,7 +58,6 @@ const recruiterProfileSchema = new mongoose.Schema(
         url: String,
       }
     ],
-
     hiring_Focus: {
 
       hiring_Types: {
@@ -81,15 +80,12 @@ const recruiterProfileSchema = new mongoose.Schema(
       },
 
     },
-
-
     companyName: {
       type: String,
       required: true,
       trim: true,
     },
-
-      companyLogo: {
+    companyLogo: {
       url: {
         type: String,
         default: ""
@@ -143,41 +139,41 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
     aboutMe: Joi.string().default("Unknown"),
 
     experienceLevel: Joi.string()
-    .valid(
-      "Entry Level",
-      "Junior",
-      "Mid Level",
-      "Senior",
-      "Lead"
-    )
-    .default("Entry Level"),
-
-  socialLinks: Joi.array().items(
-    Joi.object({
-      platform: Joi.string().required(),
-      url: Joi.string().uri().required(),
-    })
-  ).default([]),
-
-  hiring_Focus: Joi.object({
-    hiring_Types: Joi.array()
-      .items(
-        Joi.string().valid(
-          "Full-time",
-          "Part-time",
-          "Contract",
-          "Internship",
-          "Remote",
-          "Hybrid",
-          "Freelance"
-        )
+      .valid(
+        "Entry Level",
+        "Junior",
+        "Mid Level",
+        "Senior",
+        "Lead"
       )
-      .default([]),
+      .default("Entry Level"),
 
-    roles_I_hire_for: Joi.array()
-      .items(Joi.string())
-      .default([]),
-  }).default({}),
+    socialLinks: Joi.array().items(
+      Joi.object({
+        platform: Joi.string().required(),
+        url: Joi.string().uri().required(),
+      })
+    ).default([]),
+
+    hiring_Focus: Joi.object({
+      hiring_Types: Joi.array()
+        .items(
+          Joi.string().valid(
+            "Full-time",
+            "Part-time",
+            "Contract",
+            "Internship",
+            "Remote",
+            "Hybrid",
+            "Freelance"
+          )
+        )
+        .default([]),
+
+      roles_I_hire_for: Joi.array()
+        .items(Joi.string())
+        .default([]),
+    }).default({}),
     companyName: Joi.string().min(2).max(150),
 
     companyDescription: Joi.string().allow("").max(1000),

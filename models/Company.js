@@ -14,6 +14,10 @@ const companySchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    companyLogo: {
+      url: { type: String, default: "" },
+      public_id: { type: String, default: "" },
+    },
 
     industry: {
       type: String,
@@ -63,27 +67,12 @@ const companySchema = new mongoose.Schema(
       },
     ],
 
-    socialLinks: {
-      linkedin: {
-        type: String,
-        default: "",
-      },
-
-      facebook: {
-        type: String,
-        default: "",
-      },
-
-      twitter: {
-        type: String,
-        default: "",
-      },
-
-      instagram: {
-        type: String,
-        default: "",
-      },
-    },
+    socialLinks: [
+      {
+        platform: String,
+        url: String,
+      }
+    ],
 
     owner: {
       type: mongoose.Schema.Types.ObjectId,
@@ -99,63 +88,40 @@ const companySchema = new mongoose.Schema(
 export const Company = mongoose.model("Company", companySchema);
 
 export const companyValidation = Joi.object({
-  name: Joi.string()
-    .trim()
-    .min(2)
-    .max(100)
-    .required(),
+  name: Joi.string().trim().min(2).max(100).required(),
 
-  description: Joi.string()
-    .trim()
-    .min(20)
-    .max(2000)
-    .required(),
+  description: Joi.string().trim().min(20).max(2000).required(),
 
-  industry: Joi.string()
-    .trim()
-    .required(),
+  industry: Joi.string().trim().required(),
 
   companySize: Joi.string()
-    .valid(
-      "1-10",
-      "11-50",
-      "51-200",
-      "201-500",
-      "501-1000",
-      "1000+"
-    )
+    .valid("1-10", "11-50", "51-200", "201-500", "501-1000", "1000+")
     .required(),
 
-  website: Joi.string()
-    .uri()
-    .allow(""),
+  website: Joi.string().uri().allow(""),
 
-  location: Joi.string()
-    .trim()
-    .required(),
+  location: Joi.string().trim().required(),
 
   foundedYear: Joi.number()
     .integer()
     .min(1800)
     .max(new Date().getFullYear()),
 
-  specialties: Joi.array().items(
-    Joi.string().trim()
-  ),
+  specialties: Joi.array().items(Joi.string().trim()),
 
-  benefits: Joi.array().items(
-    Joi.string().trim()
-  ),
+  benefits: Joi.array().items(Joi.string().trim()),
 
-  socialLinks: Joi.object({
-    linkedin: Joi.string().uri().allow(""),
-    facebook: Joi.string().uri().allow(""),
-    twitter: Joi.string().uri().allow(""),
-    instagram: Joi.string().uri().allow(""),
+  companyLogo: Joi.object({
+    url: Joi.string().allow(""),
+    public_id: Joi.string().allow(""),
   }),
 
-  owner: Joi.string()
-    .hex()
-    .length(24)
-    .required(),
+  socialLinks: Joi.array().items(
+    Joi.object({
+      platform: Joi.string().required(),
+      url: Joi.string().uri().allow("").required(),
+    })
+  ).optional(),
+
+  owner: Joi.string().hex().length(24).required(),
 });
