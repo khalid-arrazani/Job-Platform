@@ -14,6 +14,14 @@ const companySchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
+     company_number: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+
     companyLogo: {
       url: { type: String, default: "" },
       public_id: { type: String, default: "" },
@@ -92,7 +100,11 @@ export const companyValidation = Joi.object({
 
   description: Joi.string().trim().min(20).max(2000).required(),
 
+  company_number: Joi.string().trim().min(4).max(20).required(),
+
   industry: Joi.string().trim().required(),
+  
+  company_email: Joi.string().trim().required().email(),
 
   companySize: Joi.string()
     .valid("1-10", "11-50", "51-200", "201-500", "501-1000", "1000+")
@@ -105,7 +117,7 @@ export const companyValidation = Joi.object({
   foundedYear: Joi.number()
     .integer()
     .min(1800)
-    .max(new Date().getFullYear()),
+  .max(new Date().getFullYear()),
 
   specialties: Joi.array().items(Joi.string().trim()),
 
