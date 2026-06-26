@@ -26,6 +26,10 @@ const companySchema = new mongoose.Schema(
       url: { type: String, default: "" },
       public_id: { type: String, default: "" },
     },
+    companyBackground: {
+      url: { type: String, default: "" },
+      public_id: { type: String, default: "" },
+    },
 
     industry: {
       type: String,
@@ -134,6 +138,11 @@ export const companyValidation = (data) => {
     benefits: Joi.array().items(Joi.string().trim()),
 
     companyLogo: Joi.object({
+      url: Joi.string().allow("").default(""),
+      public_id: Joi.string().allow("").default(""),
+    }).optional(),
+    
+    companyBackground: Joi.object({
       url: Joi.string().allow("").default(""),
       public_id: Joi.string().allow("").default(""),
     }).optional(),
