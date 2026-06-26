@@ -61,9 +61,6 @@ export const createProfile = asyncHandler(async (req, res) => {
       req.file.buffer
     );
 
-
-
-
     //i need here some check if there is imag
 
   const profile = await JobSeekerProfile.create({
