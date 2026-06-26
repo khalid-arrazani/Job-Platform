@@ -145,6 +145,5 @@ export const companyValidation = (data) => {
       })
     ).optional(),
 
-    owner: Joi.string().hex().length(24).required(),
   }).validate(data); 
 };
