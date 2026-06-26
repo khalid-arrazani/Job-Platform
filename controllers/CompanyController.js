@@ -47,16 +47,28 @@ export const getCompanyById = asyncHandler(async (req, res) => {
 ====================== */
 export const createCompany = asyncHandler(async (req, res) => {
   console.log(1);
+  console.log(req.body.benefits);
+
+
+ if (req.body.benefits) {
+  req.body.benefits = JSON.parse(req.body.benefits);
+}
+console.log(typeof req.body.benefits);
+if (req.body.socialLinks) {
+  req.body.socialLinks = JSON.parse(req.body.socialLinks);
+}
 
   const { error } = companyValidation(req.body);
-console.log(2);
+
+  console.log(2);
+
   if (error) {
     return res.status(400).json({
       message: error.message,
     });
   }
-  
-  
+
+
   const exists = await Company.findOne({ owner: req.user.id });
 
   if (exists) {
