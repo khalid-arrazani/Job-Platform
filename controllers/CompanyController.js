@@ -48,13 +48,14 @@ export const getCompanyById = asyncHandler(async (req, res) => {
 export const createCompany = asyncHandler(async (req, res) => {
 
   const { error } = companyValidation(req.body);
-
+  console.log(1);
   if (error) {
     return res.status(400).json({
       message: error.message,
     });
   }
-
+  console.log(2);
+  
   const exists = await Company.findOne({ owner: req.user.id });
 
   if (exists) {
@@ -62,6 +63,7 @@ export const createCompany = asyncHandler(async (req, res) => {
       message: "You already created a company",
     });
   }
+  console.log(3);
 
   let logo = null;
   let background = null;
@@ -69,12 +71,14 @@ export const createCompany = asyncHandler(async (req, res) => {
   if (req.files?.companyLogo?.[0]) {
     logo = await uploadToCloudinary(req.files.companyLogo[0].buffer);
   }
+  console.log(4);
 
   if (req.files?.companyBackground?.[0]) {
     background = await uploadToCloudinary(
       req.files.companyBackground[0].buffer
     );
   }
+  console.log(5);
 
   const company = await Company.create({
     ...req.body,
@@ -100,6 +104,7 @@ export const createCompany = asyncHandler(async (req, res) => {
         public_id: "",
       },
   });
+  console.log(6);
 
   res.status(201).json({
     success: true,
