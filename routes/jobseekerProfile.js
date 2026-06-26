@@ -11,6 +11,7 @@ import {
   updateProfile,
   UpdatePhotoProfile
 } from "../controllers/jobSeekerProfileController.js";
+
 import { uploadImage } from "../middlewares/Multer.js";
 
 
