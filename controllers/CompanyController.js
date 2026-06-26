@@ -46,6 +46,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
    CREATE COMPANY (WITH JOI)
 ====================== */
 export const createCompany = asyncHandler(async (req, res) => {
+
   const { error } = companyValidation(req.body);
 
   if (error) {
@@ -62,24 +63,44 @@ export const createCompany = asyncHandler(async (req, res) => {
     });
   }
 
-  let logo = null;
 
-  if (req.file) {
-    logo = await uploadToCloudinary(req.file.buffer);
+
+  let logo = null;
+  let background = null;
+
+  if (req.files?.companyLogo?.[0]) {
+    logo = await uploadToCloudinary(req.files.companyLogo[0].buffer);
+  }
+
+  if (req.files?.companyBackground?.[0]) {
+    background = await uploadToCloudinary(
+      req.files.companyBackground[0].buffer
+    );
   }
 
   const company = await Company.create({
     ...req.body,
     owner: req.user.id,
+
     companyLogo: logo
       ? {
-          url: logo.secure_url,
-          public_id: logo.public_id,
-        }
+        url: logo.secure_url,
+        public_id: logo.public_id,
+      }
       : {
-          url: "",
-          public_id: "",
-        },
+        url: "",
+        public_id: "",
+      },
+
+    companyBackground: background
+      ? {
+        url: background.secure_url,
+        public_id: background.public_id,
+      }
+      : {
+        url: "",
+        public_id: "",
+      },
   });
 
   res.status(201).json({
@@ -118,7 +139,7 @@ export const updateCompany = asyncHandler(async (req, res) => {
 
 
   res.status(200).json({
-    
+
     success: true,
     message: "Company updated successfully",
     company: updatedCompany,
