@@ -43,7 +43,7 @@ const companySchema = new mongoose.Schema(
         "501-1000",
         "1000+",
       ],
-      required: true,
+      
     },
 
     website: {
