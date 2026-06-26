@@ -49,11 +49,12 @@ export const createCompany = asyncHandler(async (req, res) => {
   console.log(1);
   console.log(req.body.benefits);
 
-
  if (req.body.benefits) {
   req.body.benefits = JSON.parse(req.body.benefits);
 }
+
 console.log(typeof req.body.benefits);
+
 if (req.body.socialLinks) {
   req.body.socialLinks = JSON.parse(req.body.socialLinks);
 }

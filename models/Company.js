@@ -141,7 +141,7 @@ export const companyValidation = (data) => {
     socialLinks: Joi.array().items(
       Joi.object({
         platform: Joi.string().trim().required(),
-        url: Joi.string().uri().required(),
+        url: Joi.string().uri().optional().allow(""),
       })
     ).optional(),
 
