@@ -50,6 +50,10 @@ const companySchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    company_email:{
+      type: String,
+      default: "",
+    },
 
     location: {
       type: String,
