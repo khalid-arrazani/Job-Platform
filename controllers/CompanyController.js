@@ -48,19 +48,19 @@ export const getCompanyById = asyncHandler(async (req, res) => {
 export const createCompany = asyncHandler(async (req, res) => {
 
 
- if (req.body.benefits) {
-  req.body.benefits = JSON.parse(req.body.benefits);
-}
+  if (req.body.benefits) {
+    req.body.benefits = JSON.parse(req.body.benefits);
+  }
 
 
 
-if (req.body.socialLinks) {
-  req.body.socialLinks = JSON.parse(req.body.socialLinks);
-}
+  if (req.body.socialLinks) {
+    req.body.socialLinks = JSON.parse(req.body.socialLinks);
+  }
 
- const { error } = companyValidation(req.body);
+  const { error } = companyValidation(req.body);
 
-  console.log(req.user.id);
+
 
   if (error) {
     return res.status(400).json({
@@ -76,7 +76,7 @@ if (req.body.socialLinks) {
       message: "You already created a company",
     });
   }
-  console.log(3);
+
 
   let logo = null;
   let background = null;
@@ -84,48 +84,47 @@ if (req.body.socialLinks) {
   if (req.files?.companyLogo?.[0]) {
     logo = await uploadToCloudinary(req.files.companyLogo[0].buffer);
   }
-  console.log(4);
 
   if (req.files?.companyBackground?.[0]) {
     background = await uploadToCloudinary(
       req.files.companyBackground[0].buffer
-    );
-  }
-  console.log(5);
+    )}
 
-  const company = await Company.create({
-    ...req.body,
+    const company = await Company.create({
+      ...req.body,
 
-    owner: req.user.id,
+      owner: req.user.id,
 
-    companyLogo: logo
-      ? {
-        url: logo.secure_url,
-        public_id: logo.public_id,
-      }
-      : {
-        url: "",
-        public_id: "",
-      },
 
-    companyBackground: background
-      ? {
-        url: background.secure_url,
-        public_id: background.public_id,
-      }
-      : {
-        url: "",
-        public_id: "",
-      },
+      companyLogo: logo
+        ? {
+          url: logo.secure_url,
+          public_id: logo.public_id,
+        }
+        : {
+          url: "",
+          public_id: "",
+        },
+
+      companyBackground: background
+        ? {
+          url: background.secure_url,
+          public_id: background.public_id,
+        }
+        : {
+          url: "",
+          public_id: "",
+        },
+    });
+
+
+    res.status(201).json({
+      success: true,
+      message: "Company created successfully",
+      company
+    });
+
   });
-  console.log(6);
-
-  res.status(201).json({
-    success: true,
-    message: "Company created successfully",
-    company,
-  });
-});
 
 
 /* ======================
