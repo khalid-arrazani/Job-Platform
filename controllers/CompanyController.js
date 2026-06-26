@@ -46,15 +46,16 @@ export const getCompanyById = asyncHandler(async (req, res) => {
    CREATE COMPANY (WITH JOI)
 ====================== */
 export const createCompany = asyncHandler(async (req, res) => {
+  console.log(1);
 
   const { error } = companyValidation(req.body);
-  console.log(1);
+console.log(2);
   if (error) {
     return res.status(400).json({
       message: error.message,
     });
   }
-  console.log(2);
+  
   
   const exists = await Company.findOne({ owner: req.user.id });
 

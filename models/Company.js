@@ -99,46 +99,52 @@ const companySchema = new mongoose.Schema(
 
 export const Company = mongoose.model("Company", companySchema);
 
-export const companyValidation = (data) => { 
+export const companyValidation = (data) => {
   return Joi.object({
-  name: Joi.string().trim().min(2).max(100).required(),
+    name: Joi.string().trim().min(2).max(100).required(),
 
-  description: Joi.string().trim().min(20).max(2000).required(),
+    description: Joi.string().trim().min(20).max(2000).required(),
 
-  company_number: Joi.string().trim().min(4).max(20).required(),
+    company_number: Joi.string().trim().min(4).max(20).required(),
 
-  industry: Joi.string().trim().required(),
-  
-  company_email: Joi.string().trim().required().email(),
+    industry: Joi.string().trim().required(),
 
-  companySize: Joi.string()
-    .valid("1-10", "11-50", "51-200", "201-500", "501-1000", "1000+")
-    ,
+    company_email: Joi.string().trim().email().required(),
 
-  website: Joi.string().uri().allow(""),
+    companySize: Joi.string().valid(
+      "1-10",
+      "11-50",
+      "51-200",
+      "201-500",
+      "501-1000",
+      "1000+"
+    ),
 
-  location: Joi.string().trim().required(),
+    website: Joi.string().uri().allow(""),
 
-  foundedYear: Joi.number()
-    .integer()
-    .min(1800)
-  .max(new Date().getFullYear()),
+    location: Joi.string().trim().required(),
 
-  specialties: Joi.array().items(Joi.string().trim()),
+    foundedYear: Joi.number()
+      .integer()
+      .min(1800)
+      .max(new Date().getFullYear()),
 
-  benefits: Joi.array().items(Joi.string().trim()),
+    specialties: Joi.array().items(Joi.string().trim()),
 
- companyLogo: Joi.object({
-  url: Joi.string().allow("").default(""),
-  public_id: Joi.string().allow("").default(""),
-}).optional(),
+    benefits: Joi.array().items(Joi.string().trim()),
 
-  socialLinks: Joi.array().items(
-  Joi.object({
-    platform: Joi.string().trim().required(),
-    url: Joi.string().uri().required(),
-  })
-).optional(),
+    companyLogo: Joi.object({
+      url: Joi.string().allow("").default(""),
+      public_id: Joi.string().allow("").default(""),
+    }).optional(),
 
-  owner: Joi.string().hex().length(24).required(),
-});}
+    socialLinks: Joi.array().items(
+      Joi.object({
+        platform: Joi.string().trim().required(),
+        url: Joi.string().uri().required(),
+      })
+    ).optional(),
+
+    owner: Joi.string().hex().length(24).required(),
+  }).validate(data); 
+};
