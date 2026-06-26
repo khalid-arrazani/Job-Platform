@@ -63,8 +63,6 @@ export const createCompany = asyncHandler(async (req, res) => {
     });
   }
 
-
-
   let logo = null;
   let background = null;
 

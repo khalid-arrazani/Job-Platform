@@ -99,7 +99,8 @@ const companySchema = new mongoose.Schema(
 
 export const Company = mongoose.model("Company", companySchema);
 
-export const companyValidation = Joi.object({
+export const companyValidation = (data) => { 
+  return Joi.object({
   name: Joi.string().trim().min(2).max(100).required(),
 
   description: Joi.string().trim().min(20).max(2000).required(),
@@ -140,4 +141,4 @@ export const companyValidation = Joi.object({
 ).optional(),
 
   owner: Joi.string().hex().length(24).required(),
-});
+});}
