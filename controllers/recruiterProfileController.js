@@ -20,14 +20,20 @@ export const getRecruiterProfile = asyncHandler(async (req, res) => {
 
   const profile = await RecruiterProfile.findOne({
     userId: req.user.id
-  }).populate("userId", "email role isComplete").populate("company","name");;
+  }).populate("userId", "email role isComplete").populate("company", "name");
 
   if (!profile) {
     return res.status(404).json({
       message: "Profile not found"
     });
   }
-  res.status(200).json({success: true,profile:profile, message: "get Profile successfully"});
+
+  const hasCompany = Boolean(profile.company);
+  res.status(200).json({
+    success: true,
+    profile: profile, hasCompany,
+    message: "get Profile successfully"
+  });
 });
 
 
@@ -153,28 +159,28 @@ export const updateRecruiterProfile = asyncHandler(async (req, res) => {
     });
   }
   const updateData = {
-  ...req.body,
-};
+    ...req.body,
+  };
 
   const exists = await RecruiterProfile.findOne({
     userId: req.user.id
   });
 
-if (req.file) {
+  if (req.file) {
 
-  const image = await uploadToCloudinary(req.file.buffer);
+    const image = await uploadToCloudinary(req.file.buffer);
 
-  if (exists.ProfileImage.public_id) {
-    await cloudinary.uploader.destroy(
-      exists.ProfileImage.public_id
-    );
+    if (exists.ProfileImage.public_id) {
+      await cloudinary.uploader.destroy(
+        exists.ProfileImage.public_id
+      );
+    }
+
+    updateData.companyLogo = {
+      url: image.secure_url,
+      public_id: image.public_id,
+    };
   }
-
-  updateData.companyLogo = {
-    url: image.secure_url,
-    public_id: image.public_id,
-  };
-}
 
 
 
@@ -191,7 +197,7 @@ if (req.file) {
     });
   }
 
-    res.status(200).json({
+  res.status(200).json({
     success: true,
     message: "Profile updated successfully",
     profile: profile,
