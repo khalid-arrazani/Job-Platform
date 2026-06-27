@@ -27,7 +27,6 @@ export const getRecruiterProfile = asyncHandler(async (req, res) => {
       message: "Profile not found"
     });
   }
-
   res.status(200).json({success: true,profile:profile, message: "get Profile successfully"});
 });
 
@@ -82,6 +81,7 @@ export const createRecruiterProfile = asyncHandler(async (req, res) => {
     profile: profile
   });
 });
+
 
 // Update Profile Photo
 export const UpdatePhotoProfile = asyncHandler(async (req, res) => {
