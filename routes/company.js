@@ -26,6 +26,17 @@ router.get(
   getAllCompanies
 );
 
+/* ======================
+   GET MY COMPANY
+====================== */
+
+router.get(
+  "/my-company",
+  protect,
+  recruiterOnly,
+  getAllCompanies
+)
+
 
 /* ======================
    GET COMPANY BY ID

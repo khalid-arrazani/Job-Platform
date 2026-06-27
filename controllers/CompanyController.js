@@ -23,6 +23,39 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
   });
 });
 
+/* ======================
+   GET MY COMPANY
+====================== */
+export const getMyCompany = asyncHandler(async (req, res) => {
+
+  const recruiter = await RecruiterProfile.findOne({
+    userId: req.user.id,
+  });
+
+  if (!recruiter) {
+    return res.status(404).json({
+      success: false,
+      message: "Recruiter profile not found",
+    });
+  }
+
+  const company = await Company.findOne({
+    owner: req.user.id,
+  }).populate("owner" , "email role");
+
+  if (!company) {
+    return res.status(404).json({
+      success: false,
+      message: "Company not found",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    company,
+  });
+});
+
 
 /* ======================
    GET COMPANY BY ID
