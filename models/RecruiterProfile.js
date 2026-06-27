@@ -58,6 +58,18 @@ const recruiterProfileSchema = new mongoose.Schema(
         url: String,
       }
     ],
+
+    website: {
+      type: String,
+      default: "Unknown",
+    },
+
+
+    industry: {
+      type: String,
+      default: "Unknown",
+    },
+
     hiring_Focus: {
 
       hiring_Types: {
@@ -80,11 +92,13 @@ const recruiterProfileSchema = new mongoose.Schema(
       },
 
     },
+
     companyName: {
       type: String,
       required: true,
       trim: true,
     },
+
     companyLogo: {
       url: {
         type: String,
@@ -97,16 +111,6 @@ const recruiterProfileSchema = new mongoose.Schema(
     },
 
     companyDescription: {
-      type: String,
-      default: "Unknown",
-    },
-
-    website: {
-      type: String,
-      default: "Unknown",
-    },
-
-    industry: {
       type: String,
       default: "Unknown",
     },
