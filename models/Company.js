@@ -15,7 +15,7 @@ const companySchema = new mongoose.Schema(
       trim: true,
     },
 
-     company_number: {
+    company_number: {
       type: String,
       required: true,
       trim: true,
@@ -27,8 +27,10 @@ const companySchema = new mongoose.Schema(
       public_id: { type: String, default: "" },
     },
     companyBackground: {
-      url: { type: String, default: "" },
-      public_id: { type: String, default: "" },
+      type: "default",
+      bannerId: 3,
+      url: "",
+      public_id: "",
     },
 
     industry: {
@@ -47,14 +49,14 @@ const companySchema = new mongoose.Schema(
         "501-1000",
         "1000+",
       ],
-      
+
     },
 
     website: {
       type: String,
       default: "",
     },
-    company_email:{
+    company_email: {
       type: String,
       default: "",
     },
@@ -141,11 +143,24 @@ export const companyValidation = (data) => {
       url: Joi.string().allow("").default(""),
       public_id: Joi.string().allow("").default(""),
     }).optional(),
-    
+
     companyBackground: Joi.object({
-      url: Joi.string().allow("").default(""),
-      public_id: Joi.string().allow("").default(""),
-    }).optional(),
+      type: Joi.string()
+        .valid("default", "custom")
+        .required(),
+
+      bannerId: Joi.number()
+        .allow(null)
+        .default(null),
+
+      url: Joi.string()
+        .allow("")
+        .default(""),
+
+      public_id: Joi.string()
+        .allow("")
+        .default(""),
+    }),
 
     socialLinks: Joi.array().items(
       Joi.object({
@@ -154,5 +169,5 @@ export const companyValidation = (data) => {
       })
     ).optional(),
 
-  }).validate(data); 
+  }).validate(data);
 };
