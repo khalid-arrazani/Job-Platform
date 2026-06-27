@@ -78,18 +78,6 @@ const recruiterProfileSchema = new mongoose.Schema(
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     hiring_Focus: {
 
       hiring_Types: {

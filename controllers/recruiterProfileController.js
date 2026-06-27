@@ -20,7 +20,7 @@ export const getRecruiterProfile = asyncHandler(async (req, res) => {
 
   const profile = await RecruiterProfile.findOne({
     userId: req.user.id
-  }).populate("userId", "email role isComplete");
+  }).populate("userId", "email role isComplete").populate("company","name");;
 
   if (!profile) {
     return res.status(404).json({

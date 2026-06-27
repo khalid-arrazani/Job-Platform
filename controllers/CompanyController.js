@@ -28,9 +28,9 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
    GET COMPANY BY ID
 ====================== */
 export const getCompanyById = asyncHandler(async (req, res) => {
+
   const company = await Company.findById(req.params.id).populate(
     "owner",
-    "email role"
   );
 
   if (!company) {
@@ -125,8 +125,6 @@ export const createCompany = asyncHandler(async (req, res) => {
 
   recruiterProfile.company = company._id;
   await recruiterProfile.save();
-
-
 
 
   res.status(201).json({
