@@ -72,8 +72,8 @@ const recruiterProfileSchema = new mongoose.Schema(
     company: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Company",
-      required: true,
       unique: true,
+      default: null,
     },
 
 

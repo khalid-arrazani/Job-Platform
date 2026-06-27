@@ -1,8 +1,12 @@
 import asyncHandler from "express-async-handler";
 import { Company, companyValidation } from "../models/Company.js";
+
 import cloudinary from "../config/cloudinary.js";
 
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
+
+import RecruiterProfile from "../models/RecruiterProfile.js";
+
 
 
 /* ======================
@@ -88,43 +92,50 @@ export const createCompany = asyncHandler(async (req, res) => {
   if (req.files?.companyBackground?.[0]) {
     background = await uploadToCloudinary(
       req.files.companyBackground[0].buffer
-    )}
+    )
+  }
 
-    const company = await Company.create({
-      ...req.body,
-
-      owner: req.user.id,
-
-
-      companyLogo: logo
-        ? {
-          url: logo.secure_url,
-          public_id: logo.public_id,
-        }
-        : {
-          url: "",
-          public_id: "",
-        },
-
-      companyBackground: background
-        ? {
-          url: background.secure_url,
-          public_id: background.public_id,
-        }
-        : {
-          url: "",
-          public_id: "",
-        },
-    });
-
-
-    res.status(201).json({
-      success: true,
-      message: "Company created successfully",
-      company
-    });
-
+  const company = await Company.create({
+    ...req.body,
+    owner: req.user.id,
+    companyLogo: logo
+      ? {
+        url: logo.secure_url,
+        public_id: logo.public_id,
+      }
+      : {
+        url: "",
+        public_id: "",
+      },
+    companyBackground: background
+      ? {
+        url: background.secure_url,
+        public_id: background.public_id,
+      }
+      : {
+        url: "",
+        public_id: "",
+      },
   });
+
+  //bring Recruiter and add in it company id
+  const recruiterProfile = await RecruiterProfile.findOne({
+    userId: req.user.id,
+  });
+
+  recruiterProfile.company = company._id;
+  await recruiterProfile.save();
+
+
+
+
+  res.status(201).json({
+    success: true,
+    message: "Company created successfully",
+    company
+  });
+
+});
 
 
 /* ======================
