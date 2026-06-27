@@ -27,10 +27,26 @@ const companySchema = new mongoose.Schema(
       public_id: { type: String, default: "" },
     },
     companyBackground: {
-      type: "default",
-      bannerId: 3,
-      url: "",
-      public_id: "",
+      backgroundType: {
+        type: String,
+        enum: ["default", "custom"],
+        default: "default",
+      },
+
+      bannerId: {
+        type: Number,
+        default: null,
+      },
+
+      url: {
+        type: String,
+        default: "",
+      },
+
+      public_id: {
+        type: String,
+        default: "",
+      },
     },
 
     industry: {
