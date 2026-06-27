@@ -40,8 +40,14 @@ export const getMyCompany = asyncHandler(async (req, res) => {
   }
 
   const company = await Company.findOne({
-    owner: req.user.id,
-  }).populate("owner" , "email role");
+    owner: recruiter._id,
+  }).populate({
+    path: "owner",select: "fullName headline location",
+    populate: {
+      path: "userId",
+      select: "email role isComplete",
+    },
+  });
 
   if (!company) {
     return res.status(404).json({
@@ -84,12 +90,9 @@ export const getCompanyById = asyncHandler(async (req, res) => {
 ====================== */
 export const createCompany = asyncHandler(async (req, res) => {
 
-
   if (req.body.benefits) {
     req.body.benefits = JSON.parse(req.body.benefits);
   }
-
-
 
   if (req.body.socialLinks) {
     req.body.socialLinks = JSON.parse(req.body.socialLinks);
@@ -97,14 +100,11 @@ export const createCompany = asyncHandler(async (req, res) => {
 
   const { error } = companyValidation(req.body);
 
-
-
   if (error) {
     return res.status(400).json({
       message: error.message,
     });
   }
-
 
   const exists = await Company.findOne({ owner: req.user.id });
 
@@ -128,9 +128,15 @@ export const createCompany = asyncHandler(async (req, res) => {
     )
   }
 
+  //bring Recruiter and add in it company id
+  const recruiterProfile = await RecruiterProfile.findOne({
+    userId: req.user.id,
+  });
+
+
   const company = await Company.create({
     ...req.body,
-    owner: req.user.id,
+    owner: recruiterProfile._id,
     companyLogo: logo
       ? {
         url: logo.secure_url,
@@ -151,10 +157,7 @@ export const createCompany = asyncHandler(async (req, res) => {
       },
   });
 
-  //bring Recruiter and add in it company id
-  const recruiterProfile = await RecruiterProfile.findOne({
-    userId: req.user.id,
-  });
+
 
   recruiterProfile.company = company._id;
   await recruiterProfile.save();

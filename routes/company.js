@@ -12,6 +12,7 @@ import {
   updateCompany,
   updateCompanyLogo,
   deleteCompany,
+  getMyCompany,
 } from "../controllers/companyController.js";
 
 import { uploadImage } from "../middlewares/Multer.js";
@@ -34,7 +35,7 @@ router.get(
   "/my-company",
   protect,
   recruiterOnly,
-  getAllCompanies
+  getMyCompany
 )
 
 
