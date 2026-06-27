@@ -33,17 +33,17 @@ const recruiterProfileSchema = new mongoose.Schema(
 
     headline: {
       type: String,
-      default: "Unknown",
+      default: "",
     },
 
     location: {
       type: String,
-      default: "Unknown",
+      default: "",
     },
 
     aboutMe: {
       type: String,
-      default: "Unknown",
+      default: "",
     },
 
     experienceLevel: {
@@ -61,14 +61,34 @@ const recruiterProfileSchema = new mongoose.Schema(
 
     website: {
       type: String,
-      default: "Unknown",
+      default: "",
     },
-
 
     industry: {
       type: String,
-      default: "Unknown",
+      default: "",
     },
+
+    company: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Company",
+      required: true,
+      unique: true,
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     hiring_Focus: {
 
