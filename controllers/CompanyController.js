@@ -116,17 +116,13 @@ export const createCompany = asyncHandler(async (req, res) => {
 
 
   let logo = null;
-  let background = null;
+
 
   if (req.files?.companyLogo?.[0]) {
     logo = await uploadToCloudinary(req.files.companyLogo[0].buffer);
   }
 
-  if (req.files?.companyBackground?.[0]) {
-    background = await uploadToCloudinary(
-      req.files.companyBackground[0].buffer
-    )
-  }
+ 
 
   //bring Recruiter and add in it company id
   const recruiterProfile = await RecruiterProfile.findOne({
@@ -134,28 +130,53 @@ export const createCompany = asyncHandler(async (req, res) => {
   });
 
 
-  const company = await Company.create({
-    ...req.body,
-    owner: recruiterProfile._id,
-    companyLogo: logo
-      ? {
+
+
+  let companyBackground
+
+
+  if (req.body.backgroundType === "banner") {
+
+  companyBackground = {
+    backgroundType: "banner",
+    bannerId: Number(req.body.bannerId),
+    url: "",
+    public_id: "",
+  };
+
+}
+if (
+  req.body.backgroundType === "upload" &&
+  req.files?.companyBackground?.length
+) {
+  const result = await uploadToCloudinary(
+    req.files.companyBackground[0].buffer
+  );
+
+  companyBackground = {
+    backgroundType: "upload",
+    bannerId: null,
+    url: result.secure_url,
+    public_id: result.public_id,
+  };
+}
+
+const company = await Company.create({
+  ...req.body,
+  owner: recruiterProfile._id,
+
+  companyLogo: logo
+    ? {
         url: logo.secure_url,
         public_id: logo.public_id,
       }
-      : {
+    : {
         url: "",
         public_id: "",
       },
-    companyBackground: background
-      ? {
-        url: background.secure_url,
-        public_id: background.public_id,
-      }
-      : {
-        url: "",
-        public_id: "",
-      },
-  });
+
+  companyBackground,
+});
 
 
 

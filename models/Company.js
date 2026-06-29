@@ -29,8 +29,8 @@ const companySchema = new mongoose.Schema(
     companyBackground: {
       backgroundType: {
         type: String,
-        enum: ["default", "custom"],
-        default: "default",
+        enum: ["banner", "upload"],
+        required: true
       },
 
       bannerId: {
@@ -160,9 +160,16 @@ export const companyValidation = (data) => {
       public_id: Joi.string().allow("").default(""),
     }).optional(),
 
+    backgroundType: Joi.string()
+      .valid("banner", "upload"),
+
+      bannerId: Joi.string(),
+
+
+
     companyBackground: Joi.object({
       type: Joi.string()
-        .valid("default", "custom")
+        .valid("banner", "upload")
         .required(),
 
       bannerId: Joi.number()
