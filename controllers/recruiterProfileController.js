@@ -29,6 +29,7 @@ export const getRecruiterProfile = asyncHandler(async (req, res) => {
   }
 
   const hasCompany = Boolean(profile.company);
+  
   res.status(200).json({
     success: true,
     profile: profile, hasCompany,
