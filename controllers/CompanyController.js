@@ -42,7 +42,7 @@ export const getMyCompany = asyncHandler(async (req, res) => {
   const company = await Company.findOne({
     owner: recruiter._id,
   }).populate({
-    path: "owner",select: "fullName headline location",
+    path: "owner", select: "fullName headline location",
     populate: {
       path: "userId",
       select: "email role isComplete",
@@ -122,7 +122,7 @@ export const createCompany = asyncHandler(async (req, res) => {
     logo = await uploadToCloudinary(req.files.companyLogo[0].buffer);
   }
 
- 
+
 
   //bring Recruiter and add in it company id
   const recruiterProfile = await RecruiterProfile.findOne({
@@ -137,46 +137,45 @@ export const createCompany = asyncHandler(async (req, res) => {
 
   if (req.body.backgroundType === "banner") {
 
-  companyBackground = {
-    backgroundType: "banner",
-    bannerId: Number(req.body.bannerId),
-    url: "",
-    public_id: "",
-  };
+    companyBackground = {
+      backgroundType: "banner",
+      bannerId: Number(req.body.bannerId),
+      url: "",
+      public_id: "",
+    };
 
-}
-if (
-  req.body.backgroundType === "upload" &&
-  req.files?.companyBackground?.length
-) {
-  const result = await uploadToCloudinary(
-    req.files.companyBackground[0].buffer
-  );
+  }
+  if (
+    req.body.backgroundType === "upload" &&
+    req.files?.companyBackground?.length
+  ) {
+    const result = await uploadToCloudinary(
+      req.files.companyBackground[0].buffer
+    );
 
-  companyBackground = {
-    backgroundType: "upload",
-    bannerId: null,
-    url: result.secure_url,
-    public_id: result.public_id,
-  };
-}
+    companyBackground = {
+      backgroundType: "upload",
+      bannerId: null,
+      url: result.secure_url,
+      public_id: result.public_id,
+    };
+  }
 
-const company = await Company.create({
-  ...req.body,
-  owner: recruiterProfile._id,
+  const company = await Company.create({
+    ...req.body,
+    owner: recruiterProfile._id,
 
-  companyLogo: logo
-    ? {
+    companyLogo: logo
+      ? {
         url: logo.secure_url,
         public_id: logo.public_id,
       }
-    : {
+      : {
         url: "",
         public_id: "",
       },
-
-  companyBackground,
-});
+    companyBackground,
+  });
 
 
 
