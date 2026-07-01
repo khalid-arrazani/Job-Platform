@@ -75,7 +75,7 @@ export const getMyCompany = asyncHandler(async (req, res) => {
 
   // New Applicants 
   const sevenDaysAgo = new Date();
-  console.log(sevenDaysAgo);
+
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
 
