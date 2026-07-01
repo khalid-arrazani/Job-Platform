@@ -90,6 +90,7 @@ export const getMyCompany = asyncHandler(async (req, res) => {
     Company: company._id,
     status: "hired",
   });
+  const companyViews = company.companyViews
 
   res.status(200).json({
     success: true,
@@ -98,7 +99,8 @@ export const getMyCompany = asyncHandler(async (req, res) => {
     newApplicants,
     applicants,
     totalJobs,
-    activeJobs
+    activeJobs,
+    companyViews
   });
 });
 
