@@ -58,9 +58,47 @@ export const getMyCompany = asyncHandler(async (req, res) => {
     });
   }
 
+  const jobs = await Job.find({ createdBy: company._id });
+
+
+
+  // Total Jobs
+  const totalJobs = jobs.length;
+
+  // Active Jobs
+  const activeJobs = jobs.filter((job) => job.status === "active").length;
+
+  // Total Applicants
+  const applicants = await Apply.countDocuments({
+    company: company._id,
+  });
+
+  // New Applicants 
+  const sevenDaysAgo = new Date();
+  console.log(sevenDaysAgo);
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+
+  const newApplicants = await Apply.countDocuments({
+    Company: company._id,
+    createdAt: { $gte: sevenDaysAgo },
+  });
+
+
+  // Hired
+  const hired = await Apply.countDocuments({
+    Company: company._id,
+    status: "hired",
+  });
+
   res.status(200).json({
     success: true,
     company,
+    hired,
+    newApplicants,
+    applicants,
+    totalJobs,
+    activeJobs
   });
 });
 
@@ -83,7 +121,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
 
   const jobs = await Job.find({ createdBy: company._id });
 
-console.log(jobs);
+
 
   // Total Jobs
   const totalJobs = jobs.length;
@@ -93,19 +131,19 @@ console.log(jobs);
 
   // Total Applicants
   const applicants = await Apply.countDocuments({
-     company: company._id,
+    company: company._id,
   });
 
   // New Applicants 
   const sevenDaysAgo = new Date();
   console.log(sevenDaysAgo);
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-console.log(sevenDaysAgo);
+  console.log(sevenDaysAgo);
   const newApplicants = await Apply.countDocuments({
-  Company: company._id,
-  createdAt: { $gte: sevenDaysAgo },
-});
- 
+    Company: company._id,
+    createdAt: { $gte: sevenDaysAgo },
+  });
+
 
   // Hired
   const hired = await Apply.countDocuments({
