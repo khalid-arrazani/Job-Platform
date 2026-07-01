@@ -193,7 +193,8 @@ export const createJob = asyncHandler(async (req, res) => {
 
   const job = await Job.create({
     ...data,
-    createdBy: company._id
+    createdBy: company._id,
+    status:"active"
   });
 
   res.status(201).json({ job:job ,message :"Create Job seccesfully "});

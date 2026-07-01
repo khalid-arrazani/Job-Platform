@@ -89,7 +89,7 @@ console.log(jobs);
   const totalJobs = jobs.length;
 
   // Active Jobs
-  // const activeJobs = jobs.filter((job) => job.status === "active").length;
+  const activeJobs = jobs.filter((job) => job.status === "active").length;
 
   // Total Applicants
   const applicants = await Apply.countDocuments({
@@ -119,7 +119,8 @@ console.log(sevenDaysAgo);
     hired,
     newApplicants,
     applicants,
-    totalJobs
+    totalJobs,
+    activeJobs
   });
 });
 

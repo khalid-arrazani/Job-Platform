@@ -62,6 +62,12 @@ const jobSchema = new mongoose.Schema({
     default: "Full-time"
   },
 
+  status: {
+    type: String,
+    enum: ["active", "closed", "draft"],
+    default: "draft",
+  },
+
 
   workMode: {
     type: String,
@@ -123,6 +129,9 @@ export const validateJobsDetails = (job, isUpdate = false) => {
 
     experienceLevel: Joi.string()
       .valid("Junior", "Mid", "Senior"),
+
+    status: Joi.string()
+      .valid("active", "closed", "draft"),
 
     skills: Joi.array().items(Joi.string())
   });
