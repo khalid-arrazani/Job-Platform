@@ -86,6 +86,10 @@ const companySchema = new mongoose.Schema(
     foundedYear: {
       type: Number,
     },
+    companyViews: {
+      type: Number,
+       default: 0,
+    },
 
     specialties: [
       {
@@ -163,7 +167,7 @@ export const companyValidation = (data) => {
     backgroundType: Joi.string()
       .valid("banner", "upload"),
 
-      bannerId: Joi.string(),
+    bannerId: Joi.string(),
 
 
 
