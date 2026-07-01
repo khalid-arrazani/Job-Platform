@@ -4,6 +4,7 @@ import { validateJobsDetails } from "../models/Job.js";
 import JobSeekerProfile from "../models/JobSeekerProfile.js";
 import RecruiterProfile from "../models/RecruiterProfile.js";
 import SavedJob from "../models/SavedJob.js";
+import { Company } from "../models/Company.js";
 
 
 
@@ -182,6 +183,10 @@ export const createJob = asyncHandler(async (req, res) => {
   if (!profile){
     res.status(404).json({message:"Profile not found "})
   }
+
+  const company = await Company.findOne({
+    owner: profile.id
+  })
    
   allowedFields.forEach((field) => {
     if (req.body[field] !== undefined) {
@@ -191,7 +196,7 @@ export const createJob = asyncHandler(async (req, res) => {
 
   const job = await Job.create({
     ...data,
-    createdBy: profile._id
+    createdBy: company._id
   });
 
   res.status(201).json({ job:job ,message :"Create Job seccesfully "});

@@ -6,7 +6,7 @@ const jobSchema = new mongoose.Schema({
 
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "RecruiterProfile",
+    ref: "Company",
     required: true
   },
 

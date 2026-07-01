@@ -6,6 +6,8 @@ import cloudinary from "../config/cloudinary.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 
 import RecruiterProfile from "../models/RecruiterProfile.js";
+import Apply from "../models/Apply.js";
+import Job from "../models/Job.js";
 
 
 
@@ -76,6 +78,34 @@ export const getCompanyById = asyncHandler(async (req, res) => {
       message: "Company not found",
     });
   }
+
+  const jobs = await Job.find({ company: company._id });
+
+   // Total Jobs
+  const totalJobs = jobs.length;
+
+  // Active Jobs
+  const activeJobs = jobs.filter((job) => job.status === "active").length;
+
+  // Total Applicants
+  const applicants = await Apply.countDocuments({
+    job: { $in: jobIds },
+  });
+
+    // New Applicants 
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const newApplicants = await Apply.countDocuments({
+    job: { $in: jobIds },
+    createdAt: { $gte: sevenDaysAgo },
+  });
+
+   // Hired
+  const hired = await Apply.countDocuments({
+    job: { $in: jobIds },
+    status: "hired",
+  });
 
   res.status(200).json({
     success: true,
