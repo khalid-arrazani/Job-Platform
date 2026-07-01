@@ -67,11 +67,10 @@ export const getMyCompany = asyncHandler(async (req, res) => {
    GET COMPANY BY ID
 ====================== */
 export const getCompanyById = asyncHandler(async (req, res) => {
-
   const company = await Company.findById(req.params.id).populate(
     "owner",
   );
-
+  
   if (!company) {
     return res.status(404).json({
       message: "Company not found",
