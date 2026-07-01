@@ -69,10 +69,12 @@ export const getMyCompany = asyncHandler(async (req, res) => {
    GET COMPANY BY ID
 ====================== */
 export const getCompanyById = asyncHandler(async (req, res) => {
-  const company = await Company.findById(req.params.id).populate(
-    "owner",
-  );
-  
+
+  const company = await Company.findByIdAndUpdate(req.params.id, { $inc: { companyViews: 1 } },
+    { new: false }).populate(
+      "owner",
+    );
+
   if (!company) {
     return res.status(404).json({
       message: "Company not found",
@@ -81,7 +83,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
 
   const jobs = await Job.find({ company: company._id });
 
-   // Total Jobs
+  // Total Jobs
   const totalJobs = jobs.length;
 
   // Active Jobs
@@ -92,7 +94,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
     job: { $in: jobIds },
   });
 
-    // New Applicants 
+  // New Applicants 
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -101,7 +103,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
     createdAt: { $gte: sevenDaysAgo },
   });
 
-   // Hired
+  // Hired
   const hired = await Apply.countDocuments({
     job: { $in: jobIds },
     status: "hired",
