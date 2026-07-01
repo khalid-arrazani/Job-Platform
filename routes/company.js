@@ -43,7 +43,6 @@ router.get(
    GET COMPANY BY ID
 ====================== */
 router.get(
-
   "/:id",
   protect,
   getCompanyById
