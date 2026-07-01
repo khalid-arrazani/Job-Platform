@@ -168,7 +168,7 @@ export const companyValidation = (data) => {
       .valid("banner", "upload"),
 
     bannerId: Joi.string(),
-
+    
 
 
     companyBackground: Joi.object({
