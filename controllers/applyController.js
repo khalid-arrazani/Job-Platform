@@ -57,7 +57,7 @@ export const getMyApplications = asyncHandler(async (req, res) => {
     "status"
   )
     .populate(
-      "job",
+      "company",
       "title description company jobType experienceLevel"
     );
 

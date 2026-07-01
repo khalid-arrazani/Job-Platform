@@ -71,7 +71,7 @@ export const getMyCompany = asyncHandler(async (req, res) => {
 export const getCompanyById = asyncHandler(async (req, res) => {
 
   const company = await Company.findByIdAndUpdate(req.params.id, { $inc: { companyViews: 1 } },
-    { new: false }).populate(
+    { returnDocument: false }).populate(
       "owner",
     );
 
@@ -81,37 +81,45 @@ export const getCompanyById = asyncHandler(async (req, res) => {
     });
   }
 
-  const jobs = await Job.find({ company: company._id });
+  const jobs = await Job.find({ createdBy: company._id });
+
+console.log(jobs);
 
   // Total Jobs
   const totalJobs = jobs.length;
 
   // Active Jobs
-  const activeJobs = jobs.filter((job) => job.status === "active").length;
+  // const activeJobs = jobs.filter((job) => job.status === "active").length;
 
   // Total Applicants
   const applicants = await Apply.countDocuments({
-    job: { $in: jobIds },
+     company: company._id,
   });
 
   // New Applicants 
   const sevenDaysAgo = new Date();
+  console.log(sevenDaysAgo);
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
+console.log(sevenDaysAgo);
   const newApplicants = await Apply.countDocuments({
-    job: { $in: jobIds },
-    createdAt: { $gte: sevenDaysAgo },
-  });
+  Company: company._id,
+  createdAt: { $gte: sevenDaysAgo },
+});
+ 
 
   // Hired
   const hired = await Apply.countDocuments({
-    job: { $in: jobIds },
+    Company: company._id,
     status: "hired",
   });
 
   res.status(200).json({
     success: true,
     company,
+    hired,
+    newApplicants,
+    applicants,
+    totalJobs
   });
 });
 
