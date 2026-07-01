@@ -80,14 +80,14 @@ export const getMyCompany = asyncHandler(async (req, res) => {
 
 
   const newApplicants = await Apply.countDocuments({
-    Company: company._id,
+    company: company._id,
     createdAt: { $gte: sevenDaysAgo },
   });
 
 
   // Hired
   const hired = await Apply.countDocuments({
-    Company: company._id,
+    company: company._id,
     status: "hired",
   });
   const companyViews = company.companyViews
@@ -142,14 +142,14 @@ export const getCompanyById = asyncHandler(async (req, res) => {
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
   const newApplicants = await Apply.countDocuments({
-    Company: company._id,
+    company: company._id,
     createdAt: { $gte: sevenDaysAgo },
   });
 
 
   // Hired
   const hired = await Apply.countDocuments({
-    Company: company._id,
+    company: company._id,
     status: "hired",
   });
   const companyViews = company.companyViews
