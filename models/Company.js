@@ -77,7 +77,7 @@ const companySchema = new mongoose.Schema(
       default: "",
     },
 
-    location: {
+    headquarters: {
       type: String,
       required: true,
       trim: true,
