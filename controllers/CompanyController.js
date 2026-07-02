@@ -99,7 +99,8 @@ export const getMyCompany = asyncHandler(async (req, res) => {
     applicants,
     totalJobs,
     activeJobs,
-    companyViews
+    companyViews,
+    totalActiveJobs
   });
 });
 
