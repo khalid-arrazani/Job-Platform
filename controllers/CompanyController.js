@@ -60,14 +60,13 @@ export const getMyCompany = asyncHandler(async (req, res) => {
 
   const jobs = await Job.find({ createdBy: company._id });
 
-
-
   // Total Jobs
   const totalJobs = jobs.length;
 
   // Active Jobs
-  const activeJobs = jobs.filter((job) => job.status === "active").length;
-
+  
+  const activeJobs = jobs.filter((job) => job.status === "active");
+  const  totalActiveJobs =  activeJobs.length
   // Total Applicants
   const applicants = await Apply.countDocuments({
     company: company._id,
