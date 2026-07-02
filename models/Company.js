@@ -148,7 +148,7 @@ export const companyValidation = (data) => {
 
     website: Joi.string().uri().allow(""),
 
-    location: Joi.string().trim().required(),
+    headquarters: Joi.string().trim().required(),
 
     foundedYear: Joi.number()
       .integer()
@@ -169,8 +169,6 @@ export const companyValidation = (data) => {
 
     bannerId: Joi.string(),
     
-
-
     companyBackground: Joi.object({
       type: Joi.string()
         .valid("banner", "upload")
