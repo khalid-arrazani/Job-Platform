@@ -34,6 +34,8 @@ export const getMyCompany = asyncHandler(async (req, res) => {
     userId: req.user.id,
   });
 
+ 
+
   if (!recruiter) {
     return res.status(404).json({
       success: false,
@@ -110,6 +112,8 @@ export const getMyCompany = asyncHandler(async (req, res) => {
 ====================== */
 export const getCompanyById = asyncHandler(async (req, res) => {
 
+  
+
   const company = await Company.findByIdAndUpdate(req.params.id, { $inc: { companyViews: 1 } },
     { returnDocument: false }).populate(
       "owner",
@@ -168,10 +172,12 @@ export const getCompanyById = asyncHandler(async (req, res) => {
 
 
 /* ======================
-   CREATE COMPANY (WITH JOI)
+   CREATE COMPANY 
 ====================== */
 export const createCompany = asyncHandler(async (req, res) => {
-
+   console.log(req.body);
+   console.log(11111);
+   
   if (req.body.benefits) {
     req.body.benefits = JSON.parse(req.body.benefits);
   }
