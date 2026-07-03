@@ -85,18 +85,20 @@ const companySchema = new mongoose.Schema(
 
     foundedYear: {
       type: Number,
-    },
-    companyViews: {
-      type: Number,
-       default: 0,
+      default: () => new Date().getFullYear(),
     },
 
-    specialties: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
+    companyViews: {
+      type: Number,
+      default: 0,
+    },
+
+    specialties:{
+      type: String,
+      trim: true,
+      default:""
+    },
+
 
     benefits: [
       {
@@ -155,7 +157,7 @@ export const companyValidation = (data) => {
       .min(1800)
       .max(new Date().getFullYear()),
 
-    specialties: Joi.array().items(Joi.string().trim()),
+    specialties: Joi.string().trim(),
 
     benefits: Joi.array().items(Joi.string().trim()),
 
@@ -168,7 +170,7 @@ export const companyValidation = (data) => {
       .valid("banner", "upload"),
 
     bannerId: Joi.string(),
-    
+
     companyBackground: Joi.object({
       type: Joi.string()
         .valid("banner", "upload")
