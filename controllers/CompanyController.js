@@ -417,7 +417,7 @@ export const updateCompanyBanner = asyncHandler(async (req, res) => {
     {
       companyBackground
     },
-    { new: true }
+    {returnDocument: "after"}
   );
 
   res.status(200).json({
