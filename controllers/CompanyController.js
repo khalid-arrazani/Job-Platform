@@ -412,8 +412,6 @@ export const updateCompanyBanner = asyncHandler(async (req, res) => {
     await cloudinary.uploader.destroy(company.companyBackground?.public_id);
   }
 
-
-
   const updated = await Company.findByIdAndUpdate(
     company._id,
     {
