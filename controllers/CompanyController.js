@@ -34,7 +34,7 @@ export const getMyCompany = asyncHandler(async (req, res) => {
     userId: req.user.id,
   });
 
- 
+
 
   if (!recruiter) {
     return res.status(404).json({
@@ -66,9 +66,9 @@ export const getMyCompany = asyncHandler(async (req, res) => {
   const totalJobs = jobs.length;
 
   // Active Jobs
-  
+
   const activeJobs = jobs.filter((job) => job.status === "active");
-  const  totalActiveJobs =  activeJobs.length
+  const totalActiveJobs = activeJobs.length
   // Total Applicants
   const applicants = await Apply.countDocuments({
     company: company._id,
@@ -112,7 +112,7 @@ export const getMyCompany = asyncHandler(async (req, res) => {
 ====================== */
 export const getCompanyById = asyncHandler(async (req, res) => {
 
-  
+
 
   const company = await Company.findByIdAndUpdate(req.params.id, { $inc: { companyViews: 1 } },
     { returnDocument: false }).populate(
@@ -363,8 +363,9 @@ export const updateCompanyBanner = asyncHandler(async (req, res) => {
       message: "Company not found",
     });
   }
-  
-  if (!req.files?.companyBackground?.[0] && Number(req.body.bannerId) == null ) {
+
+  if (req.body.backgroundType === "upload" && !req.files?.companyBackground?.[0] || req.body.backgroundType === "banner" &&
+    req.body.bannerId == null) {
     return res.status(400).json({
       message: "Banner image is required",
     });
@@ -374,10 +375,10 @@ export const updateCompanyBanner = asyncHandler(async (req, res) => {
 
   if (req.body.backgroundType === "banner") {
 
-    if(Number(req.body.bannerId) === Number(company.companyBackground.bannerId)){
+    if (Number(req.body.bannerId) === Number(company.companyBackground.bannerId)) {
       return res.status(400).json({
-      message: "You need to change the banner before save",
-    });
+        message: "You need to change the banner before save",
+      });
     }
 
 
@@ -394,7 +395,7 @@ export const updateCompanyBanner = asyncHandler(async (req, res) => {
     req.body.backgroundType === "upload" &&
     req.files?.companyBackground?.length
   ) {
-    
+
     const result = await uploadToCloudinary(
       req.files.companyBackground[0].buffer
     );
@@ -411,7 +412,7 @@ export const updateCompanyBanner = asyncHandler(async (req, res) => {
     await cloudinary.uploader.destroy(company.companyBackground?.public_id);
   }
 
- 
+
 
   const updated = await Company.findByIdAndUpdate(
     company._id,
