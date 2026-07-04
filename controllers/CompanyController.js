@@ -364,33 +364,66 @@ export const updateCompanyBanner = asyncHandler(async (req, res) => {
     });
   }
   
-  if (!req.file) {
+  if (!req.files?.companyLogo?.[0] && !Number(req.body.bannerId) ) {
     return res.status(400).json({
-      message: "Logo image is required",
+      message: "Banner image is required",
     });
   }
 
-  if (company.companyLogo?.public_id) {
-    await cloudinary.uploader.destroy(company.companyLogo.public_id);
+  let companyBackground
+
+  if (req.body.backgroundType === "banner") {
+
+    if(Number(req.body.bannerId) === Number(company.companyBackground.bannerId)){
+      return res.status(400).json({
+      message: "You need to change the banner before save",
+    });
+    }
+
+
+    companyBackground = {
+      backgroundType: "banner",
+      bannerId: Number(req.body.bannerId),
+      url: "",
+      public_id: "",
+    };
+
   }
 
-  const logo = await uploadToCloudinary(req.file.buffer);
+  if (
+    req.body.backgroundType === "upload" &&
+    req.files?.companyBackground?.length
+  ) {
+    
+    const result = await uploadToCloudinary(
+      req.files.companyBackground[0].buffer
+    );
+
+    companyBackground = {
+      backgroundType: "upload",
+      bannerId: null,
+      url: result.secure_url,
+      public_id: result.public_id,
+    };
+  }
+
+  if (company.companyBackground?.public_id) {
+    await cloudinary.uploader.destroy(company.companyBackground?.public_id);
+  }
+
+ 
 
   const updated = await Company.findByIdAndUpdate(
     company._id,
     {
-      companyLogo: {
-        url: logo.secure_url,
-        public_id: logo.public_id,
-      },
+      companyBackground
     },
     { new: true }
   );
 
   res.status(200).json({
     success: true,
-    message: "Company logo updated successfully",
-    company: updated,
+    message: "Company Banner updated successfully",
   });
 });
 
