@@ -13,6 +13,7 @@ import {
   updateCompanyLogo,
   deleteCompany,
   getMyCompany,
+  updateCompanyBanner,
 } from "../controllers/companyController.js";
 
 import { uploadImage } from "../middlewares/Multer.js";
@@ -81,6 +82,17 @@ router.put(
   recruiterOnly,
   uploadImage,
   updateCompanyLogo
+);
+
+/* ======================
+   UPDATE COMPANY BANNER
+====================== */
+router.put(
+  "/banner",
+  protect,
+  recruiterOnly,
+  uploadImage,
+  updateCompanyBanner
 );
 
 

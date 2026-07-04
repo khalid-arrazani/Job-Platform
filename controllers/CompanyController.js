@@ -355,8 +355,16 @@ export const updateCompanyLogo = asyncHandler(async (req, res) => {
    UPDATE COMPANY BANNER
 ====================== */
 export const updateCompanyBanner = asyncHandler(async (req, res) => {
+const recruiterProfile = await RecruiterProfile.findOne({
+    userId: req.user.id,
+  });
+  if (!recruiterProfile) {
+    return res.status(404).json({
+      message: "Recruiter Profile not found",
+    });
+  }
 
-  const company = await Company.findOne({ owner: req.user.id });
+  const company = await Company.findOne({owner: recruiterProfile._id});
 
   if (!company) {
     return res.status(404).json({
@@ -415,7 +423,7 @@ export const updateCompanyBanner = asyncHandler(async (req, res) => {
   const updated = await Company.findByIdAndUpdate(
     company._id,
     {
-      companyBackground
+     companyBackground
     },
     {returnDocument: "after"}
   );
