@@ -202,12 +202,9 @@ export const createCompany = asyncHandler(async (req, res) => {
 
   let logo = null;
 
-
   if (req.files?.companyLogo?.[0]) {
     logo = await uploadToCloudinary(req.files.companyLogo[0].buffer);
   }
-
-
 
   //bring Recruiter and add in it company id
   const recruiterProfile = await RecruiterProfile.findOne({
@@ -215,10 +212,7 @@ export const createCompany = asyncHandler(async (req, res) => {
   });
 
 
-
-
   let companyBackground
-
 
   if (req.body.backgroundType === "banner") {
 
@@ -358,7 +352,7 @@ export const updateCompanyLogo = asyncHandler(async (req, res) => {
 
 
 /* ======================
-   UPDATE COMPANY LOGO
+   UPDATE COMPANY BANNER
 ====================== */
 export const updateCompanyBanner = asyncHandler(async (req, res) => {
 
