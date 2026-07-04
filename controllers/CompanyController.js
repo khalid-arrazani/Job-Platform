@@ -364,7 +364,7 @@ export const updateCompanyBanner = asyncHandler(async (req, res) => {
     });
   }
   
-  if (!req.files?.companyLogo?.[0] && !Number(req.body.bannerId) ) {
+  if (!req.files?.companyBackground?.[0] && Number(req.body.bannerId) == null ) {
     return res.status(400).json({
       message: "Banner image is required",
     });
