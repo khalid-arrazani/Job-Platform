@@ -175,9 +175,6 @@ export const getCompanyById = asyncHandler(async (req, res) => {
    CREATE COMPANY 
 ====================== */
 export const createCompany = asyncHandler(async (req, res) => {
-   console.log(req.body);
-   console.log(11111);
-   
   if (req.body.benefits) {
     req.body.benefits = JSON.parse(req.body.benefits);
   }
@@ -284,6 +281,7 @@ export const createCompany = asyncHandler(async (req, res) => {
    UPDATE COMPANY (WITH JOI)
 ====================== */
 export const updateCompany = asyncHandler(async (req, res) => {
+
   const { error } = companyValidation(req.body);
 
   if (error) {
@@ -328,6 +326,50 @@ export const updateCompanyLogo = asyncHandler(async (req, res) => {
     });
   }
 
+  if (!req.file) {
+    return res.status(400).json({
+      message: "Logo image is required",
+    });
+  }
+
+  if (company.companyLogo?.public_id) {
+    await cloudinary.uploader.destroy(company.companyLogo.public_id);
+  }
+
+  const logo = await uploadToCloudinary(req.file.buffer);
+
+  const updated = await Company.findByIdAndUpdate(
+    company._id,
+    {
+      companyLogo: {
+        url: logo.secure_url,
+        public_id: logo.public_id,
+      },
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Company logo updated successfully",
+    company: updated,
+  });
+});
+
+
+/* ======================
+   UPDATE COMPANY LOGO
+====================== */
+export const updateCompanyBanner = asyncHandler(async (req, res) => {
+
+  const company = await Company.findOne({ owner: req.user.id });
+
+  if (!company) {
+    return res.status(404).json({
+      message: "Company not found",
+    });
+  }
+  
   if (!req.file) {
     return res.status(400).json({
       message: "Logo image is required",
