@@ -364,7 +364,6 @@ export const updateCompanyLogo = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Company logo updated successfully",
-    company: updated,
   });
 });
 
