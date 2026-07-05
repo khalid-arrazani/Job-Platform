@@ -325,7 +325,7 @@ export const updateCompanyLogo = asyncHandler(async (req, res) => {
       message: "Logo image is required",
     });
   }
-
+  
   //if there is old company logo delete it before add new logo
 
   if (company.companyLogo?.public_id) {
