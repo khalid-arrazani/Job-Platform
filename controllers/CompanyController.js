@@ -190,7 +190,7 @@ export const createCompany = asyncHandler(async (req, res) => {
       message: error.message,
     });
   }
-  //bring Recruiter and add in it company id
+
   const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,
   });
@@ -199,7 +199,8 @@ export const createCompany = asyncHandler(async (req, res) => {
       message: "Profile not found ",
     });
   }
-  const exists = await Company.findOne({ owner: req.user.id });
+
+  const exists = await Company.findOne({ owner: recruiterProfile._id });
 
   if (exists) {
     return res.status(400).json({
@@ -317,8 +318,17 @@ export const updateCompany = asyncHandler(async (req, res) => {
 ====================== */
 export const updateCompanyLogo = asyncHandler(async (req, res) => {
 
+ const recruiterProfile = await RecruiterProfile.findOne({
+    userId: req.user.id,
+  });
 
-  const company = await Company.findOne({ owner: req.user.id });
+  if (!recruiterProfile) {
+    return res.status(400).json({
+      message: "Profile not found ",
+    });
+  }
+
+  const company = await Company.findOne({ owner: recruiterProfile._id });
 
   if (!company) {
     return res.status(404).json({
