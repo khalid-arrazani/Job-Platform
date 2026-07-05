@@ -320,17 +320,19 @@ export const updateCompanyLogo = asyncHandler(async (req, res) => {
     });
   }
 
-  if (!req.file) {
+  if (!req.files?.companyLogo?.[0]) {
     return res.status(400).json({
       message: "Logo image is required",
     });
   }
 
+  //if there is old company logo delete it before add new logo
+
   if (company.companyLogo?.public_id) {
     await cloudinary.uploader.destroy(company.companyLogo.public_id);
   }
 
-  const logo = await uploadToCloudinary(req.file.buffer);
+  const logo = await uploadToCloudinary(req.files?.companyLogo?.[0].buffer);
 
   const updated = await Company.findByIdAndUpdate(
     company._id,
@@ -340,7 +342,7 @@ export const updateCompanyLogo = asyncHandler(async (req, res) => {
         public_id: logo.public_id,
       },
     },
-    { new: true }
+    {returnDocument: "after"}
   );
 
   res.status(200).json({
