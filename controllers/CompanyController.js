@@ -312,6 +312,8 @@ export const updateCompany = asyncHandler(async (req, res) => {
    UPDATE COMPANY LOGO
 ====================== */
 export const updateCompanyLogo = asyncHandler(async (req, res) => {
+
+  
   const company = await Company.findOne({ owner: req.user.id });
 
   if (!company) {
@@ -325,7 +327,7 @@ export const updateCompanyLogo = asyncHandler(async (req, res) => {
       message: "Logo image is required",
     });
   }
-  
+
   //if there is old company logo delete it before add new logo
 
   if (company.companyLogo?.public_id) {
