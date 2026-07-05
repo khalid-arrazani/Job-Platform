@@ -190,7 +190,15 @@ export const createCompany = asyncHandler(async (req, res) => {
       message: error.message,
     });
   }
-
+  //bring Recruiter and add in it company id
+  const recruiterProfile = await RecruiterProfile.findOne({
+    userId: req.user.id,
+  });
+  if (!recruiterProfile) {
+    return res.status(400).json({
+      message: "Profile not found ",
+    });
+  }
   const exists = await Company.findOne({ owner: req.user.id });
 
   if (exists) {
@@ -206,10 +214,6 @@ export const createCompany = asyncHandler(async (req, res) => {
     logo = await uploadToCloudinary(req.files.companyLogo[0].buffer);
   }
 
-  //bring Recruiter and add in it company id
-  const recruiterProfile = await RecruiterProfile.findOne({
-    userId: req.user.id,
-  });
 
 
   let companyBackground
@@ -313,7 +317,7 @@ export const updateCompany = asyncHandler(async (req, res) => {
 ====================== */
 export const updateCompanyLogo = asyncHandler(async (req, res) => {
 
-  
+
   const company = await Company.findOne({ owner: req.user.id });
 
   if (!company) {
