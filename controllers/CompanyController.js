@@ -420,6 +420,7 @@ const recruiterProfile = await RecruiterProfile.findOne({
 
   if (company.companyBackground?.public_id) {
     await cloudinary.uploader.destroy(company.companyBackground?.public_id);
+    console.log("this mf is destroy");
   }
 
   const updated = await Company.findByIdAndUpdate(
