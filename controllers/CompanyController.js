@@ -454,6 +454,68 @@ const recruiterProfile = await RecruiterProfile.findOne({
 
 
 /* ======================
+   Delete COMPANY BANNER
+====================== */
+export const deleteCompanyBanner = asyncHandler(async (req, res) => {
+const recruiterProfile = await RecruiterProfile.findOne({
+    userId: req.user.id,
+  });
+  if (!recruiterProfile) {
+    return res.status(404).json({
+      message: "Recruiter Profile not found",
+    });
+  }
+  const company = await Company.findOne({owner: recruiterProfile._id});
+
+  if (!company) {
+    return res.status(404).json({
+      message: "Company not found",
+    });
+  }
+
+  let companyBackground = {
+      backgroundType: "banner",
+      bannerId: null,
+      url: "",
+      public_id: "",
+    };
+
+  if (company.companyBackground?.public_id) {
+    await cloudinary.uploader.destroy(company.companyBackground?.public_id);
+  }
+
+  const updated = await Company.findByIdAndUpdate(
+    company._id,
+    {
+     companyBackground
+    },
+    {returnDocument: "after"}
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Company Banner deleted successfully",
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ======================
    DELETE COMPANY
 ====================== */
 export const deleteCompany = asyncHandler(async (req, res) => {
