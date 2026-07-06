@@ -14,6 +14,7 @@ import {
   deleteCompany,
   getMyCompany,
   updateCompanyBanner,
+  deleteCompanyBanner,
 } from "../controllers/companyController.js";
 
 import { uploadImage } from "../middlewares/Multer.js";
@@ -84,6 +85,7 @@ router.put(
   updateCompanyLogo
 );
 
+
 /* ======================
    UPDATE COMPANY BANNER
 ====================== */
@@ -93,6 +95,16 @@ router.put(
   recruiterOnly,
   uploadImage,
   updateCompanyBanner
+);
+
+/* ======================
+   DELETE COMPANY BANNER
+====================== */
+router.put(
+  "/delete_banner",
+  protect,
+  recruiterOnly,
+  deleteCompanyBanner
 );
 
 
