@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import { Company, companyValidation } from "../models/Company.js";
+import { Company, companyValidation, updateCompanyValidation } from "../models/Company.js";
 
 import cloudinary from "../config/cloudinary.js";
 
@@ -280,7 +280,7 @@ export const createCompany = asyncHandler(async (req, res) => {
    UPDATE COMPANY (WITH JOI)
 ====================== */
 export const updateCompany = asyncHandler(async (req, res) => {
-  const { error } = companyValidation(req.body);
+  const { error } = updateCompanyValidation(req.body);
 
   if (error) {
     return res.status(400).json({

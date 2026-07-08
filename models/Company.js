@@ -147,7 +147,7 @@ export const companyValidation = (data) => {
       "501-1000",
       "1000+"
     ),
-    
+
     website: Joi.string().uri().allow(""),
 
     headquarters: Joi.string().trim().required(),
@@ -196,5 +196,48 @@ export const companyValidation = (data) => {
       })
     ).optional(),
 
+  }).validate(data);
+};
+
+export const updateCompanyValidation = (data) => {
+  return Joi.object({
+    name: Joi.string().trim().min(2).max(100),
+
+    description: Joi.string().trim().min(20).max(2000),
+
+    company_number: Joi.string().trim().min(4).max(20),
+
+    industry: Joi.string().trim(),
+
+    company_email: Joi.string().trim().email(),
+
+    companySize: Joi.string().valid(
+      "1-10",
+      "11-50",
+      "51-200",
+      "201-500",
+      "501-1000",
+      "1000+"
+    ),
+
+    website: Joi.string().uri().allow(""),
+
+    headquarters: Joi.string().trim(),
+
+    foundedYear: Joi.number()
+      .integer()
+      .min(1800)
+      .max(new Date().getFullYear()),
+
+    specialties: Joi.string().trim(),
+
+    benefits: Joi.array().items(Joi.string().trim()),
+
+    socialLinks: Joi.array().items(
+      Joi.object({
+        platform: Joi.string().required(),
+        url: Joi.string().uri().allow(""),
+      })
+    ),
   }).validate(data);
 };
