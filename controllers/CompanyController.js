@@ -310,7 +310,6 @@ export const updateCompany = asyncHandler(async (req, res) => {
     { returnDocument: 'after'}
   );
 
-
   res.status(200).json({
     success: true,
     message: "Company updated successfully",
