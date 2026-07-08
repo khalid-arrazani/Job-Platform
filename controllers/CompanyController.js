@@ -287,25 +287,31 @@ export const updateCompany = asyncHandler(async (req, res) => {
     return res.status(400).json({
       message: error.message,
     });
-  }
+  };
 
-  const company = await Company.findOne({ owner: req.user.id });
+  console.log(req);
+
+  const recruiterProfile = await RecruiterProfile.findOne({
+    userId: req.user.id,
+  });
+
+  const company = await Company.findOne({ owner: recruiterProfile.id });
 
   if (!company) {
     return res.status(404).json({
       message: "Company not found",
     });
-  }
+  };
+  
 
   const updatedCompany = await Company.findByIdAndUpdate(
     company._id,
     { $set: req.body },
-    { new: true }
+    { returnDocument: 'after'}
   );
 
 
   res.status(200).json({
-
     success: true,
     message: "Company updated successfully",
     company: updatedCompany,
