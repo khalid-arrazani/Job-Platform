@@ -288,7 +288,7 @@ export const updateCompany = asyncHandler(async (req, res) => {
     });
   };
 
-  console.log(req);
+  console.log(req.body);
 
   const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,
