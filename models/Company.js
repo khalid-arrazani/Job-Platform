@@ -147,7 +147,7 @@ export const companyValidation = (data) => {
       "501-1000",
       "1000+"
     ),
-
+    
     website: Joi.string().uri().allow(""),
 
     headquarters: Joi.string().trim().required(),
