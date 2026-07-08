@@ -280,7 +280,6 @@ export const createCompany = asyncHandler(async (req, res) => {
    UPDATE COMPANY (WITH JOI)
 ====================== */
 export const updateCompany = asyncHandler(async (req, res) => {
-
   const { error } = companyValidation(req.body);
 
   if (error) {
