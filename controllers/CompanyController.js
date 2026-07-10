@@ -281,14 +281,13 @@ export const createCompany = asyncHandler(async (req, res) => {
 ====================== */
 export const updateCompany = asyncHandler(async (req, res) => {
   const { error } = updateCompanyValidation(req.body);
-
   if (error) {
     return res.status(400).json({
       message: error.message,
     });
   };
 
-  console.log(req.body);
+  
 
   const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,

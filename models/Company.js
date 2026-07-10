@@ -11,7 +11,7 @@ const companySchema = new mongoose.Schema(
 
     description: {
       type: String,
-      required: true,
+  
       trim: true,
     },
 
@@ -131,7 +131,7 @@ export const companyValidation = (data) => {
   return Joi.object({
     name: Joi.string().trim().min(2).max(100).required(),
 
-    description: Joi.string().trim().min(20).max(2000).required(),
+    description: Joi.string().trim().min(20).max(2000),
 
     company_number: Joi.string().trim().min(4).max(20).required(),
 
