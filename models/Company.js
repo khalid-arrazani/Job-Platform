@@ -132,7 +132,7 @@ export const companyValidation = (data) => {
   return Joi.object({
     name: Joi.string().trim().min(2).max(100).required(),
 
-    description: Joi.string().trim().min(20).max(2000),
+    description: Joi.string().trim().min(20).max(2000).allow(""),
 
     company_number: Joi.string().trim().min(4).max(20).required(),
 
