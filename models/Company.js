@@ -13,6 +13,7 @@ const companySchema = new mongoose.Schema(
       type: String,
   
       trim: true,
+      default:""
     },
 
     company_number: {
@@ -203,7 +204,7 @@ export const updateCompanyValidation = (data) => {
   return Joi.object({
     name: Joi.string().trim().min(2).max(100),
 
-    description: Joi.string().trim().min(20).max(2000),
+    description: Joi.string().trim().min(20).max(2000).allow(""),
 
     company_number: Joi.string().trim().min(4).max(20),
 
