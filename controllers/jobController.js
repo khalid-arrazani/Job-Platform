@@ -19,7 +19,7 @@ export const getAllJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find()
     .skip((page - 1) * limit)
     .limit(limit)
-    .populate("createdBy","name companyLogo description");
+    .populate("createdBy", "name companyLogo description");
 
   if (jobs.length === 0) {
     return res.status(404).json({
@@ -31,7 +31,7 @@ export const getAllJobs = asyncHandler(async (req, res) => {
 
 
 
-   //  GET saved jobs for this user
+  //  GET saved jobs for this user
   const savedJobs = await SavedJob.find({
     user: req.user.id,
   });
@@ -49,11 +49,11 @@ export const getAllJobs = asyncHandler(async (req, res) => {
 
 
   res.status(200).json({
-     success: true,
+    success: true,
     total,
     currentPage: page,
     totalPages: Math.ceil(total / limit),
-    jobs :jobsWithSavedState,
+    jobs: jobsWithSavedState,
   });
 });
 
@@ -91,7 +91,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
   const limit = 4;
 
- const recruiterProfile = await RecruiterProfile.findOne({
+  const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,
   });
 
@@ -104,6 +104,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   };
 
   const jobs = await Job.find({
+    
     createdBy: company._id
   })
     .skip((page - 1) * limit)
@@ -117,15 +118,25 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
   const total = await Job.countDocuments();
 
-  const JobsWithAplly = jobs
+  const JobsWithApply = await Promise.all(
+    jobs.map(async (job) => {
+      const applicationsCount = await Apply.countDocuments({
+        job: job._id,
+      });
 
-  // const apply = await Apply.
+      return {
+        ...job.toObject(),
+        applicationsCount,
+      };
+    })
+  );
+
 
   res.status(200).json({
     total,
     page,
     results: jobs.length,
-    jobs
+    jobs:JobsWithApply
   });
 
 });
@@ -133,7 +144,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 // Get single job by id
 export const getJobById = asyncHandler(async (req, res) => {
   console.log(req.params.id);
-  const jobBy_Id = await Job.findByIdAndUpdate(req.params.id ,{ $inc: { jobViews: 1 } },
+  const jobBy_Id = await Job.findByIdAndUpdate(req.params.id, { $inc: { jobViews: 1 } },
     { returnDocument: "after" })
     .populate("createdBy");
 
@@ -167,7 +178,7 @@ export const getJobById = asyncHandler(async (req, res) => {
 // Create new job for recruiter
 export const createJob = asyncHandler(async (req, res) => {
   const { error } = validateJobsDetails(req.body);
-  
+
   if (error) {
     return res.status(400).json({
       message: error.details[0].message
@@ -175,21 +186,21 @@ export const createJob = asyncHandler(async (req, res) => {
   }
 
   const allowedFields = [
-  "title",
-  "description",
-  "location",
+    "title",
+    "description",
+    "location",
 
-  "minSalary",
-  "maxSalary",
-  "salaryCurrency",
-  "salaryPeriod",
+    "minSalary",
+    "maxSalary",
+    "salaryCurrency",
+    "salaryPeriod",
 
-  "jobType",
-  "workMode",
+    "jobType",
+    "workMode",
 
-  "experienceLevel",
-  "skills",
-];
+    "experienceLevel",
+    "skills",
+  ];
 
   const data = {};
 
@@ -197,14 +208,14 @@ export const createJob = asyncHandler(async (req, res) => {
     userId: req.user.id
   })
 
-  if (!profile){
-    res.status(404).json({message:"Profile not found "})
+  if (!profile) {
+    res.status(404).json({ message: "Profile not found " })
   }
 
   const company = await Company.findOne({
     owner: profile.id
   })
-   
+
   allowedFields.forEach((field) => {
     if (req.body[field] !== undefined) {
       data[field] = req.body[field];
@@ -214,8 +225,8 @@ export const createJob = asyncHandler(async (req, res) => {
   const job = await Job.create({
     ...data,
     createdBy: company._id,
-    status:"active"
+    status: "active"
   });
 
-  res.status(201).json({ job:job ,message :"Create Job seccesfully "});
+  res.status(201).json({ job: job, message: "Create Job seccesfully " });
 });
