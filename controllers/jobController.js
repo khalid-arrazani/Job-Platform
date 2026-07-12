@@ -171,7 +171,7 @@ export const getJobById = asyncHandler(async (req, res) => {
 
   const jobById = jobWithSavedState
 
-  res.status(200).json(jobById);
+ return res.status(200).json(jobById);
 });
 
 // Create new job for recruiter
@@ -204,11 +204,11 @@ export const createJob = asyncHandler(async (req, res) => {
   const data = {};
 
   const profile = await RecruiterProfile.findOne({
-    userId: req.user.id
+     userId: req.user.id
   })
 
   if (!profile) {
-    res.status(404).json({ message: "Profile not found " })
+    return res.status(404).json({ message: "Profile not found " })
   }
 
   const company = await Company.findOne({
@@ -227,5 +227,43 @@ export const createJob = asyncHandler(async (req, res) => {
     status: "active"
   });
 
-  res.status(201).json({ job: job, message: "Create Job seccesfully " });
+ return res.status(201).json({ job: job, message: "Create Job seccesfully " });
+});
+
+
+//Delete my jobs 
+export const deleteMyJobs = asyncHandler(async (req, res) => {
+  const profile = await RecruiterProfile.findOne({
+    userId: req.user.id,
+  });
+
+  if (!profile) {
+    return res.status(404).json({
+      message: "Profile not found",
+    });
+  }
+
+  const company = await Company.findOne({
+    owner: profile._id,
+  });
+
+  const job = await Job.findById(req.params.JobId);
+
+  if (!job) {
+    return res.status(404).json({
+      message: "Job not found",
+    });
+  }
+
+  if (!job.createdBy.equals(company._id)) {
+    return res.status(403).json({
+      message: "You are not allowed to delete this job.",
+    });
+  }
+
+  await Job.findByIdAndDelete(job._id);
+
+  return res.status(200).json({
+    message: "Job deleted successfully.",
+  });
 });
