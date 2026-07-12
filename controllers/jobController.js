@@ -5,6 +5,7 @@ import JobSeekerProfile from "../models/JobSeekerProfile.js";
 import RecruiterProfile from "../models/RecruiterProfile.js";
 import SavedJob from "../models/SavedJob.js";
 import { Company } from "../models/Company.js";
+import Apply from "../models/Apply.js";
 
 
 
@@ -116,12 +117,17 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
   const total = await Job.countDocuments();
 
+  const JobsWithAplly = jobs
+
+  // const apply = await Apply.
+
   res.status(200).json({
     total,
     page,
     results: jobs.length,
     jobs
   });
+
 });
 
 // Get single job by id
