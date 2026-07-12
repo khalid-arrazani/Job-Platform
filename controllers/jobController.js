@@ -104,9 +104,8 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   };
 
   const jobs = await Job.find({
-    
     createdBy: company._id
-  })
+  }).populate("createdBy","companyLogo")
     .skip((page - 1) * limit)
     .limit(limit);
 
