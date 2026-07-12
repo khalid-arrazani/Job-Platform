@@ -9,7 +9,8 @@ import {
   getAllJobs,
   getMyJobs,
   getJobById,
-  createJob
+  createJob,
+  deleteMyJobs
 } from "../controllers/jobController.js";
 
 
@@ -26,6 +27,13 @@ router.get(
   protect,
   recruiterOnly,
   getMyJobs
+);
+
+router.delete(
+  "/Delete_My-Jobs/:JobId",
+  protect,
+  recruiterOnly,
+  deleteMyJobs
 );
 
 router.get(
