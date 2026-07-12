@@ -90,8 +90,20 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
   const limit = 4;
 
+ const recruiterProfile = await RecruiterProfile.findOne({
+    userId: req.user.id,
+  });
+
+  const company = await Company.findOne({ owner: recruiterProfile.id });
+
+  if (!company) {
+    return res.status(404).json({
+      message: "Company not found",
+    });
+  };
+
   const jobs = await Job.find({
-    createdBy: req.user.id
+    createdBy: company._id
   })
     .skip((page - 1) * limit)
     .limit(limit);
@@ -114,7 +126,9 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
 // Get single job by id
 export const getJobById = asyncHandler(async (req, res) => {
-  const jobBy_Id = await Job.findById(req.params.id)
+  console.log(req.params.id);
+  const jobBy_Id = await Job.findByIdAndUpdate(req.params.id ,{ $inc: { jobViews: 1 } },
+    { returnDocument: "after" })
     .populate("createdBy");
 
   if (!jobBy_Id) {

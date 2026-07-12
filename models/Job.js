@@ -14,7 +14,10 @@ const jobSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-
+jobViews: {
+      type: Number,
+      default: 0,
+    },
   description: {
     type: String,
     required: true
