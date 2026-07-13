@@ -10,7 +10,8 @@ import {
   getMyJobs,
   getJobById,
   createJob,
-  deleteMyJobs
+  deleteMyJobs,
+  toggeleStatus
 } from "../controllers/jobController.js";
 
 
@@ -34,6 +35,14 @@ router.delete(
   protect,
   recruiterOnly,
   deleteMyJobs
+);
+
+
+router.put(
+  "/Status_My-Jobs/:JobId",
+  protect,
+  recruiterOnly,
+  toggeleStatus
 );
 
 router.get(

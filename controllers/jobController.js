@@ -271,7 +271,7 @@ export const deleteMyJobs = asyncHandler(async (req, res) => {
 });
 
 //togele my jobs  close , active
-export const togeleState = asyncHandler(async (req, res) => {
+export const toggeleStatus = asyncHandler(async (req, res) => {
 
   const profile = await RecruiterProfile.findOne({
     userId: req.user.id,
@@ -307,6 +307,6 @@ export const togeleState = asyncHandler(async (req, res) => {
 
 
   return res.status(200).json({
-    message: "Job deleted successfully.",
+    message: "Job Status change successfully.",
   });
 });
