@@ -58,6 +58,8 @@ export const getAllJobs = asyncHandler(async (req, res) => {
 });
 
 
+
+
 export const getSavedJobs = asyncHandler(async (req, res) => {
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
