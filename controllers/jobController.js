@@ -107,7 +107,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
   const jobs = await Job.find({
     createdBy: company._id
-  }).populate("createdBy","companyLogo")
+  }).populate("createdBy", "companyLogo")
     .skip((page - 1) * limit)
     .limit(limit);
 
@@ -137,7 +137,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
     total,
     page,
     results: jobs.length,
-    jobs:JobsWithApply
+    jobs: JobsWithApply
   });
 
 });
@@ -173,7 +173,7 @@ export const getJobById = asyncHandler(async (req, res) => {
 
   const jobById = jobWithSavedState
 
- return res.status(200).json(jobById);
+  return res.status(200).json(jobById);
 });
 
 // Create new job for recruiter
@@ -206,7 +206,7 @@ export const createJob = asyncHandler(async (req, res) => {
   const data = {};
 
   const profile = await RecruiterProfile.findOne({
-     userId: req.user.id
+    userId: req.user.id
   })
 
   if (!profile) {
@@ -229,7 +229,7 @@ export const createJob = asyncHandler(async (req, res) => {
     status: "active"
   });
 
- return res.status(201).json({ job: job, message: "Create Job seccesfully " });
+  return res.status(201).json({ job: job, message: "Create Job seccesfully " });
 });
 
 
@@ -264,6 +264,47 @@ export const deleteMyJobs = asyncHandler(async (req, res) => {
   }
 
   await Job.findByIdAndDelete(job._id);
+
+  return res.status(200).json({
+    message: "Job deleted successfully.",
+  });
+});
+
+//togele my jobs  close , active
+export const togeleState = asyncHandler(async (req, res) => {
+
+  const profile = await RecruiterProfile.findOne({
+    userId: req.user.id,
+  });
+
+  if (!profile) {
+    return res.status(404).json({
+      message: "Profile not found",
+    });
+  }
+
+  const company = await Company.findOne({
+    owner: profile._id,
+  });
+
+  const job = await Job.findById(req.params.JobId);
+
+  if (!job) {
+    return res.status(404).json({
+      message: "Job not found",
+    });
+  }
+
+  if (!job.createdBy.equals(company._id)) {
+    return res.status(403).json({
+      message: "You are not allowed to edite this job.",
+    });
+  }
+
+
+  job.state = job.state === "active" ? "closed" : "active";
+  await job.save()
+
 
   return res.status(200).json({
     message: "Job deleted successfully.",
