@@ -11,7 +11,8 @@ import {
   getJobById,
   createJob,
   deleteMyJobs,
-  toggeleStatus
+ 
+  toggleStatus
 } from "../controllers/jobController.js";
 
 
@@ -42,7 +43,7 @@ router.put(
   "/Status_My-Jobs/:JobId",
   protect,
   recruiterOnly,
-  toggeleStatus
+  toggleStatus
 );
 
 router.get(

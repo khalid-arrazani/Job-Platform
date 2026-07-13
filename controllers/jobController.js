@@ -271,7 +271,7 @@ export const deleteMyJobs = asyncHandler(async (req, res) => {
 });
 
 //togele my jobs  close , active
-export const toggeleStatus = asyncHandler(async (req, res) => {
+export const toggleStatus = asyncHandler(async (req, res) => {
 
   const profile = await RecruiterProfile.findOne({
     userId: req.user.id,
@@ -286,6 +286,12 @@ export const toggeleStatus = asyncHandler(async (req, res) => {
   const company = await Company.findOne({
     owner: profile._id,
   });
+
+  if (!company) {
+  return res.status(404).json({
+    message: "Company not found",
+  });
+}
 
   const job = await Job.findById(req.params.JobId);
 
