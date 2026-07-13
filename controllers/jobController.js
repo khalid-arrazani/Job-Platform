@@ -236,6 +236,9 @@ export const createJob = asyncHandler(async (req, res) => {
 
 // Update My job for recruiter
 export const UpdateJob = asyncHandler(async (req, res) => {
+
+
+  
   const { error } = validateJobsDetails(req.body);
 
   if (error) {
@@ -275,7 +278,7 @@ export const UpdateJob = asyncHandler(async (req, res) => {
   if (!company) {
     return res.status(404).json({ message: "Company not found " })
   }
-const data = {};
+  const data = {};
   allowedFields.forEach((field) => {
     if (req.body[field] !== undefined) {
       data[field] = req.body[field];
@@ -295,7 +298,7 @@ const data = {};
     });
   }
 
-  Object.assign(job,data);
+  Object.assign(job, data);
   await job.save();
 
   return res.status(201).json({ message: "Update Job seccesfully " });
@@ -357,10 +360,10 @@ export const toggleStatus = asyncHandler(async (req, res) => {
   });
 
   if (!company) {
-  return res.status(404).json({
-    message: "Company not found",
-  });
-}
+    return res.status(404).json({
+      message: "Company not found",
+    });
+  }
 
   const job = await Job.findById(req.params.JobId);
 

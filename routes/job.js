@@ -12,7 +12,8 @@ import {
   createJob,
   deleteMyJobs,
  
-  toggleStatus
+  toggleStatus,
+  UpdateJob
 } from "../controllers/jobController.js";
 
 
@@ -58,5 +59,12 @@ router.post(
   recruiterOnly,
   createJob
 );
+router.put(
+  "/UpdateJob/:JobId",
+  protect,
+  recruiterOnly,
+  UpdateJob
+);
+
 
 export default router;
