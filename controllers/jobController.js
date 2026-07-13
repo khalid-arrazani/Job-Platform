@@ -233,6 +233,63 @@ export const createJob = asyncHandler(async (req, res) => {
 });
 
 
+// Update My job for recruiter
+export const UpdateJob = asyncHandler(async (req, res) => {
+  const { error } = validateJobsDetails(req.body);
+
+  if (error) {
+    return res.status(400).json({
+      message: error.details[0].message
+    });
+  }
+
+  const allowedFields = [
+    "title",
+    "description",
+    "location",
+
+    "minSalary",
+    "maxSalary",
+    "salaryCurrency",
+    "salaryPeriod",
+
+    "jobType",
+    "workMode",
+
+    "experienceLevel",
+    "skills",
+  ];
+
+  const data = {};
+
+  const profile = await RecruiterProfile.findOne({
+    userId: req.user.id
+  })
+
+  if (!profile) {
+    return res.status(404).json({ message: "Profile not found " })
+  }
+
+  const company = await Company.findOne({
+    owner: profile.id
+  })
+
+  allowedFields.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      data[field] = req.body[field];
+    }
+  });
+
+  const job = await Job.create({
+    ...data,
+    createdBy: company._id,
+    status: "active"
+  });
+
+  return res.status(201).json({ job: job, message: "Create Job seccesfully " });
+});
+
+
 //Delete my jobs 
 export const deleteMyJobs = asyncHandler(async (req, res) => {
   const profile = await RecruiterProfile.findOne({
@@ -313,6 +370,6 @@ export const toggleStatus = asyncHandler(async (req, res) => {
 
 
   return res.status(200).json({
-    message: "Job Status change successfully.",
+    message: "Job status updated successfully.",
   });
 });
