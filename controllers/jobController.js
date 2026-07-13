@@ -6,7 +6,7 @@ import RecruiterProfile from "../models/RecruiterProfile.js";
 import SavedJob from "../models/SavedJob.js";
 import { Company } from "../models/Company.js";
 import Apply from "../models/Apply.js";
-import { object } from "joi";
+
 
 
 
@@ -260,8 +260,6 @@ export const UpdateJob = asyncHandler(async (req, res) => {
     "experienceLevel",
     "skills",
   ];
-
-  
 
   const profile = await RecruiterProfile.findOne({
     userId: req.user.id
