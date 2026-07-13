@@ -302,7 +302,7 @@ export const togeleState = asyncHandler(async (req, res) => {
   }
 
 
-  job.state = job.state === "active" ? "closed" : "active";
+  job.status = job.status === "active" ? "closed" : "active";
   await job.save()
 
 
