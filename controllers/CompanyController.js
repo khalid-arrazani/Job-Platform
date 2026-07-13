@@ -171,6 +171,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
    CREATE COMPANY 
 ====================== */
 export const createCompany = asyncHandler(async (req, res) => {
+  
   if (req.body.benefits) {
     req.body.benefits = JSON.parse(req.body.benefits);
   }

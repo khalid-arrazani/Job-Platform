@@ -6,6 +6,7 @@ import RecruiterProfile from "../models/RecruiterProfile.js";
 import SavedJob from "../models/SavedJob.js";
 import { Company } from "../models/Company.js";
 import Apply from "../models/Apply.js";
+import { object } from "joi";
 
 
 
@@ -260,7 +261,7 @@ export const UpdateJob = asyncHandler(async (req, res) => {
     "skills",
   ];
 
-  const data = {};
+  
 
   const profile = await RecruiterProfile.findOne({
     userId: req.user.id
@@ -273,20 +274,33 @@ export const UpdateJob = asyncHandler(async (req, res) => {
   const company = await Company.findOne({
     owner: profile.id
   })
-
+  if (!company) {
+    return res.status(404).json({ message: "Company not found " })
+  }
+const data = {};
   allowedFields.forEach((field) => {
     if (req.body[field] !== undefined) {
       data[field] = req.body[field];
     }
   });
+  const job = await Job.findById(req.params.JobId);
 
-  const job = await Job.create({
-    ...data,
-    createdBy: company._id,
-    status: "active"
-  });
+  if (!job) {
+    return res.status(404).json({
+      message: "Job not found",
+    });
+  }
 
-  return res.status(201).json({ job: job, message: "Create Job seccesfully " });
+  if (!job.createdBy.equals(company._id)) {
+    return res.status(403).json({
+      message: "You are not allowed to Upadate this job.",
+    });
+  }
+
+  Object.assign(job,data);
+  await job.save();
+
+  return res.status(201).json({ message: "Update Job seccesfully " });
 });
 
 
