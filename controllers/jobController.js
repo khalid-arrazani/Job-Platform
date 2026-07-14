@@ -111,11 +111,11 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   }
 
   const jobs = await Job.find(filter)
-    .sort({ createdAt: -1 })
+    .sort({ createdAt: 1 })
     .populate("createdBy", "companyLogo name description")
     .skip((page - 1) * limit)
-    .limit(limit);
-
+    .limit(limit)
+    .where("title").regex(/react/i)
 
 
 
