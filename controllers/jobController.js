@@ -115,7 +115,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
     .populate("createdBy", "companyLogo name description")
     .skip((page - 1) * limit)
     .limit(limit)
-    .where("title").regex(/react/i)
+    .where("title").regex(/ /i)
 
 
 
