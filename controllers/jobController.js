@@ -92,7 +92,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
 
-  const limit = 4;
+  const limit = 6;
 
   const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,
@@ -106,9 +106,13 @@ export const getMyJobs = asyncHandler(async (req, res) => {
     });
   };
 
-  const jobs = await Job.find({
+  const filter = {
     createdBy: company._id
-  }).populate("createdBy", "companyLogo name description")
+  }
+
+  const jobs = await Job.find(filter)
+    .sort({ createdAt: -1 })
+    .populate("createdBy", "companyLogo name description")
     .skip((page - 1) * limit)
     .limit(limit);
 
