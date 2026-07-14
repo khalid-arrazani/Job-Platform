@@ -89,7 +89,7 @@ export const getSavedJobs = asyncHandler(async (req, res) => {
 
 // Get all recruiter jobs with pagination
 export const getMyJobs = asyncHandler(async (req, res) => {
-  console.log(req.params);
+  console.log(req.query);
   const page = parseInt(req.query.page) || 1;
 
   const limit = 6;
@@ -108,10 +108,11 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   };
 
   const filter = {
-    createdBy: company._id
+    createdBy: company._id,
+    status:req.query.status
   }
 
-const search = ""
+  const search = req.query.search || ""
 
   const jobs = await Job.find(filter)
     .sort({ createdAt: 1 })
