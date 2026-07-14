@@ -110,17 +110,37 @@ export const getMyJobs = asyncHandler(async (req, res) => {
     createdBy: company._id
   }
 
-  const jobs = await Job.find(filter)
-    .sort({ createdAt: -1 })
-    .populate("createdBy", "companyLogo name description")
-    .skip((page - 1) * limit)
-    .limit(limit);
+  // const jobs = await Job.find(filter)
+  //   .sort({ createdAt: -1 })
+  //   .populate("createdBy", "companyLogo name description")
+  //   .skip((page - 1) * limit)
+  //   .limit(limit);
+  const jobs = await Job.aggregate([
+    {
+      $match: {
+        createdBy: company._id,
+        status: "active"
+      }
+    },{
+      $sort:{
+         createdAt:-1
+      }
+   },{
+      $limit:limit
+   }
+
+  ])
+
+
+
 
   if (jobs.length === 0) {
     return res.status(404).json({
       message: "No jobs found"
     });
   }
+
+
 
   const total = await Job.countDocuments();
 
@@ -242,7 +262,7 @@ export const createJob = asyncHandler(async (req, res) => {
 export const UpdateJob = asyncHandler(async (req, res) => {
 
 
-  
+
   const { error } = validateJobsDetails(req.body);
 
   if (error) {
