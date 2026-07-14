@@ -89,7 +89,7 @@ export const getSavedJobs = asyncHandler(async (req, res) => {
 
 // Get all recruiter jobs with pagination
 export const getMyJobs = asyncHandler(async (req, res) => {
-
+  console.log(req.params);
   const page = parseInt(req.query.page) || 1;
 
   const limit = 6;
@@ -100,6 +100,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
   const company = await Company.findOne({ owner: recruiterProfile.id });
 
+
   if (!company) {
     return res.status(404).json({
       message: "Company not found",
@@ -109,9 +110,8 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   const filter = {
     createdBy: company._id
   }
+
 const search = ""
-
-
 
   const jobs = await Job.find(filter)
     .sort({ createdAt: 1 })
