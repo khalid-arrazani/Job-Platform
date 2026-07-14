@@ -109,13 +109,16 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   const filter = {
     createdBy: company._id
   }
+const search = ""
+
+
 
   const jobs = await Job.find(filter)
     .sort({ createdAt: 1 })
     .populate("createdBy", "companyLogo name description")
     .skip((page - 1) * limit)
     .limit(limit)
-    .where("title").regex(/ /i)
+    .where("title").regex(new RegExp(search, "i"))
 
 
 
