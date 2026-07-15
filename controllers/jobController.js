@@ -89,10 +89,11 @@ export const getSavedJobs = asyncHandler(async (req, res) => {
 
 // Get all recruiter jobs with pagination
 export const getMyJobs = asyncHandler(async (req, res) => {
-  console.log(req.query);
+
+
   const page = parseInt(req.query.page) || 1;
 
-  const limit = 6;
+  const limit = 3;
 
   const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,
@@ -107,27 +108,38 @@ export const getMyJobs = asyncHandler(async (req, res) => {
     });
   };
 
-  const filter = {
-    createdBy: company._id,
-    status:req.query.status
+  let filter = {
+    createdBy: company._id
   }
 
+  const filterFields = ["status"]
+
+  filterFields.forEach((field) => {
+    if (req.query[field] !== undefined &&
+      req.query[field].length >= 1 &&
+      req.query[field] !== "") {
+      filter[field] = req.query[field];
+    }});
+
   const search = req.query.search || ""
+  const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
+
+
 
   const jobs = await Job.find(filter)
-    .sort({ createdAt: 1 })
+    .sort({ createdAt: sort })
     .populate("createdBy", "companyLogo name description")
     .skip((page - 1) * limit)
     .limit(limit)
     .where("title").regex(new RegExp(search, "i"))
 
 
+     const totalJobs = await Job.find(filter)
+    .where("title").regex(new RegExp(search, "i"))
 
-  if (jobs.length === 0) {
-    return res.status(404).json({
-      message: "No jobs found"
-    });
-  }
+
+
+ 
 
   const total = await Job.countDocuments();
 
@@ -150,7 +162,8 @@ export const getMyJobs = asyncHandler(async (req, res) => {
     total,
     page,
     results: jobs.length,
-    jobs: JobsWithApply
+    jobs: JobsWithApply,
+    totalPages: Math.ceil(totalJobs.length / limit)
   });
 
 });
