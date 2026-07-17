@@ -343,6 +343,77 @@ export const UpdateJob = asyncHandler(async (req, res) => {
 });
 
 
+// Update My Draft for recruiter
+export const UpdateDraftJob = asyncHandler(async (req, res) => {
+
+  
+  const { error } = validateJobsDetails(req.body);
+
+  if (error) {
+    return res.status(400).json({
+      message: error.details[0].message
+    });
+  }
+
+  const allowedFields = [
+    "title",
+    "description",
+    "location",
+
+    "minSalary",
+    "maxSalary",
+    "salaryCurrency",
+    "salaryPeriod",
+
+    "jobType",
+    "workMode",
+
+    "experienceLevel",
+    "skills",
+  ];
+
+  const profile = await RecruiterProfile.findOne({
+    userId: req.user.id
+  })
+
+  if (!profile) {
+    return res.status(404).json({ message: "Profile not found " })
+  }
+
+  const company = await Company.findOne({
+    owner: profile.id
+  })
+  if (!company) {
+    return res.status(404).json({ message: "Company not found " })
+  }
+  const data = {};
+  allowedFields.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      data[field] = req.body[field];
+    }
+  });
+  const job = await Job.findById(req.params.JobId);
+
+  if (!job) {
+    return res.status(404).json({
+      message: "Job not found",
+    });
+  }
+
+  if (!job.createdBy.equals(company._id)) {
+    return res.status(403).json({
+      message: "You are not allowed to Upadate this job.",
+    });
+  }
+
+  Object.assign(job, data);
+  await job.save();
+
+  return res.status(201).json({ message: "Update Job seccesfully " });
+});
+
+
+
 //Delete my jobs 
 export const deleteMyJobs = asyncHandler(async (req, res) => {
   const profile = await RecruiterProfile.findOne({
