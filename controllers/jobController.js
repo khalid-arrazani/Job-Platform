@@ -339,7 +339,7 @@ export const UpdateJob = asyncHandler(async (req, res) => {
     });
   }
 
-
+  
 
   if (!job.createdBy.equals(company._id)) {
     return res.status(403).json({
