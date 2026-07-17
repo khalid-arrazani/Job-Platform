@@ -90,7 +90,6 @@ export const getSavedJobs = asyncHandler(async (req, res) => {
 // Get all recruiter jobs with pagination
 export const getMyJobs = asyncHandler(async (req, res) => {
 
-
   const page = parseInt(req.query.page) || 1;
 
   const limit = 3;
@@ -109,7 +108,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   };
 
   let filter = {
-    createdBy: company._id
+    createdBy: company._id,status: { $ne: "draft" }
   }
 
   const filterFields = ["status"]
@@ -119,7 +118,8 @@ export const getMyJobs = asyncHandler(async (req, res) => {
       req.query[field].length >= 1 &&
       req.query[field] !== "") {
       filter[field] = req.query[field];
-    }});
+    }
+  });
 
   const search = req.query.search || ""
   const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
@@ -134,14 +134,17 @@ export const getMyJobs = asyncHandler(async (req, res) => {
     .where("title").regex(new RegExp(search, "i"))
 
 
-     const totalJobs = await Job.find(filter)
+
+  const totalJobs = await Job.find(filter)
     .where("title").regex(new RegExp(search, "i"))
 
 
+  const hasJobs = !!(await Job.exists({ createdBy: company._id }));
 
- 
 
-  const total = await Job.countDocuments();
+  const countActive = await Job.countDocuments({ createdBy: company._id,status:"active" });
+  const countClosed = await Job.countDocuments({ createdBy: company._id,status:"closed" });
+  const countDraft = await Job.countDocuments({ createdBy: company._id,status:"draft" });
 
   const JobsWithApply = await Promise.all(
     jobs.map(async (job) => {
@@ -159,11 +162,10 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
 
   res.status(200).json({
-    total,
     page,
-    results: jobs.length,
     jobs: JobsWithApply,
-    totalPages: Math.ceil(totalJobs.length / limit)
+    totalPages: Math.ceil(totalJobs.length / limit),
+    hasJobs,countActive,countClosed,countDraft
   });
 
 });
@@ -204,13 +206,23 @@ export const getJobById = asyncHandler(async (req, res) => {
 
 // Create new job for recruiter
 export const createJob = asyncHandler(async (req, res) => {
+
+  if(req.body.status !== "draft"){
   const { error } = validateJobsDetails(req.body);
 
   if (error) {
     return res.status(400).json({
       message: error.details[0].message
     });
+  }} else if (req.body.status == "draft"){
+    if (!req.body.title && req.body.title == "") {
+    return res.status(400).json({
+      message:"A job title is required to save a draft."
+    });
   }
+  };
+
+
 
   const allowedFields = [
     "title",
@@ -227,6 +239,7 @@ export const createJob = asyncHandler(async (req, res) => {
 
     "experienceLevel",
     "skills",
+    "status"
   ];
 
   const data = {};
@@ -244,18 +257,19 @@ export const createJob = asyncHandler(async (req, res) => {
   })
 
   allowedFields.forEach((field) => {
-    if (req.body[field] !== undefined) {
+    if (req.body[field] !== undefined && req.body[field] !== "") {
       data[field] = req.body[field];
     }
   });
 
+  let message = req.body.status= "active" ? "Create Job seccesfully" : req.body.status= "draft" ? "draft Job seccesfully":null
+
   const job = await Job.create({
     ...data,
     createdBy: company._id,
-    status: "active"
   });
 
-  return res.status(201).json({ job: job, message: "Create Job seccesfully " });
+  return res.status(201).json({ job: job, message:message});
 });
 
 

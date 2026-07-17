@@ -7,42 +7,53 @@ const jobSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Company",
-    required: true
+    required:true
   },
 
   title: {
     type: String,
-    required: true
+    required:true
+  
   },
-jobViews: {
+   jobViews: {
       type: Number,
       default: 0,
     },
   description: {
     type: String,
-    required: true
+    required: function () {
+    return this.status !== "draft";
+  },
   },
 
   location: {
     type: String,
-    required: true
+    required: function () {
+    return this.status !== "draft";
+  },
   },
 
   minSalary: {
     type: Number,
-    required: true,
+    required: function () {
+    return this.status !== "draft";
+  },
     min: 0,
   },
 
   maxSalary: {
     type: Number,
-    required: true,
+    required: function () {
+    return this.status !== "draft";
+  },
     min: 0,
   },
 
   salaryCurrency: {
     type: String,
-    required: true,
+   required: function () {
+    return this.status !== "draft";
+  },
     default: "USD",
   },
 
