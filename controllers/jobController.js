@@ -346,7 +346,7 @@ export const UpdateJob = asyncHandler(async (req, res) => {
 // Update My Draft for recruiter
 export const UpdateDraftJob = asyncHandler(async (req, res) => {
 
-  
+
   const { error } = validateJobsDetails(req.body);
 
   if (error) {
@@ -371,6 +371,17 @@ export const UpdateDraftJob = asyncHandler(async (req, res) => {
     "experienceLevel",
     "skills",
   ];
+   
+  const data = {};
+  
+  allowedFields.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      data[field] = req.body[field];
+    }
+  });
+
+
+
 
   const profile = await RecruiterProfile.findOne({
     userId: req.user.id
@@ -386,12 +397,7 @@ export const UpdateDraftJob = asyncHandler(async (req, res) => {
   if (!company) {
     return res.status(404).json({ message: "Company not found " })
   }
-  const data = {};
-  allowedFields.forEach((field) => {
-    if (req.body[field] !== undefined) {
-      data[field] = req.body[field];
-    }
-  });
+  
   const job = await Job.findById(req.params.JobId);
 
   if (!job) {
