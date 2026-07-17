@@ -206,7 +206,6 @@ export const getJobById = asyncHandler(async (req, res) => {
 
 // Create new job for recruiter
 export const createJob = asyncHandler(async (req, res) => {
-
   if(req.body.status !== "draft"){
   const { error } = validateJobsDetails(req.body);
 
@@ -215,12 +214,14 @@ export const createJob = asyncHandler(async (req, res) => {
       message: error.details[0].message
     });
   }} else if (req.body.status == "draft"){
-    if (!req.body.title && req.body.title == "") {
+    if (!req.body.title && req.body.title == "",req.body.title == undefined) {
     return res.status(400).json({
       message:"A job title is required to save a draft."
     });
   }
   };
+
+
 
   const allowedFields = [
     "title",
@@ -357,6 +358,14 @@ export const deleteMyJobs = asyncHandler(async (req, res) => {
   const company = await Company.findOne({
     owner: profile._id,
   });
+
+  const { JobId } = req.params;
+
+  if (JobId  == 'undefined') {
+  return res.status(400).json({
+    message: "Job ID is required.",
+  });
+}
 
   const job = await Job.findById(req.params.JobId);
 
