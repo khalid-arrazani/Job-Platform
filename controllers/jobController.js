@@ -275,7 +275,8 @@ export const createJob = asyncHandler(async (req, res) => {
 // Update My job for recruiter
 export const UpdateJob = asyncHandler(async (req, res) => {
 
-
+  console.log(req.body);
+  console.log(req.params);
 
   const { error } = validateJobsDetails(req.body);
 
@@ -302,13 +303,26 @@ export const UpdateJob = asyncHandler(async (req, res) => {
     "skills",
   ];
 
+   const data = {};
+
+  allowedFields.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      data[field] = req.body[field];
+    }
+  });
+
+
+
+
   const profile = await RecruiterProfile.findOne({
     userId: req.user.id
   })
-
   if (!profile) {
     return res.status(404).json({ message: "Profile not found " })
   }
+
+
+
 
   const company = await Company.findOne({
     owner: profile.id
@@ -316,19 +330,16 @@ export const UpdateJob = asyncHandler(async (req, res) => {
   if (!company) {
     return res.status(404).json({ message: "Company not found " })
   }
-  const data = {};
-  allowedFields.forEach((field) => {
-    if (req.body[field] !== undefined) {
-      data[field] = req.body[field];
-    }
-  });
-  const job = await Job.findById(req.params.JobId);
+ 
 
+  const job = await Job.findById(req.params.JobId);
   if (!job) {
     return res.status(404).json({
       message: "Job not found",
     });
   }
+
+
 
   if (!job.createdBy.equals(company._id)) {
     return res.status(403).json({
@@ -343,80 +354,85 @@ export const UpdateJob = asyncHandler(async (req, res) => {
 });
 
 
-// Update My Draft for recruiter
-export const UpdateDraftJob = asyncHandler(async (req, res) => {
+// // Update My Draft for recruiter
+// export const UpdateDraftJob = asyncHandler(async (req, res) => {
 
 
-  const { error } = validateJobsDetails(req.body);
+//   const { error } = validateJobsDetails(req.body);
 
-  if (error) {
-    return res.status(400).json({
-      message: error.details[0].message
-    });
-  }
+//   if (error) {
+//     return res.status(400).json({
+//       message: error.details[0].message
+//     });
+//   }
 
-  const allowedFields = [
-    "title",
-    "description",
-    "location",
 
-    "minSalary",
-    "maxSalary",
-    "salaryCurrency",
-    "salaryPeriod",
 
-    "jobType",
-    "workMode",
+//   const allowedFields = [
+//     "title",
+//     "description",
+//     "location",
 
-    "experienceLevel",
-    "skills",
-  ];
+//     "minSalary",
+//     "maxSalary",
+//     "salaryCurrency",
+//     "salaryPeriod",
+
+//     "jobType",
+//     "workMode",
+
+//     "experienceLevel",
+//     "skills",
+//   ];
    
-  const data = {};
+//   const data = {};
+
+//   allowedFields.forEach((field) => {
+//     if (req.body[field] !== undefined) {
+//       data[field] = req.body[field];
+//     }
+//   });
+
+
+
+
+//   const profile = await RecruiterProfile.findOne({
+//     userId: req.user.id
+//   })
+
+//   if (!profile) {
+//     return res.status(404).json({ message: "Profile not found " })
+//   }
+
+
+//   const company = await Company.findOne({
+//     owner: profile.id
+//   })
+//   if (!company) {
+//     return res.status(404).json({ message: "Company not found " })
+//   }
   
-  allowedFields.forEach((field) => {
-    if (req.body[field] !== undefined) {
-      data[field] = req.body[field];
-    }
-  });
+
+//   const job = await Job.findById(req.params.JobId);
+
+//   if (!job) {
+//     return res.status(404).json({
+//       message: "Job not found",
+//     });
+//   }
 
 
+//   if (!job.createdBy.equals(company._id)) {
+//     return res.status(403).json({
+//       message: "You are not allowed to Upadate this job.",
+//     });
+//   }
 
+//   Object.assign(job, data);
+//   await job.save();
 
-  const profile = await RecruiterProfile.findOne({
-    userId: req.user.id
-  })
-
-  if (!profile) {
-    return res.status(404).json({ message: "Profile not found " })
-  }
-
-  const company = await Company.findOne({
-    owner: profile.id
-  })
-  if (!company) {
-    return res.status(404).json({ message: "Company not found " })
-  }
-  
-  const job = await Job.findById(req.params.JobId);
-
-  if (!job) {
-    return res.status(404).json({
-      message: "Job not found",
-    });
-  }
-
-  if (!job.createdBy.equals(company._id)) {
-    return res.status(403).json({
-      message: "You are not allowed to Upadate this job.",
-    });
-  }
-
-  Object.assign(job, data);
-  await job.save();
-
-  return res.status(201).json({ message: "Update Job seccesfully " });
-});
+//   return res.status(201).json({ message: "Update Job seccesfully " });
+// });
 
 
 
