@@ -222,8 +222,6 @@ export const createJob = asyncHandler(async (req, res) => {
   }
   };
 
-
-
   const allowedFields = [
     "title",
     "description",
