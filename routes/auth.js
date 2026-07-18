@@ -15,10 +15,16 @@ import {
   getForgotPasswordView,
   forgotPassword,
   getResetPasswordView,
-  resetPassword
+  resetPassword,
+  getMe
 } from "../controllers/authController.js";
 
 
+
+router.get(
+  "/me",
+  protect,getMe
+)
 
 router.post(
   "/register",
@@ -40,8 +46,6 @@ router.post(
   protect,
   logoutUser
 );
-
-
 
 
 router.post(

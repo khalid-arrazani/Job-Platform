@@ -12,7 +12,18 @@ import {
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
+export const getMe = asyncHandler(async (req, res) => {
 
+res.status(201).json({
+  message: "get me successfully",
+  user: req.user
+});
+
+
+
+
+
+});
 
 // Register controller
 export const registerUser = asyncHandler(async (req, res) => {
@@ -57,7 +68,6 @@ res.status(201).json({
   user: userObj
 });
 });
-
 
 
 // Login controller
@@ -139,7 +149,6 @@ export const loginUser = asyncHandler(async (req, res) => {
 });
 
 
-
 // Refresh token controller
 export const refreshAccessToken = asyncHandler(async (req, res) => {
 
@@ -215,7 +224,6 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 
-
 // Logout controller
 export const logoutUser = asyncHandler(async (req, res) => {
 
@@ -238,7 +246,6 @@ export const logoutUser = asyncHandler(async (req, res) => {
     message: "Logout successful!"
   });
 });
-
 
 
 // Send verification email controller
@@ -382,8 +389,6 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 export const getResetPasswordView = asyncHandler(async (req, res) => {
   res.render("reset-password");
 })
-
-
 
 
 // Reset password controller
