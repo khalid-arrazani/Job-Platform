@@ -7,53 +7,53 @@ const jobSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Company",
-    required:true
+    required: true
   },
 
   title: {
     type: String,
-    required:true
-  
+    required: true
+
   },
-   jobViews: {
-      type: Number,
-      default: 0,
-    },
+  jobViews: {
+    type: Number,
+    default: 0,
+  },
   description: {
     type: String,
     required: function () {
-    return this.status !== "draft";
-  },
+      return this.status !== "draft";
+    },
   },
 
   location: {
     type: String,
     required: function () {
-    return this.status !== "draft";
-  },
+      return this.status !== "draft";
+    },
   },
 
   minSalary: {
     type: Number,
     required: function () {
-    return this.status !== "draft";
-  },
+      return this.status !== "draft";
+    },
     min: 0,
   },
 
   maxSalary: {
     type: Number,
     required: function () {
-    return this.status !== "draft";
-  },
+      return this.status !== "draft";
+    },
     min: 0,
   },
 
   salaryCurrency: {
     type: String,
-   required: function () {
-    return this.status !== "draft";
-  },
+    required: function () {
+      return this.status !== "draft";
+    },
     default: "USD",
   },
 
@@ -107,22 +107,16 @@ const jobSchema = new mongoose.Schema({
 export const validateJobsDetails = (job, isUpdate = false) => {
   let schema = Joi.object({
     title: Joi.string(),
-
     description: Joi.string(),
-
     location: Joi.string(),
-
     minSalary: Joi.number().min(0),
-
     maxSalary: Joi.number()
       .min(0)
       .when("minSalary", {
         is: Joi.exist(),
         then: Joi.number().greater(Joi.ref("minSalary")),
       }),
-
     salaryCurrency: Joi.string(),
-
     salaryPeriod: Joi.string().valid(
       "Per Month",
       "Per Year"
@@ -149,12 +143,15 @@ export const validateJobsDetails = (job, isUpdate = false) => {
 
     skills: Joi.array().items(Joi.string())
   });
+
   if (!isUpdate) {
     schema = schema.fork(
-      ["title", "description", "location"],
+      ["title", "description", "location", "minSalary", "maxSalary", "location", "salaryCurrency",
+        "salaryPeriod", "jobType", "workMode", "experienceLevel", "skills"],
       (field) => field.required()
     );
   }
+
   return schema.validate(job);
 };
 const Job = mongoose.models.Job || mongoose.model("Job", jobSchema);

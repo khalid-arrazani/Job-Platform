@@ -276,26 +276,21 @@ export const createJob = asyncHandler(async (req, res) => {
 // Update My job for recruiter
 export const UpdateJob = asyncHandler(async (req, res) => {
 
- console.log(req.body , req.params );
-
-
   if (req.body.status == "draft") {
-    console.log("draft");
     if (!req.body.title && req.body.title == "", req.body.title == undefined) {
       return res.status(400).json({
         message: "A job title is required to save a draft."
       });
     }
   } else {
-    console.log("active");
-   
-    const { error } = validateJobsDetails(req.body);
 
+    const { error } = validateJobsDetails(req.body);
     if (error) {
       return res.status(400).json({
         message: error.details[0].message
       });
     }
+
   }
 
 
@@ -314,6 +309,7 @@ export const UpdateJob = asyncHandler(async (req, res) => {
 
     "experienceLevel",
     "skills",
+    "status"
   ];
 
   const data = {};
@@ -323,8 +319,6 @@ export const UpdateJob = asyncHandler(async (req, res) => {
       data[field] = req.body[field];
     }
   });
-
-  console.log(1111);
 
 
   const profile = await RecruiterProfile.findOne({
@@ -355,23 +349,21 @@ export const UpdateJob = asyncHandler(async (req, res) => {
     });
   }
 
-  Object.assign(job, data);
+
+  Object.assign(job, { ...data });
   await job.save();
 
-  let m
 
-  if (req.body.status == "draft"){
+  let m
+  if (req.body.status == "draft") {
     m = "Update draft seccesfully"
   } else {
     m = "Update Job seccesfully"
   }
 
-  return res.status(201).json({ message:m});
+  return res.status(201).json({ message: m });
 
 });
-
-
-
 
 
 //Delete my jobs 
