@@ -275,10 +275,7 @@ export const createJob = asyncHandler(async (req, res) => {
 
 // Update My job for recruiter
 export const UpdateJob = asyncHandler(async (req, res) => {
-
-
-
-
+  
   if (req.body.status == "draft") {
     if (!req.body.title && req.body.title == "", req.body.title == undefined) {
       return res.status(400).json({
@@ -367,7 +364,7 @@ export const UpdateJob = asyncHandler(async (req, res) => {
   }
 
   return res.status(201).json({ message:m});
-  
+
 });
 
 
