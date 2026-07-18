@@ -275,14 +275,20 @@ export const createJob = asyncHandler(async (req, res) => {
 
 // Update My job for recruiter
 export const UpdateJob = asyncHandler(async (req, res) => {
-  
+
+ console.log(req.body , req.params );
+
+
   if (req.body.status == "draft") {
+    console.log("draft");
     if (!req.body.title && req.body.title == "", req.body.title == undefined) {
       return res.status(400).json({
         message: "A job title is required to save a draft."
       });
     }
   } else {
+    console.log("active");
+   
     const { error } = validateJobsDetails(req.body);
 
     if (error) {
@@ -318,7 +324,7 @@ export const UpdateJob = asyncHandler(async (req, res) => {
     }
   });
 
-
+  console.log(1111);
 
 
   const profile = await RecruiterProfile.findOne({
@@ -327,9 +333,6 @@ export const UpdateJob = asyncHandler(async (req, res) => {
   if (!profile) {
     return res.status(404).json({ message: "Profile not found " })
   }
-
-
-
 
   const company = await Company.findOne({
     owner: profile.id
