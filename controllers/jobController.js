@@ -108,7 +108,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   };
 
   let filter = {
-    createdBy: company._id,status: { $ne: "draft" }
+    createdBy: company._id, status: { $ne: "draft" }
   }
 
   const filterFields = ["status"]
@@ -142,9 +142,9 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   const hasJobs = !!(await Job.exists({ createdBy: company._id }));
 
 
-  const countActive = await Job.countDocuments({ createdBy: company._id,status:"active" });
-  const countClosed = await Job.countDocuments({ createdBy: company._id,status:"closed" });
-  const countDraft = await Job.countDocuments({ createdBy: company._id,status:"draft" });
+  const countActive = await Job.countDocuments({ createdBy: company._id, status: "active" });
+  const countClosed = await Job.countDocuments({ createdBy: company._id, status: "closed" });
+  const countDraft = await Job.countDocuments({ createdBy: company._id, status: "draft" });
 
   const JobsWithApply = await Promise.all(
     jobs.map(async (job) => {
@@ -165,7 +165,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
     page,
     jobs: JobsWithApply,
     totalPages: Math.ceil(totalJobs.length / limit),
-    hasJobs,countActive,countClosed,countDraft
+    hasJobs, countActive, countClosed, countDraft
   });
 
 });
@@ -206,19 +206,20 @@ export const getJobById = asyncHandler(async (req, res) => {
 
 // Create new job for recruiter
 export const createJob = asyncHandler(async (req, res) => {
-  if(req.body.status !== "draft"){
-  const { error } = validateJobsDetails(req.body);
+  if (req.body.status !== "draft") {
+    const { error } = validateJobsDetails(req.body);
 
-  if (error) {
-    return res.status(400).json({
-      message: error.details[0].message
-    });
-  }} else if (req.body.status == "draft"){
-    if (!req.body.title && req.body.title == "",req.body.title == undefined) {
-    return res.status(400).json({
-      message:"A job title is required to save a draft."
-    });
-  }
+    if (error) {
+      return res.status(400).json({
+        message: error.details[0].message
+      });
+    }
+  } else if (req.body.status == "draft") {
+    if (!req.body.title && req.body.title == "", req.body.title == undefined) {
+      return res.status(400).json({
+        message: "A job title is required to save a draft."
+      });
+    }
   };
 
 
@@ -261,30 +262,39 @@ export const createJob = asyncHandler(async (req, res) => {
     }
   });
 
-  let message = req.body.status= "active" ? "Create Job seccesfully" : req.body.status= "draft" ? "draft Job seccesfully":null
+  let message = req.body.status = "active" ? "Create Job seccesfully" : req.body.status = "draft" ? "draft Job seccesfully" : null
 
   const job = await Job.create({
     ...data,
     createdBy: company._id,
   });
 
-  return res.status(201).json({ job: job, message:message});
+  return res.status(201).json({ job: job, message: message });
 });
 
 
 // Update My job for recruiter
 export const UpdateJob = asyncHandler(async (req, res) => {
 
-  console.log(req.body);
-  console.log(req.params);
 
-  const { error } = validateJobsDetails(req.body);
 
-  if (error) {
-    return res.status(400).json({
-      message: error.details[0].message
-    });
+
+  if (req.body.status == "draft") {
+    if (!req.body.title && req.body.title == "", req.body.title == undefined) {
+      return res.status(400).json({
+        message: "A job title is required to save a draft."
+      });
+    }
+  } else {
+    const { error } = validateJobsDetails(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        message: error.details[0].message
+      });
+    }
   }
+
 
   const allowedFields = [
     "title",
@@ -303,7 +313,7 @@ export const UpdateJob = asyncHandler(async (req, res) => {
     "skills",
   ];
 
-   const data = {};
+  const data = {};
 
   allowedFields.forEach((field) => {
     if (req.body[field] !== undefined) {
@@ -330,7 +340,7 @@ export const UpdateJob = asyncHandler(async (req, res) => {
   if (!company) {
     return res.status(404).json({ message: "Company not found " })
   }
- 
+
 
   const job = await Job.findById(req.params.JobId);
   if (!job) {
@@ -338,8 +348,6 @@ export const UpdateJob = asyncHandler(async (req, res) => {
       message: "Job not found",
     });
   }
-
-  
 
   if (!job.createdBy.equals(company._id)) {
     return res.status(403).json({
@@ -350,89 +358,19 @@ export const UpdateJob = asyncHandler(async (req, res) => {
   Object.assign(job, data);
   await job.save();
 
-  return res.status(201).json({ message: "Update Job seccesfully " });
+  let m
+
+  if (req.body.status == "draft"){
+    m = "Update draft seccesfully"
+  } else {
+    m = "Update Job seccesfully"
+  }
+
+  return res.status(201).json({ message:m});
+  
 });
 
 
-// // Update My Draft for recruiter
-// export const UpdateDraftJob = asyncHandler(async (req, res) => {
-
-
-//   const { error } = validateJobsDetails(req.body);
-
-//   if (error) {
-//     return res.status(400).json({
-//       message: error.details[0].message
-//     });
-//   }
-
-
-
-//   const allowedFields = [
-//     "title",
-//     "description",
-//     "location",
-
-//     "minSalary",
-//     "maxSalary",
-//     "salaryCurrency",
-//     "salaryPeriod",
-
-//     "jobType",
-//     "workMode",
-
-//     "experienceLevel",
-//     "skills",
-//   ];
-   
-//   const data = {};
-
-//   allowedFields.forEach((field) => {
-//     if (req.body[field] !== undefined) {
-//       data[field] = req.body[field];
-//     }
-//   });
-
-
-
-
-//   const profile = await RecruiterProfile.findOne({
-//     userId: req.user.id
-//   })
-
-//   if (!profile) {
-//     return res.status(404).json({ message: "Profile not found " })
-//   }
-
-
-//   const company = await Company.findOne({
-//     owner: profile.id
-//   })
-//   if (!company) {
-//     return res.status(404).json({ message: "Company not found " })
-//   }
-  
-
-//   const job = await Job.findById(req.params.JobId);
-
-//   if (!job) {
-//     return res.status(404).json({
-//       message: "Job not found",
-//     });
-//   }
-
-
-//   if (!job.createdBy.equals(company._id)) {
-//     return res.status(403).json({
-//       message: "You are not allowed to Upadate this job.",
-//     });
-//   }
-
-//   Object.assign(job, data);
-//   await job.save();
-
-//   return res.status(201).json({ message: "Update Job seccesfully " });
-// });
 
 
 
@@ -454,11 +392,11 @@ export const deleteMyJobs = asyncHandler(async (req, res) => {
 
   const { JobId } = req.params;
 
-  if (JobId  == 'undefined') {
-  return res.status(400).json({
-    message: "Job ID is required.",
-  });
-}
+  if (JobId == 'undefined') {
+    return res.status(400).json({
+      message: "Job ID is required.",
+    });
+  }
 
   const job = await Job.findById(req.params.JobId);
 
