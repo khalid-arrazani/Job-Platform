@@ -61,7 +61,7 @@ export const getAllJobs = asyncHandler(async (req, res) => {
     isSaved: savedJobIds.includes(job._id.toString())
   }));
 
-  
+
   res.status(200).json({
     success: true,
     total,
@@ -185,7 +185,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
 // Get single job by id
 export const getJobById = asyncHandler(async (req, res) => {
-  console.log(req.params.id);
+
   const jobBy_Id = await Job.findByIdAndUpdate(req.params.id, { $inc: { jobViews: 1 } },
     { returnDocument: "after" })
     .populate("createdBy");
@@ -197,6 +197,7 @@ export const getJobById = asyncHandler(async (req, res) => {
   }
 
   let isSaved = false;
+  let isApply = false;
 
   if (req.user) {
     const savedJob = await SavedJob.findOne({
@@ -205,14 +206,23 @@ export const getJobById = asyncHandler(async (req, res) => {
     });
 
     isSaved = !!savedJob;
+
+    const applyJob = await Apply.findOne({
+      user: req.user.id,
+      job: jobBy_Id._id,
+    });
+
+    isApply = !!applyJob;
   }
 
-  const jobWithSavedState = {
+  const jobWithSavedAndApplyState = {
     ...jobBy_Id._doc,
     isSaved,
+    isApply
   };
 
-  const jobById = jobWithSavedState
+  const jobById = jobWithSavedAndApplyState
+  console.log(jobById);
 
   return res.status(200).json(jobById);
 });
