@@ -68,7 +68,7 @@ export const getMyApplications = asyncHandler(async (req, res) => {
 
 // Get all applications for a recruiter job
 export const getJobApplications = asyncHandler(async (req, res) => {
-
+  
   const job = await Job.findOne({
     _id: req.params.jobId,
     createdBy: req.user.id

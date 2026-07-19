@@ -12,18 +12,8 @@ import {
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
-export const getMe = asyncHandler(async (req, res) => {
-
-res.status(201).json({
-  message: "get me successfully",
-  user: req.user
-});
 
 
-
-
-
-});
 
 // Register controller
 export const registerUser = asyncHandler(async (req, res) => {
@@ -152,6 +142,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 // Refresh token controller
 export const refreshAccessToken = asyncHandler(async (req, res) => {
 
+
   const oldrefreshToken = req.cookies.refreshToken;
 
   if (!oldrefreshToken) {
@@ -226,7 +217,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 
 // Logout controller
 export const logoutUser = asyncHandler(async (req, res) => {
-
+ 
   const user = req.user;
 
   user.refreshTokens = user.refreshTokens.filter(

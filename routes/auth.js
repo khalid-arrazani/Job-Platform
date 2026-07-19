@@ -16,15 +16,10 @@ import {
   forgotPassword,
   getResetPasswordView,
   resetPassword,
-  getMe
+  
 } from "../controllers/authController.js";
 
 
-
-router.get(
-  "/me",
-  protect,getMe
-)
 
 router.post(
   "/register",

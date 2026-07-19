@@ -84,6 +84,7 @@ export const getSavedJobs = async (req, res) => {
         ...item.job._doc,
         isSaved: true,
       }));
+      
 
     return res.status(200).json({
       currentPage: page,
