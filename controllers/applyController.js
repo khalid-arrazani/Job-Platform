@@ -14,7 +14,7 @@ import JobSeekerProfile from "../models/JobSeekerProfile.js";
 
 // Apply for a job using uploaded CV or profile CV
 export const applyForJob = asyncHandler(async (req, res) => {
-
+  console.log("11",req.body);
   const jobId = req.params.jobId;
 
   let cvUrl = req.user.cv || null;
@@ -35,15 +35,12 @@ export const applyForJob = asyncHandler(async (req, res) => {
     profile: idProfile.id,
     applicant: req.user.id,
     cv: cvUrl,
-    cvPublicId
+    cvPublicId,
+    company:req.body.Company
   });
 
   res.status(201).json({
-    message: "Applied successfully",
-    application: {
-      ...application._doc,
-      cvSource: req.file ? "uploaded" : "profile"
-    }
+    message: "Applied successfully"
   });
 });
 

@@ -4,6 +4,7 @@ import Apply from "../models/Apply.js";
 
 
 const isAlreadyApplied = async (req, res, next) => {
+
    const jobId = req.params.jobId.toString();
     const job = await Job.findById(jobId);
 
