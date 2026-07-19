@@ -49,12 +49,32 @@ export const getAllJobs = asyncHandler(async (req, res) => {
   }));
 
 
+
+  // is apply
+
+  const applyJobs = await Apply.find({
+    user: req.user.id,
+  });
+
+
+  const applyJobIds = applyJobs.map((s) =>
+    s.job.toString()
+  );
+
+  // attach isSaved to each job
+  const jobsWithApplyState = jobs.map((job) => ({
+    ...job._doc,
+    isSaved: applyJobIds.includes(job._id.toString()),
+  }));
+
+  console.log(jobsWithApplyState);
+
   res.status(200).json({
     success: true,
     total,
     currentPage: page,
     totalPages: Math.ceil(total / limit),
-    jobs: jobsWithSavedState,
+    jobs: jobsWithSavedState,jobsWithApplyState
   });
 });
 
