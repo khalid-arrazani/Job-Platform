@@ -14,7 +14,6 @@ import JobSeekerProfile from "../models/JobSeekerProfile.js";
 
 // Apply for a job using uploaded CV or profile CV
 export const applyForJob = asyncHandler(async (req, res) => {
-
   const jobId = req.params.jobId;
 
   let cvUrl = req.user.cv || null;
