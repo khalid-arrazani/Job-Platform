@@ -42,7 +42,7 @@ export const getAllJobs = asyncHandler(async (req, res) => {
     s.job.toString()
   );
 
-  
+
 
   // is apply
   const applyJobs = await Apply.find({
@@ -186,9 +186,13 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 // Get single job by id
 export const getJobById = asyncHandler(async (req, res) => {
 
+
   const jobBy_Id = await Job.findByIdAndUpdate(req.params.id, { $inc: { jobViews: 1 } },
     { returnDocument: "after" })
     .populate("createdBy");
+
+
+
 
   if (!jobBy_Id) {
     return res.status(404).json({
@@ -200,6 +204,7 @@ export const getJobById = asyncHandler(async (req, res) => {
   let isApply = false;
 
   if (req.user) {
+
     const savedJob = await SavedJob.findOne({
       user: req.user.id,
       job: jobBy_Id._id,
@@ -208,12 +213,13 @@ export const getJobById = asyncHandler(async (req, res) => {
     isSaved = !!savedJob;
 
     const applyJob = await Apply.findOne({
-      user: req.user.id,
+      applicant: req.user.id,
       job: jobBy_Id._id,
     });
 
     isApply = !!applyJob;
   }
+
 
   const jobWithSavedAndApplyState = {
     ...jobBy_Id._doc,
@@ -222,7 +228,6 @@ export const getJobById = asyncHandler(async (req, res) => {
   };
 
   const jobById = jobWithSavedAndApplyState
-  console.log(jobById);
 
   return res.status(200).json(jobById);
 });
