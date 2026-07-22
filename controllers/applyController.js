@@ -50,11 +50,13 @@ export const getMyApplications = asyncHandler(async (req, res) => {
 
   const applications = await Apply.find(
     { applicant: req.user.id },
-    "status"
+    "status createdAt"
   )
     .populate(
-      "company",
-      "title description company jobType experienceLevel"
+      "company","companyLogo name"
+    )
+    .populate(
+      "job","title createdAt location"
     );
 
   res.status(200).json(applications);
