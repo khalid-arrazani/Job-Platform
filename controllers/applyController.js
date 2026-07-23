@@ -57,7 +57,7 @@ export const getMyApplications = asyncHandler(async (req, res) => {
   
 
   let filter = {
-    createdBy: req.user.id
+    applicant: req.user.id
   }
 
   const filterFields = ["status"]
@@ -76,7 +76,7 @@ export const getMyApplications = asyncHandler(async (req, res) => {
 
 
   const applications = await Apply.find(
-    { applicant: req.user.id, status: "pending" },
+    filter,
     "status createdAt"
   )
     .skip((page - 1) * limit)
