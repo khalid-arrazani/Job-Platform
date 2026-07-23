@@ -81,14 +81,15 @@ export const getMyApplications = asyncHandler(async (req, res) => {
   )
     .skip((page - 1) * limit)
     .limit(limit)
-    .where("title").regex(new RegExp(search, "i"))
+    
     .sort({ createdAt: sort })
     .populate(
       "company", "companyLogo name"
     )
     .populate(
       "job", "title createdAt location"
-    );
+    )
+    .where("title").regex(new RegExp(search, "i"))
 
   res.status(200).json(applications);
 });
