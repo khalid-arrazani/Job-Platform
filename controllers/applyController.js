@@ -3,6 +3,8 @@ import asyncHandler from "express-async-handler";
 import Apply from "../models/Apply.js";
 import Job from "../models/Job.js";
 import JobSeekerProfile from "../models/JobSeekerProfile.js";
+import RecruiterProfile from "../models/RecruiterProfile.js";
+import { Company } from "../models/Company.js";
 
 
 
@@ -48,8 +50,43 @@ export const applyForJob = asyncHandler(async (req, res) => {
 // Get all authenticated job seeker applications
 export const getMyApplications = asyncHandler(async (req, res) => {
 
+
+   const page = parseInt(req.query.page) || 1;
+    const limit = 3;
+  
+    const recruiterProfile = await RecruiterProfile.findOne({
+      userId: req.user.id,
+    });
+  
+    const company = await Company.findOne({ owner: recruiterProfile.id });
+  
+  
+    if (!company) {
+      return res.status(404).json({
+        message: "Company not found",
+      });
+    };
+  
+    let filter = {
+      createdBy: company._id, status: { $ne: "draft" }
+    }
+  
+    const filterFields = ["status"]
+  
+    filterFields.forEach((field) => {
+      if (req.query[field] !== undefined &&
+        req.query[field].length >= 1 &&
+        req.query[field] !== "") {
+        filter[field] = req.query[field];
+      }
+    });
+  
+    const search = req.query.search || ""
+    const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
+  
+  
   const applications = await Apply.find(
-    { applicant: req.user.id },
+    { applicant: req.user.id , status:"pending"},
     "status createdAt"
   )
     .populate(
