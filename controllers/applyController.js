@@ -54,21 +54,10 @@ export const getMyApplications = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = 3;
 
-  const recruiterProfile = await RecruiterProfile.findOne({
-    userId: req.user.id,
-  });
-
-  const company = await Company.findOne({ owner: recruiterProfile.id });
-
-
-  if (!company) {
-    return res.status(404).json({
-      message: "Company not found",
-    });
-  };
+  
 
   let filter = {
-    createdBy: company._id
+    createdBy: req.user.id
   }
 
   const filterFields = ["status"]
@@ -80,6 +69,7 @@ export const getMyApplications = asyncHandler(async (req, res) => {
       filter[field] = req.query[field];
     }
   });
+
 
   const search = req.query.search || ""
   const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
