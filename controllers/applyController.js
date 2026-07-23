@@ -50,7 +50,7 @@ export const applyForJob = asyncHandler(async (req, res) => {
 // Get all authenticated job seeker applications
 export const getMyApplications = asyncHandler(async (req, res) => {
 
-
+  
   const page = parseInt(req.query.page) || 1;
   const limit = 5;
 
