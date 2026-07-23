@@ -52,14 +52,12 @@ export const getMyApplications = asyncHandler(async (req, res) => {
 
 
   const page = parseInt(req.query.page) || 1;
-  const limit = 3;
+  const limit = 5;
 
   
-
   let filter = {
     applicant: req.user.id
   }
-
   const filterFields = ["status"]
 
   filterFields.forEach((field) => {
@@ -89,7 +87,7 @@ export const getMyApplications = asyncHandler(async (req, res) => {
     .populate(
       "job", "title createdAt location"
     )
-    .where("title").regex(new RegExp(search, "i"))
+  
 
   res.status(200).json(applications);
 });
