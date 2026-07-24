@@ -50,11 +50,11 @@ export const applyForJob = asyncHandler(async (req, res) => {
 // Get all authenticated job seeker applications
 export const getMyApplications = asyncHandler(async (req, res) => {
 
-  
+
   const page = parseInt(req.query.page) || 1;
   const limit = 5;
 
-  
+
   let filter = {
     applicant: req.user.id
   }
@@ -79,7 +79,7 @@ export const getMyApplications = asyncHandler(async (req, res) => {
   )
     .skip((page - 1) * limit)
     .limit(limit)
-    
+
     .sort({ createdAt: sort })
     .populate(
       "company", "companyLogo name"
@@ -87,9 +87,19 @@ export const getMyApplications = asyncHandler(async (req, res) => {
     .populate(
       "job", "title createdAt location"
     )
-  
 
-  res.status(200).json(applications);
+  const countPending = await Apply.countDocuments({ applicant: req.user.id, status: "Pending" });
+  const countUnder_review = await Apply.countDocuments({ applicant: req.user.id, status: "Under review" });
+  const countAccepted = await Apply.countDocuments({ applicant: req.user.id, status: "Accepted" });
+  const countInterview = await Apply.countDocuments({ applicant: req.user.id, status: "Interview" });
+  const countRejected = await Apply.countDocuments({ applicant: req.user.id, status: "Rejected" });
+
+  const totalJobs = await Apply.countDocuments({ applicant: req.user.id });
+
+
+
+
+  res.status(200).json({ applications, totalPages: Math.ceil(totalJobs.length / limit), countPending, countUnder_review, countAccepted, countInterview, countRejected });
 });
 
 
@@ -127,7 +137,7 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
 
   const { status } = req.query;
 
-  if (!["Accepted","Interview", "Rejected","Under review"].includes(status)) {
+  if (!["Accepted", "Interview", "Rejected", "Under review"].includes(status)) {
     return res.status(400).json({
       message: "Invalid status"
     });
