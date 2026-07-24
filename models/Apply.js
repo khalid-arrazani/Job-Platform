@@ -20,8 +20,8 @@ const ApplicationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "accepted","Interview", "rejected","under review"],
-      default: "pending"
+      enum: ["Pending", "Accepted","Interview", "Rejected","Under review"],
+      default: "Pending"
     },
     cv: String,
     cvPublicId: String
