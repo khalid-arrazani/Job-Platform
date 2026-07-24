@@ -93,13 +93,12 @@ export const getMyApplications = asyncHandler(async (req, res) => {
   const countAccepted = await Apply.countDocuments({ applicant: req.user.id, status: "Accepted" });
   const countInterview = await Apply.countDocuments({ applicant: req.user.id, status: "Interview" });
   const countRejected = await Apply.countDocuments({ applicant: req.user.id, status: "Rejected" });
-
-  const totalJobs = await Apply.countDocuments({ applicant: req.user.id });
-
+  const totalJobs = await Apply.countDocuments({ applicant: req.user.id});
 
 
 
-  res.status(200).json({ applications, totalPages: Math.ceil(totalJobs.length / limit), countPending, countUnder_review, countAccepted, countInterview, countRejected });
+
+  res.status(200).json({ applications, totalPages: Math.ceil(totalJobs / limit), countPending, countUnder_review, countAccepted, countInterview, countRejected ,hasApply: !!applications.length});
 });
 
 
