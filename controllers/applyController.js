@@ -93,7 +93,7 @@ export const getMyApplications = asyncHandler(async (req, res) => {
   const countAccepted = await Apply.countDocuments({ applicant: req.user.id, status: "Accepted" });
   const countInterview = await Apply.countDocuments({ applicant: req.user.id, status: "Interview" });
   const countRejected = await Apply.countDocuments({ applicant: req.user.id, status: "Rejected" });
-  const totalJobs = await Apply.countDocuments({ applicant: req.user.id});
+  const totalJobs = await Apply.countDocuments(filter);
 
 
 
