@@ -96,7 +96,7 @@ export const getMyApplications = asyncHandler(async (req, res) => {
   const totalJobs = await Apply.countDocuments(filter);
 
 
-  res.status(200).json({ applications, totalPages: Math.ceil(totalJobs / limit), countPending, countUnder_review, countAccepted, countInterview, countRejected ,hasApply: !!applications.length});
+  res.status(200).json({ applications, totalPages: Math.ceil(totalJobs / limit), countPending, countUnder_review, countAccepted, countInterview, countRejected, hasApply: !!applications.length });
 });
 
 
@@ -104,23 +104,32 @@ export const getMyApplications = asyncHandler(async (req, res) => {
 // Get all applications for a recruiter job
 export const getJobApplications = asyncHandler(async (req, res) => {
 
-  const job = await Job.findOne({
-    _id: req.params.jobId,
-    createdBy: req.user.id
+
+  const profile = await RecruiterProfile.findOne({
+    userId: req.user.id
+  })
+  if (!profile) {
+    return res.status(404).json({
+      message: "profile not found"
+    });
+  }
+
+  const company = await Company.findOne({
+    owner: profile._id
   });
 
-  if (!job) {
+  if (!company) {
     return res.status(404).json({
-      message: "Job not found"
+      message: "company not found"
     });
   }
 
   const applications = await Apply.find(
-    { job: req.params.jobId },
+    { company: company._id },
     "status"
   )
-    .populate("applicant", "username email")
-    .populate("job", "title");
+    .populate("applicant", "username email location")
+    .populate("job", "title jobType workMode");
 
   res.status(200).json({
     applications
