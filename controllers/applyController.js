@@ -104,11 +104,11 @@ export const getMyApplications = asyncHandler(async (req, res) => {
 // Get all applications for a recruiter job
 export const getJobApplications = asyncHandler(async (req, res) => {
 
-
+  
   const profile = await RecruiterProfile.findOne({
     userId: req.user.id
   })
-  
+
   if (!profile) {
     return res.status(404).json({
       message: "profile not found"

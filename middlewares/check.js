@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
 export const protect = async (req, res, next) => {
-
+ console.log(44444);
   try {
     // Get access token from cookies
     const token = req.cookies.accessToken;
