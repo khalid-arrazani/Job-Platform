@@ -33,6 +33,7 @@ router.get(
   getMyApplications
 );
 
+
 router.get(
   "/applications",
   protect,
