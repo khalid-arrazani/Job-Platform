@@ -34,7 +34,7 @@ router.get(
 );
 
 router.get(
-  "/jobs/:jobId/applications",
+  "/applications",
   protect,
   authorizeRoles("recruiter"),
   getJobApplications
