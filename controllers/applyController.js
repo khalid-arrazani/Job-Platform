@@ -130,7 +130,8 @@ export const getJobApplications = asyncHandler(async (req, res) => {
     "status"
   )
     .populate("applicant", "username email location")
-    .populate("job", "title jobType workMode");
+    .populate("job", "title jobType workMode")
+    .populate("profile");
 
   res.status(200).json({
     applications
