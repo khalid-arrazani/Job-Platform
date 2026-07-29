@@ -127,7 +127,7 @@ export const getJobApplications = asyncHandler(async (req, res) => {
 
   const applications = await Apply.find(
     { company: company._id },
-    "status"
+    "status createdAt"
   )
     .populate("applicant", "username email location")
     .populate("job", "title jobType workMode")
