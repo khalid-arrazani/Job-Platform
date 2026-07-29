@@ -13,6 +13,12 @@ const ApplicationSchema = new mongoose.Schema(
       ref: "User",
       required: true
     },
+    
+    profile: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
     company:{
       type: mongoose.Schema.Types.ObjectId,
       ref:"Company",
