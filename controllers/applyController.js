@@ -153,7 +153,6 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
     });
   }
 
-  console.log(2);
 
   const application = await Apply.findById(
     req.params.id,
