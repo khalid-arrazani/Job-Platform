@@ -142,7 +142,7 @@ export const getJobApplications = asyncHandler(async (req, res) => {
 
 // Accept or reject application
 export const updateApplicationStatus = asyncHandler(async (req, res) => {
-
+  console.log(req.query);
   const { status } = req.query;
 
   if (!["Accepted", "Interview", "Rejected", "Under review"].includes(status)) {
