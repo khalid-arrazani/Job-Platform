@@ -170,7 +170,7 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
   },"_id")
 
   const companyId = await Company.findOne({
-    userId: req.user.id
+    owner: myId._id
   },"_id")
 
   console.log(myId,application.job.createdBy);
