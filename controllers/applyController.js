@@ -142,14 +142,18 @@ export const getJobApplications = asyncHandler(async (req, res) => {
 
 // Accept or reject application
 export const updateApplicationStatus = asyncHandler(async (req, res) => {
-  console.log(req.query);
+
   const { status } = req.query;
+  const { id } = req.params;
+ 
 
   if (!["Accepted", "Interview", "Rejected", "Under review"].includes(status)) {
     return res.status(400).json({
       message: "Invalid status"
     });
   }
+
+  console.log(2);
 
   const application = await Apply.findById(
     req.params.id,
