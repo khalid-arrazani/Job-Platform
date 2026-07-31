@@ -104,7 +104,7 @@ export const getMyApplications = asyncHandler(async (req, res) => {
 // Get all applications for a recruiter job
 export const getJobApplications = asyncHandler(async (req, res) => {
 
-  
+
   const profile = await RecruiterProfile.findOne({
     userId: req.user.id
   })
@@ -145,7 +145,7 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
 
   const { status } = req.query;
   const { id } = req.params;
- 
+
 
   if (!["Accepted", "Interview", "Rejected", "Under review"].includes(status)) {
     return res.status(400).json({
@@ -156,8 +156,8 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
 
   const application = await Apply.findById(
     req.params.id,
-  ) .populate("job", "createdBy")
-   .populate("company", "owner")
+  ).populate("job", "createdBy")
+    .populate("company", "owner")
 
   if (!application) {
     return res.status(404).json({
@@ -165,13 +165,19 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
     });
   }
 
+  const myId = await RecruiterProfile.findOne({
+    userId: req.user.id
+  },"_id")
 
+  const companyId = await Company.findOne({
+    userId: req.user.id
+  },"_id")
 
-  console.log(application);
+  console.log(myId,application.job.createdBy);
 
 
   if (
-    application.job.createdBy.toString() !== req.user.id
+    application.job.createdBy.toString() !== myId._id
   ) {
     return res.status(403).json({
       message: "Not allowed"
