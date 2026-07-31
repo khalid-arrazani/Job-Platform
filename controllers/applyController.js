@@ -157,12 +157,15 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
   const application = await Apply.findById(
     req.params.id,
   ) .populate("job", "createdBy")
+   .populate("company", "owner")
 
   if (!application) {
     return res.status(404).json({
       message: "Application not found"
     });
   }
+
+
 
   console.log(application);
 
