@@ -156,17 +156,14 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
 
   const application = await Apply.findById(
     req.params.id,
-    "cv"
-  )
-    .populate("job", "title createdBy company")
-    .populate("applicant", "username email role")
-    .populate("profile", "fullName location");
+  ) .populate("job", "title createdBy company")
 
   if (!application) {
     return res.status(404).json({
       message: "Application not found"
     });
   }
+  
 
   if (
     application.job.createdBy.toString() !== req.user.id
