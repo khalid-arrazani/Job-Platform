@@ -173,11 +173,10 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
     owner: myId._id
   },"_id")
 
-  console.log(myId,application.job.createdBy);
-
+  console.log(companyId._id ,application.job.createdBy );
 
   if (
-    application.job.createdBy.toString() !== myId._id
+    application.job.createdBy.toString() !== companyId._id.toString()
   ) {
     return res.status(403).json({
       message: "Not allowed"
@@ -189,8 +188,7 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
   await application.save();
 
   res.status(200).json({
-    message: `Application ${status}`,
-    application
+    message: `Application ${status}`
   });
 });
 
