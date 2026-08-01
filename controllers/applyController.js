@@ -173,8 +173,6 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
     owner: myId._id
   },"_id")
 
-  console.log(companyId._id ,application.job.createdBy );
-
   if (
     application.job.createdBy.toString() !== companyId._id.toString()
   ) {
