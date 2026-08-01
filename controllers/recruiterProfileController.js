@@ -38,6 +38,30 @@ export const getRecruiterProfile = asyncHandler(async (req, res) => {
 });
 
 
+// Get authenticated recruiter profile By Id 
+export const BringProfileByIdR = asyncHandler(async (req, res) => {
+
+  const ProfileId = req.params.ProfileId;
+
+
+  const profile = await RecruiterProfile.findById(ProfileId).populate("userId", "email role isComplete").populate("company", "name");
+
+  if (!profile) {
+    return res.status(404).json({
+      message: "Profile not found"
+    });
+  }
+
+  const hasCompany = Boolean(profile.company);
+  
+  res.status(200).json({
+    success: true,
+    profile: profile, hasCompany,
+    message: "get Profile successfully"
+  });
+});
+
+
 
 // Create recruiter profile for the first time
 export const createRecruiterProfile = asyncHandler(async (req, res) => {

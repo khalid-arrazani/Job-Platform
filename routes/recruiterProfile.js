@@ -9,7 +9,8 @@ import {
   getRecruiterProfile,
   createRecruiterProfile,
   updateRecruiterProfile,
-  UpdatePhotoProfile
+  UpdatePhotoProfile,
+  BringProfileByIdR
 } from "../controllers/recruiterProfileController.js";
 import { uploadImage } from "../middlewares/Multer.js";
 
@@ -21,6 +22,17 @@ router.get(
   recruiterOnly,
   getRecruiterProfile
 );
+
+
+
+router.get(
+  "/:ProfileId",
+  protect,
+  recruiterOnly,
+  BringProfileByIdR
+);
+
+
 
 
 

@@ -9,7 +9,8 @@ import {
   getMyProfile,
   createProfile,
   updateProfile,
-  UpdatePhotoProfile
+  UpdatePhotoProfile,
+  BringProfileByIdJs
 } from "../controllers/jobSeekerProfileController.js";
 
 import { uploadImage } from "../middlewares/Multer.js";
@@ -21,6 +22,14 @@ router.get(
   protect,
   authorizeRoles("jobSeeker"),
   getMyProfile
+);
+
+
+router.get(
+  "/:ProfileId",
+  protect,
+  authorizeRoles("jobSeeker"),
+  BringProfileByIdJs
 );
 
 
