@@ -19,6 +19,12 @@ router.get(
   getMyAccount
 );
 
+router.get(
+  "/BringProfileById/:ProfileId",
+  protect,
+  getMyAccount
+);
+
 
 // update my profile for jobSeeker and recruiter
 router.patch(
