@@ -12,14 +12,11 @@ import {
 } from "../controllers/userController.js";
 
 // get my profile for jobSeeker and recruiter
-
 router.get(
   "/me",
   protect,
   getMyAccount
 );
-
-
 
 
 // update my profile for jobSeeker and recruiter
