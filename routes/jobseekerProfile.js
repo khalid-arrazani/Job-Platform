@@ -28,7 +28,6 @@ router.get(
 router.get(
   "/:ProfileId",
   protect,
-  authorizeRoles("jobSeeker"),
   BringProfileByIdJs
 );
 

@@ -129,7 +129,7 @@ export const getJobApplications = asyncHandler(async (req, res) => {
     { company: company._id },
     "status createdAt"
   )
-    .populate("applicant", "username email location")
+    .populate("applicant", "username email location role")
     .populate("job", "title jobType workMode")
     .populate("profile");
 

@@ -36,10 +36,12 @@ export const getMyProfile = asyncHandler(async (req, res) => {
 // Get authenticated job seeker profile By Id 
 export const BringProfileByIdJs = asyncHandler(async (req, res) => {
 
+  console.log(5555);
+  
   const ProfileId = req.params.ProfileId;
 
 
-  const profile = await JobSeekerProfile.findById(ProfileId).populate("userId", "email role isComplete").populate("company", "name");
+  const profile = await JobSeekerProfile.findById(ProfileId).populate("userId", "email role isComplete")
 
   if (!profile) {
     return res.status(404).json({
@@ -47,11 +49,11 @@ export const BringProfileByIdJs = asyncHandler(async (req, res) => {
     });
   }
 
-  const hasCompany = Boolean(profile.company);
+
   
   res.status(200).json({
     success: true,
-    profile: profile, hasCompany,
+    profile: profile,
     message: "get Profile successfully"
   });
 });

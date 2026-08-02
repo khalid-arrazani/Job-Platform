@@ -24,11 +24,9 @@ router.get(
 );
 
 
-
 router.get(
   "/:ProfileId",
   protect,
-  recruiterOnly,
   BringProfileByIdR
 );
 
