@@ -70,7 +70,7 @@ export const getMyApplications = asyncHandler(async (req, res) => {
 
 
   const search = req.query.search || ""
-  const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
+  const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : -1
 
 
   const applications = await Apply.find(
@@ -104,8 +104,12 @@ export const getMyApplications = asyncHandler(async (req, res) => {
 // Get all applications for a recruiter job
 export const getJobApplications = asyncHandler(async (req, res) => {
 
+  
+  const page = parseInt(req.query.page) || 1;
+  const limit = 5;
 
-  const profile = await RecruiterProfile.findOne({
+
+    const profile = await RecruiterProfile.findOne({
     userId: req.user.id
   })
 
@@ -125,10 +129,31 @@ export const getJobApplications = asyncHandler(async (req, res) => {
     });
   }
 
+
+  let filter = {
+   company: company._id 
+  }
+  const filterFields = ["status"]
+
+  filterFields.forEach((field) => {
+    if (req.query[field] !== undefined &&
+      req.query[field].length >= 1 &&
+      req.query[field] !== "") {
+      filter[field] = req.query[field];
+    }
+  });
+
+
+  const search = req.query.search || ""
+  const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : -1
+
   const applications = await Apply.find(
-    { company: company._id },
+    filter,
     "status createdAt"
-  )
+  ) 
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .sort({ createdAt: sort })
     .populate("applicant", "username email location role")
     .populate("job", "title jobType workMode")
     .populate("profile");
