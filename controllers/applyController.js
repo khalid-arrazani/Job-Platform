@@ -158,8 +158,18 @@ export const getJobApplications = asyncHandler(async (req, res) => {
     .populate("job", "title jobType workMode")
     .populate("profile");
 
+
+
+  const countPending = await Apply.countDocuments({  company: company._id , status: "Pending" });
+  const countUnder_review = await Apply.countDocuments({ company: company._id , status: "Under review" });
+  const countAccepted = await Apply.countDocuments({  company: company._id , status: "Accepted" });
+  const countInterview = await Apply.countDocuments({ company: company._id , status: "Interview" });
+  const countRejected = await Apply.countDocuments({  company: company._id , status: "Rejected" });
+
+  const totalJobs = await Apply.countDocuments(filter);
+
   res.status(200).json({
-    applications
+    res.status(200).json({ applications, totalPages: Math.ceil(totalJobs / limit), countPending, countUnder_review, countAccepted, countInterview, countRejected, hasApply: !!applications.length });
   });
 });
 
