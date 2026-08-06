@@ -15,7 +15,7 @@ import {
   getMyCompany,
   updateCompanyBanner,
   deleteCompanyBanner,
-} from "../controllers/companyController.js";
+} from "../controllers/CompanyController.js";
 
 import { uploadImage } from "../middlewares/Multer.js";
 
