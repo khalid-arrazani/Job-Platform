@@ -21,7 +21,6 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
     .populate("owner", "email role")
     .sort({ createdAt: -1 });
 
-
   res.status(200).json({
     success: true,
     companies,
