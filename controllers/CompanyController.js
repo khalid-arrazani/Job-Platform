@@ -16,28 +16,33 @@ import Job from "../models/Job.js";
 ====================== */
 export const getAllCompanies = asyncHandler(async (req, res) => {
 
+  const search = req.query.search || ""
 
   const companies = await Company.find()
     .populate("owner", "email role")
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 }).where("title").regex(new RegExp(search, "i"));
 
-    const JobsWithApply = await Promise.all(
-    companies.map(async (Apply) => {
+  const JobsWithApply = await Promise.all(
+    companies.map(async (company) => {
       const applicationsCount = await Apply.countDocuments({
-        job: Apply._id,
+        company: company._id,
       });
+      const totalJobs = await Job.find(filter)
+        .where("title").regex(new RegExp(search, "i"))
 
       return {
         ...job.toObject(),
-        applicationsCount,
+        applicationsCount
       };
-
     })
   );
 
+
+
+
   res.status(200).json({
     success: true,
-    companies,
+    JobsWithApply,
   });
 });
 
@@ -187,7 +192,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
    CREATE COMPANY 
 ====================== */
 export const createCompany = asyncHandler(async (req, res) => {
-  
+
   if (req.body.benefits) {
     req.body.benefits = JSON.parse(req.body.benefits);
   }
@@ -300,7 +305,7 @@ export const updateCompany = asyncHandler(async (req, res) => {
     });
   };
 
-  
+
 
   const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,
@@ -313,12 +318,12 @@ export const updateCompany = asyncHandler(async (req, res) => {
       message: "Company not found",
     });
   };
-  
+
 
   const updatedCompany = await Company.findByIdAndUpdate(
     company._id,
     { $set: req.body },
-    { returnDocument: 'after'}
+    { returnDocument: 'after' }
   );
 
   res.status(200).json({
@@ -334,7 +339,7 @@ export const updateCompany = asyncHandler(async (req, res) => {
 ====================== */
 export const updateCompanyLogo = asyncHandler(async (req, res) => {
 
- const recruiterProfile = await RecruiterProfile.findOne({
+  const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,
   });
 
@@ -374,7 +379,7 @@ export const updateCompanyLogo = asyncHandler(async (req, res) => {
         public_id: logo.public_id,
       },
     },
-    {returnDocument: "after"}
+    { returnDocument: "after" }
   );
 
   res.status(200).json({
@@ -388,7 +393,7 @@ export const updateCompanyLogo = asyncHandler(async (req, res) => {
    UPDATE COMPANY BANNER
 ====================== */
 export const updateCompanyBanner = asyncHandler(async (req, res) => {
-const recruiterProfile = await RecruiterProfile.findOne({
+  const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,
   });
   if (!recruiterProfile) {
@@ -397,7 +402,7 @@ const recruiterProfile = await RecruiterProfile.findOne({
     });
   }
 
-  const company = await Company.findOne({owner: recruiterProfile._id});
+  const company = await Company.findOne({ owner: recruiterProfile._id });
 
   if (!company) {
     return res.status(404).json({
@@ -457,9 +462,9 @@ const recruiterProfile = await RecruiterProfile.findOne({
   const updated = await Company.findByIdAndUpdate(
     company._id,
     {
-     companyBackground
+      companyBackground
     },
-    {returnDocument: "after"}
+    { returnDocument: "after" }
   );
 
   res.status(200).json({
@@ -473,7 +478,7 @@ const recruiterProfile = await RecruiterProfile.findOne({
    Delete COMPANY BANNER
 ====================== */
 export const deleteCompanyBanner = asyncHandler(async (req, res) => {
-const recruiterProfile = await RecruiterProfile.findOne({
+  const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,
   });
   if (!recruiterProfile) {
@@ -481,7 +486,7 @@ const recruiterProfile = await RecruiterProfile.findOne({
       message: "Recruiter Profile not found",
     });
   }
-  const company = await Company.findOne({owner: recruiterProfile._id});
+  const company = await Company.findOne({ owner: recruiterProfile._id });
 
   if (!company) {
     return res.status(404).json({
@@ -490,11 +495,11 @@ const recruiterProfile = await RecruiterProfile.findOne({
   }
 
   let companyBackground = {
-      backgroundType: "banner",
-      bannerId: null,
-      url: "",
-      public_id: "",
-    };
+    backgroundType: "banner",
+    bannerId: null,
+    url: "",
+    public_id: "",
+  };
 
   if (company.companyBackground?.public_id) {
     await cloudinary.uploader.destroy(company.companyBackground?.public_id);
@@ -503,9 +508,9 @@ const recruiterProfile = await RecruiterProfile.findOne({
   const updated = await Company.findByIdAndUpdate(
     company._id,
     {
-     companyBackground
+      companyBackground
     },
-    {returnDocument: "after"}
+    { returnDocument: "after" }
   );
 
   res.status(200).json({
