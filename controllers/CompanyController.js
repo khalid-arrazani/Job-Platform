@@ -57,6 +57,7 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
     totalPages: Math.ceil(totalJobs / limit),
     success: true,
     JobsWithApply,
+    companies
   });
 });
 
