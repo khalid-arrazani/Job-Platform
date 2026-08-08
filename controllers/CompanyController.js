@@ -42,7 +42,7 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
       });
 
       return {
-        ...job.toObject(),
+        ...company.toObject(),
         applicationsCount,jobsCount
       };
     })
