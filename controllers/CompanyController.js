@@ -27,6 +27,7 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
       const applicationsCount = await Apply.countDocuments({
         company: company._id,
       });
+      
       const totalJobs = await Job.find(filter)
         .where("title").regex(new RegExp(search, "i"))
 
