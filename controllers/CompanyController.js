@@ -16,6 +16,11 @@ import Job from "../models/Job.js";
 ====================== */
 export const getAllCompanies = asyncHandler(async (req, res) => {
 
+
+  const page = parseInt(req.query.page) || 1;
+
+  const limit = 8;
+
   const search = req.query.search || ""
 
   const companies = await Company.find()
@@ -24,24 +29,32 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
 
   const JobsWithApply = await Promise.all(
     companies.map(async (company) => {
+
+
       const applicationsCount = await Apply.countDocuments({
         company: company._id,
       });
-      
-      const totalJobs = await Job.find(filter)
-        .where("title").regex(new RegExp(search, "i"))
+
+       const jobsCount = await Job.countDocuments({
+        createdBy: company._id,
+      });
 
       return {
         ...job.toObject(),
-        applicationsCount
+        applicationsCount,jobsCount
       };
     })
   );
 
+  const totalJobs = await Job.find({
+    company: company._id,
+  })
+    .where("title").regex(new RegExp(search, "i"))
 
 
 
   res.status(200).json({
+    totalPages: Math.ceil(totalJobs.length / limit),
     success: true,
     JobsWithApply,
   });
