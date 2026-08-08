@@ -21,7 +21,19 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
     .populate("owner", "email role")
     .sort({ createdAt: -1 });
 
-    
+    const JobsWithApply = await Promise.all(
+    companies.map(async (Apply) => {
+      const applicationsCount = await Apply.countDocuments({
+        job: Apply._id,
+      });
+
+      return {
+        ...job.toObject(),
+        applicationsCount,
+      };
+
+    })
+  );
 
   res.status(200).json({
     success: true,
