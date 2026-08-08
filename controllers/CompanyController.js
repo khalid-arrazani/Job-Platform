@@ -15,9 +15,12 @@ import Job from "../models/Job.js";
    GET ALL COMPANIES
 ====================== */
 export const getAllCompanies = asyncHandler(async (req, res) => {
+
+
   const companies = await Company.find()
     .populate("owner", "email role")
     .sort({ createdAt: -1 });
+
 
   res.status(200).json({
     success: true,
