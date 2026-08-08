@@ -25,7 +25,10 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
 
   const companies = await Company.find()
     .populate("owner", "email role")
-    .sort({ createdAt: -1 }).where("title").regex(new RegExp(search, "i"));
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .where("title")
+    .regex(new RegExp(search, "i"));
 
   const JobsWithApply = await Promise.all(
     companies.map(async (company) => {
@@ -46,15 +49,14 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
     })
   );
 
-  const totalJobs = await Job.find({
-    company: company._id,
-  })
-    .where("title").regex(new RegExp(search, "i"))
+  const totalJobs = await Company.countDocuments()
+    .where("title")
+    .regex(new RegExp(search, "i"))
 
 
 
   res.status(200).json({
-    totalPages: Math.ceil(totalJobs.length / limit),
+    totalPages: Math.ceil(totalJobs / limit),
     success: true,
     JobsWithApply,
   });
