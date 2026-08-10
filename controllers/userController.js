@@ -27,7 +27,11 @@ export const getMyAccount = asyncHandler(async (req, res) => {
     });
   }
 
-  res.status(200).json(user);
+  res.status(200).json({
+    success: true,
+    message: "get user successful",
+     user
+  });
 });
 
 
@@ -117,7 +121,7 @@ export const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
   const user = await User.findById(req.user.id);
-  if (!user){
+  if (!user) {
     return res.status(404).json({
       message: "User not found"
     });
