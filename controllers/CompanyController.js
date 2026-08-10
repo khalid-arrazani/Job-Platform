@@ -192,7 +192,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
     company: company._id,
     status: "hired",
   });
-  
+
   const companyViews = company.companyViews
 
 

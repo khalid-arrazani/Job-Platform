@@ -11,6 +11,8 @@ import {
   changePassword
 } from "../controllers/userController.js";
 
+
+
 // get my profile for jobSeeker and recruiter
 router.get(
   "/me",
@@ -22,7 +24,8 @@ router.get(
 // update my profile for jobSeeker and recruiter
 router.patch(
   "/me",
-  protect, updateMyAccount
+  protect,
+  updateMyAccount
 );
 
 // delete my account for jobSeeker and recruiter
