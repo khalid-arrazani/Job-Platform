@@ -165,8 +165,10 @@ export const getCompanyById = asyncHandler(async (req, res) => {
   // Active Jobs
 
   const activeJobs = jobs.filter((job) => job.status === "active");
+
   const totalActiveJobs = activeJobs.length
   // Total Applicants
+
   const applicants = await Apply.countDocuments({
     company: company._id,
   });
@@ -183,12 +185,14 @@ export const getCompanyById = asyncHandler(async (req, res) => {
   });
 
 
+
   // Hired
   const hired = await Apply.countDocuments({
     company: company._id,
     status: "hired",
   });
   const companyViews = company.companyViews
+
 
   res.status(200).json({
     success: true,
@@ -200,6 +204,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
     activeJobs,
     companyViews,
     totalActiveJobs
+});
 });
 
 
