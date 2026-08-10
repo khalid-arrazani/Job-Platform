@@ -32,6 +32,7 @@ export const getMyAccount = asyncHandler(async (req, res) => {
     message: "get user successful",
      user
   });
+  
 });
 
 
