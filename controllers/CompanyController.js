@@ -151,6 +151,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
       "owner",
     );
 
+
   if (!company) {
     return res.status(404).json({
       message: "Company not found",
@@ -191,6 +192,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
     company: company._id,
     status: "hired",
   });
+  
   const companyViews = company.companyViews
 
 
@@ -205,6 +207,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
     companyViews,
     totalActiveJobs
 });
+
 });
 
 
