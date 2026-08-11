@@ -99,32 +99,7 @@ const recruiterProfileSchema = new mongoose.Schema(
 
     },
 
-    companyName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    companyLogo: {
-      url: {
-        type: String,
-        default: ""
-      },
-      public_id: {
-        type: String,
-        default: ""
-      }
-    },
-
-    companyDescription: {
-      type: String,
-      default: "Unknown",
-    },
-
-    Companylocation: {
-      type: String,
-      default: "Unknown",
-    },
+  
 
   },
   { timestamps: true }
