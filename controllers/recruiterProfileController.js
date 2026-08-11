@@ -83,19 +83,23 @@ export const createRecruiterProfile = asyncHandler(async (req, res) => {
       message: "Profile already exists"
     });
   };
+   let ProfilesImage
+   if (req.files?.profileImage?.[0]) {
+      ProfilesImage = await uploadToCloudinary(req.files.profileImage[0].buffer);
+    }
 
-  const image =
-    await uploadToCloudinary(
-      req.file.buffer
-    );
+
 
   const profile = await RecruiterProfile.create({
     userId: req.user.id,
-    
-    ProfileImage: {
-      url: image.secure_url,
-      public_id: image.public_id
-    },
+
+    ProfileImage: ProfilesImage ? {
+      url: ProfilesImage.secure_url,
+      public_id: ProfilesImage.public_id
+    }:{
+      url:"",
+      public_id:""
+    } ,
     ...req.body
   });
 
