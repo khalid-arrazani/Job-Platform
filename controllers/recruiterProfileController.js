@@ -84,6 +84,7 @@ export const createRecruiterProfile = asyncHandler(async (req, res) => {
     });
   };
    let ProfilesImage
+   
    if (req.files?.profileImage?.[0]) {
       ProfilesImage = await uploadToCloudinary(req.files.profileImage[0].buffer);
     }
