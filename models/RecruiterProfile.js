@@ -206,7 +206,7 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
 
   if (!isUpdate) {
     schema = schema.fork(
-      ["fullName", "companyName"],
+      ["fullName", "headline","location"],
       (field) => field.required()
     );
   }

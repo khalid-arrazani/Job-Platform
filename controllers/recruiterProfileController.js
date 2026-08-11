@@ -91,6 +91,7 @@ export const createRecruiterProfile = asyncHandler(async (req, res) => {
 
   const profile = await RecruiterProfile.create({
     userId: req.user.id,
+    
     ProfileImage: {
       url: image.secure_url,
       public_id: image.public_id
