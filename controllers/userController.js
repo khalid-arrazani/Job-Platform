@@ -38,9 +38,6 @@ export const getMyAccount = asyncHandler(async (req, res) => {
 
 
 
-
-
-
 // Update authenticated user profile
 export const updateMyAccount = asyncHandler(async (req, res) => {
 
