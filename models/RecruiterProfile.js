@@ -76,8 +76,6 @@ const recruiterProfileSchema = new mongoose.Schema(
       default: null,
     },
 
-
-
     hiring_Focus: {
 
       hiring_Types: {
@@ -186,15 +184,17 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
         .items(Joi.string())
         .default([]),
     }).default({}),
+
+    location: Joi.string().allow("").max(100),
+    website: Joi.string().allow(""),
+
     companyName: Joi.string().min(2).max(150),
 
     companyDescription: Joi.string().allow("").max(1000),
 
-    website: Joi.string().allow(""),
+  
 
     industry: Joi.string().allow("").max(100),
-
-    location: Joi.string().allow("").max(100),
 
     Companylocation: Joi.string().allow("").max(100),
 
