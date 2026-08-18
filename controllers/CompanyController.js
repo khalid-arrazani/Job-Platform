@@ -19,7 +19,7 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
   const limit = 8;
-  const search = req.query.search || "Google"
+  const search = req.query.search || ""
 
   const companies = await Company.find({
   name: {
