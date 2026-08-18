@@ -12,9 +12,6 @@ import cloudinary from "../config/cloudinary.js";
 /* ======================
    RECRUITER PROFILE
 ====================== */
-
-
-
 // Get authenticated recruiter profile
 export const getRecruiterProfile = asyncHandler(async (req, res) => {
 

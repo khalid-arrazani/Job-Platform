@@ -19,13 +19,21 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
   const limit = 8;
-  const search = req.query.search || ""
+  const search = req.query.search || "Google"
 
-  const companies = await Company.find()
+  const companies = await Company.find({
+  title: {
+    $regex: search,
+    $options: "i",
+  },
+})
     .populate("owner", "email role")
     .skip((page - 1) * limit)
     .limit(limit)
-   
+ 
+
+
+
 
   const JobsWithApply = await Promise.all(
     companies.map(async (company) => {
