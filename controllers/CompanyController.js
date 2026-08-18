@@ -22,7 +22,7 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
   const search = req.query.search || "Google"
 
   const companies = await Company.find({
-  title: {
+  name: {
     $regex: search,
     $options: "i",
   },
