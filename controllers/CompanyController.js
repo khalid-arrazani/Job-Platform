@@ -18,9 +18,7 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
 
 
   const page = parseInt(req.query.page) || 1;
-
   const limit = 8;
-
   const search = req.query.search || ""
 
   const companies = await Company.find()
@@ -31,8 +29,6 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
 
   const JobsWithApply = await Promise.all(
     companies.map(async (company) => {
-
-
       const applicationsCount = await Apply.countDocuments({
         company: company._id,
       });
@@ -50,8 +46,6 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
 
   const totalJobs = await Company.countDocuments()
   
-
-
 
   res.status(200).json({
     totalPages: Math.ceil(totalJobs / limit),
