@@ -40,7 +40,7 @@ export const getRecruiterProfile = asyncHandler(async (req, res) => {
 
 // Get authenticated recruiter profile By Id 
 export const BringProfileByIdR = asyncHandler(async (req, res) => {
- console.log(8888);
+
   const ProfileId = req.params.ProfileId;
 
 
