@@ -16,7 +16,7 @@ import Job from "../models/Job.js";
 ====================== */
 export const getAllCompanies = asyncHandler(async (req, res) => {
 
-
+  console.log(req.query);
   const page = parseInt(req.query.page) || 1;
   const limit = 8;
 
