@@ -49,7 +49,12 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
     })
   );
 
-  const totalJobs = await Company.countDocuments()
+  const totalJobs = await Company.countDocuments({
+  name: {
+    $regex: search,
+    $options: "i",
+  },
+ })
   
 
   res.status(200).json({
