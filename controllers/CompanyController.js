@@ -18,7 +18,7 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
 
   console.log(req.query);
   const page = parseInt(req.query.page) || 1;
-  const limit = 8;
+  const limit = 1;
 
   const search = req.query.search || ""
 
