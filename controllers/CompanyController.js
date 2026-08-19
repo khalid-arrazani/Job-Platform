@@ -56,7 +56,6 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
   },
  })
   
-
   res.status(200).json({
     totalPages: Math.ceil(totalJobs / limit),
     success: true,
