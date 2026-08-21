@@ -17,25 +17,25 @@ const page = parseInt(req.query.page) || 1;
 const search = req.query.search || "";
 
   const limit = 8;
+  const filter = {};
 
-
-  const jobs = await Job.find({
-  title: {
-    $regex: search,
-    $options: "i",
-  },
- })
+if (search) {
+  filter.$or = [
+    { title: { $regex: search, $options: "i" } },
+    { jobType: { $regex: search, $options: "i" } },
+    { workMode: { $regex: search, $options: "i" } },
+    { experienceLevel: { $regex: search, $options: "i" } },
+  ];
+}
+  const jobs = await Job.find(filter
+ )
     .skip((page - 1) * limit)
     .limit(limit)
     .populate("createdBy", "name companyLogo description");
 
-  if (jobs.length === 0) {
-    return res.status(404).json({
-      message: "No jobs found"
-    });
-  }
 
-  const total = await Job.countDocuments();
+
+  const total = await Job.countDocuments(filter);
 
 
   //  GET saved jobs for this user
