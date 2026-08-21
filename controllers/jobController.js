@@ -13,12 +13,19 @@ import Apply from "../models/Apply.js";
 // Get all jobs for job seekers with pagination
 export const getAllJobs = asyncHandler(async (req, res) => {
 
-  const filter = parseInt(req.query.filter) ;
+const page = parseInt(req.query.page) || 1;
+const search = req.query.search || "";
+
   const limit = 8;
 
- console.log(filter);
-  const jobs = await Job.find()
-    .skip((filter.page || 1 - 1) * limit)
+
+  const jobs = await Job.find({
+  title: {
+    $regex: search,
+    $options: "i",
+  },
+ })
+    .skip((page - 1) * limit)
     .limit(limit)
     .populate("createdBy", "name companyLogo description");
 
@@ -29,7 +36,6 @@ export const getAllJobs = asyncHandler(async (req, res) => {
   }
 
   const total = await Job.countDocuments();
-
 
 
   //  GET saved jobs for this user
