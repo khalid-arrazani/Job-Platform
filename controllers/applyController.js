@@ -146,6 +146,7 @@ export const getJobApplications = asyncHandler(async (req, res) => {
   const search = req.query.search || ""
   const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : -1
 
+  
   const applications = await Apply.find(
     filter,
     "status createdAt"
