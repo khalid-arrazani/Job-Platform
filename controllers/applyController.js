@@ -132,15 +132,19 @@ export const getJobApplications = asyncHandler(async (req, res) => {
   let filter = {
    company: company._id 
   }
+
+
   const filterFields = ["status"]
 
-  
+
   filterFields.forEach((field) => {
     if (req.query[field] !== undefined &&
       req.query[field].length >= 1 &&
-      req.query[field] !== "") {
+      req.query[field] !== "")
+      
+      {
       filter[field] = req.query[field];
-    }
+      }
   });
 
 
