@@ -517,6 +517,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   };
 
 
+
   let filter = {
     createdBy: CompanyId , status:"active"
   }
@@ -525,8 +526,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   const search = req.query.search || ""
   const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
 
-
-
+  
   const jobs = await Job.find(filter)
     .sort({ createdAt: sort })
     .populate("createdBy", "companyLogo name description")
