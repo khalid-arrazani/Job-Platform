@@ -494,7 +494,7 @@ export const toggleStatus = asyncHandler(async (req, res) => {
 
 
 //get all Companies jobs by Company Id  
-export const getMyJobs = asyncHandler(async (req, res) => {
+export const getCompaniesJobs = asyncHandler(async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
 
@@ -526,7 +526,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   const search = req.query.search || ""
   const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
 
-  
+
   const jobs = await Job.find(filter)
     .sort({ createdAt: sort })
     .populate("createdBy", "companyLogo name description")
