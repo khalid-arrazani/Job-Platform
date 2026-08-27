@@ -11,9 +11,9 @@ import {
   getJobById,
   createJob,
   deleteMyJobs,
- 
   toggleStatus,
-  UpdateJob
+  UpdateJob,
+  getCompaniesJobs
 } from "../controllers/jobController.js";
 
 
@@ -31,6 +31,8 @@ router.get(
   recruiterOnly,
   getMyJobs
 );
+
+router.get("/company-jobs", protect, getCompaniesJobs);
 
 router.delete(
   "/Delete_My-Jobs/:JobId",
