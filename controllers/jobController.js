@@ -13,22 +13,22 @@ import Apply from "../models/Apply.js";
 // Get all jobs for job seekers with pagination
 export const getAllJobs = asyncHandler(async (req, res) => {
 
-const page = parseInt(req.query.page) || 1;
-const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const search = req.query.search || "";
 
   const limit = 8;
   const filter = {};
 
-if (search) {
-  filter.$or = [
-    { title: { $regex: search, $options: "i" } },
-    { jobType: { $regex: search, $options: "i" } },
-    { workMode: { $regex: search, $options: "i" } },
-    { experienceLevel: { $regex: search, $options: "i" } },
-  ];
-}
+  if (search) {
+    filter.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { jobType: { $regex: search, $options: "i" } },
+      { workMode: { $regex: search, $options: "i" } },
+      { experienceLevel: { $regex: search, $options: "i" } },
+    ];
+  }
   const jobs = await Job.find(filter
- )
+  )
     .skip((page - 1) * limit)
     .limit(limit)
     .populate("createdBy", "name companyLogo description");
@@ -498,17 +498,23 @@ export const getCompaniesJobs = asyncHandler(async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
 
-  const CompanyId = parseInt(req.query.CompanyId);
+  const CompanyId = req.query.CompanyId;
 
-  if ( !CompanyId){
+  const search = req.query.search || ""
+  const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
+
+  const limit = 3;
+
+
+  if (!CompanyId) {
     return res.status(400).json({
       message: "CompanyId not send",
     });
   }
 
-  const limit = 3;
 
-  const company = await Company.findById(CompanyId)
+
+  const company = await Company.findById(CompanyId);
 
   if (!company) {
     return res.status(404).json({
@@ -519,12 +525,19 @@ export const getCompaniesJobs = asyncHandler(async (req, res) => {
 
 
   let filter = {
-    createdBy: CompanyId , status:"active"
+    createdBy: CompanyId, status: "active"
   }
 
 
-  const search = req.query.search || ""
-  const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
+
+
+
+  if (search) {
+    filter.title = {
+      $regex: search,
+      $options: "i",
+    };
+  }
 
 
   const jobs = await Job.find(filter)
@@ -532,22 +545,17 @@ export const getCompaniesJobs = asyncHandler(async (req, res) => {
     .populate("createdBy", "companyLogo name description")
     .skip((page - 1) * limit)
     .limit(limit)
-    .where("title").regex(new RegExp(search, "i"))
-  
 
 
-  const countJobs = await Job.countDocuments(filter)
 
 
-  
+  const countJobs = await Job.countDocuments(filter);
 
 
   res.status(200).json({
     page,
-
-    jobs: JobsWithApply,
-
-    totalPages: Math.ceil(totalJobs.length / limit)
+    totalPages: Math.ceil(countJobs / limit),
+    jobs
   });
 
 }); 
