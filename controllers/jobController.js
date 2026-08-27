@@ -528,10 +528,6 @@ export const getCompaniesJobs = asyncHandler(async (req, res) => {
     createdBy: CompanyId, status: "active"
   }
 
-
-
-
-
   if (search) {
     filter.title = {
       $regex: search,
@@ -540,13 +536,12 @@ export const getCompaniesJobs = asyncHandler(async (req, res) => {
   }
 
 
+
   const jobs = await Job.find(filter)
     .sort({ createdAt: sort })
     .populate("createdBy", "companyLogo name description")
     .skip((page - 1) * limit)
     .limit(limit)
-
-
 
 
   const countJobs = await Job.countDocuments(filter);
