@@ -491,3 +491,63 @@ export const toggleStatus = asyncHandler(async (req, res) => {
     message: "Job status updated successfully.",
   });
 });
+
+
+//get all Companies jobs by Company Id  
+export const getMyJobs = asyncHandler(async (req, res) => {
+
+  const page = parseInt(req.query.page) || 1;
+  
+  const CompanyId = parseInt(req.query.CompanyId);
+
+  if ( !CompanyId){
+    return res.status(400).json({
+      message: "CompanyId not send",
+    });
+  }
+
+  const limit = 3;
+
+  const company = await Company.findById(CompanyId)
+
+  if (!company) {
+    return res.status(404).json({
+      message: "Company not found",
+    });
+  };
+
+
+  let filter = {
+    createdBy: CompanyId , status:"active"
+  }
+
+
+  const search = req.query.search || ""
+  const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
+
+
+
+  const jobs = await Job.find(filter)
+    .sort({ createdAt: sort })
+    .populate("createdBy", "companyLogo name description")
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .where("title").regex(new RegExp(search, "i"))
+  
+
+
+  const countJobs = await Job.countDocuments(filter)
+
+
+  
+
+
+  res.status(200).json({
+    page,
+
+    jobs: JobsWithApply,
+
+    totalPages: Math.ceil(totalJobs.length / limit)
+  });
+
+}); 
