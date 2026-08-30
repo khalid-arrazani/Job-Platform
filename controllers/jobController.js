@@ -500,8 +500,6 @@ export const getCompaniesJobs = asyncHandler(async (req, res) => {
 
 
 
-
-
   const search = req.query.search || ""
   const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
   const limit = 3;
@@ -518,7 +516,7 @@ export const getCompaniesJobs = asyncHandler(async (req, res) => {
 
 
   const company = await Company.findById(CompanyId);
-  
+
   if (!company) {
     return res.status(404).json({
       message: "Company not found",
