@@ -498,14 +498,16 @@ export const getCompaniesJobs = asyncHandler(async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
 
-  const CompanyId = req.query.CompanyId;
+
+
+
 
   const search = req.query.search || ""
   const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
-
   const limit = 3;
 
 
+  const CompanyId = req.query.CompanyId;
   if (!CompanyId) {
     return res.status(400).json({
       message: "CompanyId not send",
@@ -514,8 +516,9 @@ export const getCompaniesJobs = asyncHandler(async (req, res) => {
 
 
 
-  const company = await Company.findById(CompanyId);
 
+  const company = await Company.findById(CompanyId);
+  
   if (!company) {
     return res.status(404).json({
       message: "Company not found",
