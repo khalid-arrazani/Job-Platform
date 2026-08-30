@@ -503,7 +503,7 @@ export const getCompaniesJobs = asyncHandler(async (req, res) => {
 
   const search = req.query.search || ""
   const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
-  const limit = 3;
+  const limit = 8;
 
 
   const CompanyId = req.query.CompanyId;
