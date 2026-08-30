@@ -33,9 +33,9 @@ router.get(
 );
 
 router.get("/company-jobs",
-   protect,
-   getCompaniesJobs
- );
+  protect,
+  getCompaniesJobs
+);
 
 
 
