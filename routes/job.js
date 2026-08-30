@@ -35,7 +35,10 @@ router.get(
 router.get("/company-jobs",
    protect,
    getCompaniesJobs
-  );
+ );
+
+
+
 
 router.delete(
   "/Delete_My-Jobs/:JobId",
