@@ -496,8 +496,9 @@ export const toggleStatus = asyncHandler(async (req, res) => {
 //get all Companies jobs by Company Id  
 export const getCompaniesJobs = asyncHandler(async (req, res) => {
 
-  const page = parseInt(req.query.page) || 1;
+  console.log(req.query);
 
+  const page = parseInt(req.query.page) || 1;
 
 
   const search = req.query.search || ""
