@@ -32,12 +32,11 @@ router.get(
   getMyJobs
 );
 
+
 router.get("/company-jobs",
   protect,
   getCompaniesJobs
 );
-
-
 
 
 router.delete(
