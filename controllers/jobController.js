@@ -514,8 +514,6 @@ export const getCompaniesJobs = asyncHandler(async (req, res) => {
   }
 
 
-
-
   const company = await Company.findById(CompanyId);
 
   if (!company) {

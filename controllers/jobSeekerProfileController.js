@@ -81,16 +81,25 @@ export const createProfile = asyncHandler(async (req, res) => {
     });
   };
 
-  const image =
-    await uploadToCloudinary(
-      req.file.buffer
-    );
+ let ProfilesImage
+   
+   if (req.files?.profileImage?.[0]) {
+      ProfilesImage = await uploadToCloudinary(req.files.profileImage[0].buffer);
+    }
 
-    //i need here some check if there is imag
+
+
+  
 
   const profile = await JobSeekerProfile.create({
     userId: req.user.id,
-    ProfileImage: image.secure_url,
+    ProfileImage: ProfilesImage ? {
+      url: ProfilesImage.secure_url,
+      public_id: ProfilesImage.public_id
+    }:{
+      url:"",
+      public_id:""
+    } ,
     ...req.body
   });
 

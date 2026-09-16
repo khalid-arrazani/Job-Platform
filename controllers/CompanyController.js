@@ -149,6 +149,12 @@ export const getMyCompany = asyncHandler(async (req, res) => {
 ====================== */
 export const getCompanyById = asyncHandler(async (req, res) => {
 
+  if (!req.params.id) {
+    return res.status(404).json({
+      message: "Company Id  not found",
+    });
+  }
+
   const company = await Company.findByIdAndUpdate(req.params.id, { $inc: { companyViews: 1 } },
     { returnDocument: false }).populate(
       "owner",
