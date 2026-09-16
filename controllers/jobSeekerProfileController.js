@@ -115,7 +115,7 @@ export const createProfile = asyncHandler(async (req, res) => {
     success: true,
     message: "Profile created successfully",
     profile: profile,
-    Profile: image.secure_url
+    Profile: ProfilesImage 
   });
 });
 
