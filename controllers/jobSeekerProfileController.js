@@ -136,7 +136,9 @@ export const UpdatePhotoProfile = asyncHandler(async (req, res) => {
     });
   };
 
-  if (!req.file) {
+  
+
+  if (!req.files?.profileImage?.[0]) {
     return res.status(400).json({
       message:
         "Image is required"
@@ -150,7 +152,7 @@ export const UpdatePhotoProfile = asyncHandler(async (req, res) => {
   }
 
   const image = await uploadToCloudinary(
-    req.file.buffer
+    req.files.profileImage[0].buffer
   );
 
 
