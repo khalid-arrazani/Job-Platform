@@ -124,7 +124,7 @@ export const createProfile = asyncHandler(async (req, res) => {
 // Update Profile Photo
 export const UpdatePhotoProfile = asyncHandler(async (req, res) => {
 
-  console.log(req.file);
+
 
   const exists = await JobSeekerProfile.findOne({
     userId: req.user.id
