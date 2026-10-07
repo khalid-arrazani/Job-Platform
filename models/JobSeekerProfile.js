@@ -159,9 +159,10 @@ export const validateJobSeekerProfile = (
         .valid(
           "immediately",
           "1_week",
-          "1_month"
+          "1_month",
+          "none"
         )
-        .default("immediately"),
+        .default("none"),
 
       languages: Joi.array()
         .items(Joi.string())
@@ -171,9 +172,10 @@ export const validateJobSeekerProfile = (
         .valid(
           "junior",
           "mid",
-          "senior"
+          "senior",
+          "none"
         )
-        .default("junior"),
+        .default("none"),
 
       preferredJobType: Joi.string()
         .valid(
@@ -182,9 +184,10 @@ export const validateJobSeekerProfile = (
           "remote",
           "internship",
           "freelance",
-          "contract"
+          "contract",
+          "none"
         )
-        .default("full-time"),
+        .default("none"),
     }),
 
     skills: Joi.array().items(
