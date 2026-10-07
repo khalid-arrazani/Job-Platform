@@ -210,11 +210,11 @@ export const updateProfile = asyncHandler(async (req, res) => {
   const updateData = {};
 
   allowedFields.forEach((field) => {
-
     if (req.body[field] !== undefined) {
       updateData[field] = req.body[field];
     }
   });
+
 
   const profile = await JobSeekerProfile.findOneAndUpdate(
     { userId: req.user.id },
