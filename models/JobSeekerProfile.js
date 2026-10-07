@@ -48,8 +48,9 @@ const jobSeekerProfileSchema = new mongoose.Schema(
           "immediately",
           "1_week",
           "1_month",
+          "none",
         ],
-        default: "immediately",
+        default: "none",
       },
 
       languages: {
@@ -63,8 +64,9 @@ const jobSeekerProfileSchema = new mongoose.Schema(
           "junior",
           "mid",
           "senior",
+          "none",
         ],
-        default: "junior",
+        default: "none",
       },
 
       preferredJobType: {
@@ -76,8 +78,9 @@ const jobSeekerProfileSchema = new mongoose.Schema(
           "internship",
           "freelance",
           "contract",
+          "none",
         ],
-        default: "full-time",
+        default: "none",
       },
     },
 
