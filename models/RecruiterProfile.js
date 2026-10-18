@@ -99,7 +99,7 @@ const recruiterProfileSchema = new mongoose.Schema(
 
     },
 
-  
+
 
   },
   { timestamps: true }
@@ -121,7 +121,7 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
       public_id: Joi.string().allow("")
     }),
 
-    aboutMe: Joi.string().default("Unknown"),
+    aboutMe: Joi.string().default(""),
 
     experienceLevel: Joi.string()
       .valid(
@@ -139,6 +139,9 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
         url: Joi.string().uri().required(),
       })
     ).default([]),
+
+
+
 
     hiring_Focus: Joi.object({
       hiring_Types: Joi.array()
@@ -160,20 +163,21 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
         .default([]),
     }).default({}),
 
+
+
+
+
+
     location: Joi.string().allow("").max(100),
     website: Joi.string().allow(""),
-
-   
-
-
     industry: Joi.string().allow("").max(100),
 
-  
+
   });
 
   if (!isUpdate) {
     schema = schema.fork(
-      ["fullName", "headline","location"],
+      ["fullName", "headline", "location"],
       (field) => field.required()
     );
   }
