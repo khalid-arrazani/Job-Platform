@@ -46,12 +46,6 @@ const recruiterProfileSchema = new mongoose.Schema(
       default: "",
     },
 
-    experienceLevel: {
-      type: String,
-      enum: ["Entry Level", "Junior", "Mid Level", "Senior", "Lead"],
-      default: "Entry Level",
-    },
-
     socialLinks: [
       {
         platform: String,
