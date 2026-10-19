@@ -58,18 +58,13 @@ const recruiterProfileSchema = new mongoose.Schema(
       default: "",
     },
 
-    industry: {
-      type: String,
-      default: "",
-    },
-
     company: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Company",
       unique: true,
       default: null,
     },
-    
+
     professionalTitle: {
       type: [String],
       default: [],
