@@ -70,6 +70,11 @@ const recruiterProfileSchema = new mongoose.Schema(
       default: [],
     },
 
+    Languages: {
+      type: [String],
+      default: [],
+    },
+    
     hiring_Focus: {
 
       jobCategoriesList: {
