@@ -70,7 +70,7 @@ const recruiterProfileSchema = new mongoose.Schema(
       default: [],
     },
 
-    Languages: {
+    languages: {
       type: [String],
       default: [],
     },
@@ -106,7 +106,7 @@ const recruiterProfileSchema = new mongoose.Schema(
         default: [],
       },
       aboutHiringfocus: {
-        type: String,
+        type: String, trim: true,
         default: "",
       },
 
