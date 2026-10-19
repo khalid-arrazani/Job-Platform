@@ -109,8 +109,6 @@ const recruiterProfileSchema = new mongoose.Schema(
 
     },
 
-
-
   },
   { timestamps: true }
 );
@@ -154,24 +152,35 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
 
 
     hiring_Focus: Joi.object({
-      hiring_Types: Joi.array()
-        .items(
-          Joi.string().valid(
-            "Full-time",
-            "Part-time",
-            "Contract",
-            "Internship",
-            "Remote",
-            "Hybrid",
-            "Freelance"
-          )
-        )
-        .default([]),
+  jobCategoriesList: Joi.array()
+    .items(Joi.string().trim())
+    .default([]),
 
-      roles_I_hire_for: Joi.array()
-        .items(Joi.string())
-        .default([]),
-    }).default({}),
+  rolesList: Joi.array()
+    .items(Joi.string().trim())
+    .default([]),
+
+  experienceLevelsList: Joi.array()
+    .items(Joi.string().trim())
+    .default([]),
+
+  employmentTypesList: Joi.array()
+    .items(Joi.string().trim())
+    .default([]),
+
+  workArrangementsList: Joi.array()
+    .items(Joi.string().trim())
+    .default([]),
+
+  preferredSkillsList: Joi.array()
+    .items(Joi.string().trim())
+    .default([]),
+
+  aboutHiringfocus: Joi.string()
+    .trim()
+    .allow("")
+    .default(""),
+}).default({}),
 
 
 
