@@ -69,6 +69,11 @@ const recruiterProfileSchema = new mongoose.Schema(
       unique: true,
       default: null,
     },
+    
+    professionalTitle: {
+      type: [String],
+      default: [],
+    },
 
     hiring_Focus: {
 
