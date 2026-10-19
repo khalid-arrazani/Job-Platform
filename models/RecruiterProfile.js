@@ -74,7 +74,7 @@ const recruiterProfileSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-    
+
     hiring_Focus: {
 
       jobCategoriesList: {
@@ -130,15 +130,7 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
 
     aboutMe: Joi.string().default(""),
 
-    experienceLevel: Joi.string()
-      .valid(
-        "Entry Level",
-        "Junior",
-        "Mid Level",
-        "Senior",
-        "Lead"
-      )
-      .default("Entry Level"),
+   
 
     socialLinks: Joi.array().items(
       Joi.object({
@@ -146,9 +138,6 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
         url: Joi.string().uri().required(),
       })
     ).default([]),
-
-
-
 
     hiring_Focus: Joi.object({
 
@@ -181,15 +170,10 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
         .allow("")
         .default(""),
     }).default({}),
-
-
-
-
-
-
+    
     location: Joi.string().allow("").max(100),
     website: Joi.string().allow(""),
-    industry: Joi.string().allow("").max(100),
+
 
 
   });
