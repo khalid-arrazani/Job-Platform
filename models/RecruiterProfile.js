@@ -74,6 +74,10 @@ const recruiterProfileSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    skills: {
+      type: [String],
+      default: [],
+    },
 
     hiring_Focus: {
 
@@ -170,7 +174,7 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
         .allow("")
         .default(""),
     }).default({}),
-    
+
     location: Joi.string().allow("").max(100),
     website: Joi.string().allow(""),
 
