@@ -133,7 +133,7 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
       public_id: Joi.string().allow("")
     }),
 
-    aboutMe: Joi.string().default(""),
+    aboutMe: Joi.string().default("").allow(""),
 
     socialLinks: Joi.array().items(
       Joi.object({
