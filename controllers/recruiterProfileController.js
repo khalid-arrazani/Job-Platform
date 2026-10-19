@@ -194,24 +194,6 @@ export const updateRecruiterProfile = asyncHandler(async (req, res) => {
     userId: req.user.id
   });
 
-  if (req.file) {
-
-    const image = await uploadToCloudinary(req.file.buffer);
-
-    if (exists.ProfileImage.public_id) {
-      await cloudinary.uploader.destroy(
-        exists.ProfileImage.public_id
-      );
-    }
-
-    updateData.companyLogo = {
-      url: image.secure_url,
-      public_id: image.public_id,
-    };
-  }
-
-
-
   const profile = await RecruiterProfile.findOneAndUpdate(
     { userId: req.user.id },
     { $set: updateData },
