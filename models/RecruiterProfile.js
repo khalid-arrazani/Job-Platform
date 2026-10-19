@@ -78,24 +78,34 @@ const recruiterProfileSchema = new mongoose.Schema(
 
     hiring_Focus: {
 
-      hiring_Types: {
-        type: [String],
-        enum: [
-          "Full-time",
-          "Part-time",
-          "Contract",
-          "Internship",
-          "Remote",
-          "Hybrid",
-          "Freelance"
-        ],
-        default: ["Full-time"],
-      },
-
-      roles_I_hire_for: {
+      jobCategoriesList: {
         type: [String],
         default: [],
       },
+      rolesList: {
+        type: [String],
+        default: [],
+      },
+      experienceLevelsList: {
+        type: [String],
+        default: [],
+      },
+      employmentTypesList: {
+        type: [String],
+        default: [],
+      },
+      workArrangementsList: {
+        type: [String],
+        default: [],
+      },
+      preferredSkillsList: {
+        type: [String],
+        default: [],
+      },
+      aboutHiringfocus: {
+      type: String,
+      default: "",
+    },
 
     },
 
