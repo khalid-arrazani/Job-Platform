@@ -103,9 +103,9 @@ const recruiterProfileSchema = new mongoose.Schema(
         default: [],
       },
       aboutHiringfocus: {
-      type: String,
-      default: "",
-    },
+        type: String,
+        default: "",
+      },
 
     },
 
@@ -152,35 +152,36 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
 
 
     hiring_Focus: Joi.object({
-  jobCategoriesList: Joi.array()
-    .items(Joi.string().trim())
-    .default([]),
 
-  rolesList: Joi.array()
-    .items(Joi.string().trim())
-    .default([]),
+      jobCategoriesList: Joi.array()
+        .items(Joi.string().trim())
+        .default([]),
 
-  experienceLevelsList: Joi.array()
-    .items(Joi.string().trim())
-    .default([]),
+      rolesList: Joi.array()
+        .items(Joi.string().trim())
+        .default([]),
 
-  employmentTypesList: Joi.array()
-    .items(Joi.string().trim())
-    .default([]),
+      experienceLevelsList: Joi.array()
+        .items(Joi.string().trim())
+        .default([]),
 
-  workArrangementsList: Joi.array()
-    .items(Joi.string().trim())
-    .default([]),
+      employmentTypesList: Joi.array()
+        .items(Joi.string().trim())
+        .default([]),
 
-  preferredSkillsList: Joi.array()
-    .items(Joi.string().trim())
-    .default([]),
+      workArrangementsList: Joi.array()
+        .items(Joi.string().trim())
+        .default([]),
 
-  aboutHiringfocus: Joi.string()
-    .trim()
-    .allow("")
-    .default(""),
-}).default({}),
+      preferredSkillsList: Joi.array()
+        .items(Joi.string().trim())
+        .default([]),
+
+      aboutHiringfocus: Joi.string()
+        .trim()
+        .allow("")
+        .default(""),
+    }).default({}),
 
 
 
