@@ -123,6 +123,7 @@ JOI VALIDATION
 
 export const validateRecruiterProfile = (data, isUpdate = false) => {
   let schema = Joi.object({
+
     fullName: Joi.string().min(3).max(100),
 
     headline: Joi.string().min(3).max(400),
@@ -172,6 +173,18 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
         .allow("")
         .default(""),
     }).default({}),
+
+    skills: Joi.array()
+      .items(Joi.string().trim())
+      .default([]),
+
+    languages: Joi.array()
+      .items(Joi.string().trim())
+      .default([]),
+
+    professionalTitle: Joi.array()
+      .items(Joi.string().trim())
+      .default([]), 
 
     location: Joi.string().allow("").max(100),
     website: Joi.string().allow(""),
