@@ -171,9 +171,6 @@ export const UpdatePhotoProfile = asyncHandler(async (req, res) => {
 
 
 
-
-
-
 // Update authenticated recruiter profile
 export const updateRecruiterProfile = asyncHandler(async (req, res) => {
   const { error } = validateRecruiterProfile(
