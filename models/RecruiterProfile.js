@@ -154,6 +154,47 @@ const recruiterProfileSchema = new mongoose.Schema(
       },
     ],
 
+    experiences: [
+      {
+        degree: {
+          type: String,
+          required: true,
+          trim: true,
+          maxlength: 60,
+        },
+        school: {
+          type: String,
+          required: true,
+          trim: true,
+          maxlength: 40,
+        },
+        field_Of_Study: {
+          type: String,
+          default: "",
+        },
+        location: {
+          type: String,
+          default: "",
+          trim: true,
+          maxlength: 80,
+        },
+        start_Date: {
+          type: String,
+          required: true,
+        },
+        end_Date: {
+          type: String,
+          default: "",
+        },
+        description: {
+          type: String,
+          default: "",
+          trim: true,
+          maxlength: 500,
+        },
+      },
+    ],
+
   },
   { timestamps: true }
 );
@@ -223,6 +264,24 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
         company_Name: Joi.string().trim().max(30).required(),
 
         employment_Type: Joi.string().allow("").default(""),
+
+        location: Joi.string().trim().max(40).allow("").default(""),
+
+        start_Date: Joi.string().required(),
+
+        end_Date: Joi.string().allow("").default(""),
+
+        description: Joi.string().trim().max(500).allow("").default(""),
+      })
+    ).default([]),
+
+    education: Joi.array().items(
+      Joi.object({
+        degree: Joi.string().trim().max(30).required(),
+
+        school: Joi.string().trim().max(30).required(),
+
+        field_Of_Study: Joi.string().allow("").default(""),
 
         location: Joi.string().trim().max(40).allow("").default(""),
 
