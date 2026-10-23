@@ -154,7 +154,7 @@ const recruiterProfileSchema = new mongoose.Schema(
       },
     ],
 
-    experiences: [
+    education: [
       {
         degree: {
           type: String,
@@ -170,6 +170,7 @@ const recruiterProfileSchema = new mongoose.Schema(
         },
         field_Of_Study: {
           type: String,
+          maxlength: 50,
           default: "",
         },
         location: {
@@ -281,7 +282,7 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
 
         school: Joi.string().trim().max(30).required(),
 
-        field_Of_Study: Joi.string().allow("").default(""),
+        field_Of_Study: Joi.string().allow("").max(50).default(""),
 
         location: Joi.string().trim().max(40).allow("").default(""),
 
