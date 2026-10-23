@@ -278,7 +278,7 @@ export const validateRecruiterProfile = (data, isUpdate = false) => {
 
     education: Joi.array().items(
       Joi.object({
-        degree: Joi.string().trim().max(30).required(),
+        degree: Joi.string().trim().max(60).required(),
 
         school: Joi.string().trim().max(30).required(),
 
