@@ -84,7 +84,8 @@ export const getSavedJobs = async (req, res) => {
       })
       .sort({ createdAt: -1 }) // latest saved first
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .where("title").regex(new RegExp(search, "i"))
 
     const jobs = savedJobs
       .filter((item) => item.job)
