@@ -90,6 +90,9 @@ export const getSavedJobs = async (req, res) => {
       .limit(limit)
       .where("title").regex(new RegExp(search, "i"))
 
+
+
+      
     const jobs = savedJobs
       .filter((item) => item.job)
       .map((item) => ({
