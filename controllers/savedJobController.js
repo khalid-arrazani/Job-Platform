@@ -55,6 +55,8 @@ export const toggleSaveJob = async (req, res) => {
 
 export const getSavedJobs = async (req, res) => {
   try {
+
+    
     const userId = req.user.id;
 
     const page = Number(req.params.page) || 1;
