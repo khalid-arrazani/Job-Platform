@@ -74,6 +74,9 @@ export const getSavedJobs = async (req, res) => {
   const search = req.query.search || ""
   const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
 
+
+
+
     // paginated data
     const savedJobs = await SavedJob.find({ user: userId })
       .populate({
@@ -82,7 +85,7 @@ export const getSavedJobs = async (req, res) => {
           path: "createdBy",
         },
       })
-      .sort({ createdAt: -1 }) // latest saved first
+      .sort({ createdAt: sort }) // latest saved first
       .skip(skip)
       .limit(limit)
       .where("title").regex(new RegExp(search, "i"))
