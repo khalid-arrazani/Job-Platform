@@ -56,7 +56,7 @@ export const toggleSaveJob = async (req, res) => {
 export const getSavedJobs = async (req, res) => {
   try {
 
-    
+
     const userId = req.user.id;
 
     const page = Number(req.params.page) || 1;
@@ -67,6 +67,12 @@ export const getSavedJobs = async (req, res) => {
     const totalSavedJobs = await SavedJob.countDocuments({
       user: userId,
     });
+
+
+
+
+  const search = req.query.search || ""
+  const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
 
     // paginated data
     const savedJobs = await SavedJob.find({ user: userId })
