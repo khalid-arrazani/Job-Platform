@@ -78,7 +78,7 @@ export const getSavedJobs = async (req, res) => {
     const savedJobs = await SavedJob.find({ user: userId })
       .populate({
         path: "job",
-        
+
         match: {
           title: { $regex: search, $options: "i" },
         },
@@ -90,7 +90,7 @@ export const getSavedJobs = async (req, res) => {
       .sort({ createdAt: sort })
       .skip(skip)
       .limit(limit)
-      .where("title").regex(new RegExp(search, "i"))
+    
 
 
 
