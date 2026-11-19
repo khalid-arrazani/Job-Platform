@@ -78,19 +78,19 @@ export const getSavedJobs = async (req, res) => {
     const savedJobs = await SavedJob.find({ user: userId })
       .populate({
         path: "job",
-
-        match: {
-          title: { $regex: search, $options: "i" },
-        },
-
+        ...(search && {
+          match: {
+            title: { $regex: search, $options: "i" },
+          },
+        }),
         populate: {
           path: "createdBy",
         },
       })
       .sort({ createdAt: sort })
       .skip(skip)
-      .limit(limit)
-    
+      .limit(limit);
+
 
 
 
