@@ -59,7 +59,7 @@ export const getSavedJobs = async (req, res) => {
 
     const userId = req.user.id;
 
-    const page = Number(req.params.page) || 1;
+    const page = parseInt(req.query.page) || 1;
     const limit = 5;
     const skip = (page - 1) * limit;
 
@@ -92,7 +92,7 @@ export const getSavedJobs = async (req, res) => {
 
 
 
-      
+
     const jobs = savedJobs
       .filter((item) => item.job)
       .map((item) => ({
