@@ -56,6 +56,7 @@ export const toggleSaveJob = async (req, res) => {
 export const getSavedJobs = async (req, res) => {
   try {
 
+    console.log(req.query);
 
     const userId = req.user.id;
 
