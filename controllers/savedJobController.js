@@ -3,24 +3,24 @@ import SavedJob, { saveJobValidator } from "../models/SavedJob.js";
 
 // SAVE / UNSAVE TOGGLE
 export const toggleSaveJob = async (req, res) => {
-    
+
   try {
     const { error } = saveJobValidator(req.body);
-    
+
     if (error) {
       return res.status(400).json({
         message: error.details[0].message,
       });
     }
 
-    const userId = req.user.id; 
+    const userId = req.user.id;
     const jobId = req.body.jobId;
 
     const existing = await SavedJob.findOne({
       user: userId,
       job: jobId,
     });
- 
+
     // If already saved → UNSAVE
     if (existing) {
       await SavedJob.deleteOne({ _id: existing._id });
@@ -30,13 +30,13 @@ export const toggleSaveJob = async (req, res) => {
         message: "Job removed from saved list",
       });
     }
- 
+
     // If not saved → SAVE
     const saved = await SavedJob.create({
       user: userId,
       job: jobId,
     });
-    
+
     return res.status(201).json({
       saved: true,
       message: "Job saved successfully",
@@ -69,10 +69,8 @@ export const getSavedJobs = async (req, res) => {
     });
 
 
-
-
-  const search = req.query.search || ""
-  const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
+    const search = req.query.search || ""
+    const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
 
 
 
@@ -99,7 +97,7 @@ export const getSavedJobs = async (req, res) => {
         ...item.job._doc,
         isSaved: true,
       }));
-      
+
 
     return res.status(200).json({
       currentPage: page,

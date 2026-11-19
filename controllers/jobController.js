@@ -116,9 +116,13 @@ export const getMyJobs = asyncHandler(async (req, res) => {
   const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,
   });
+  if (!recruiterProfile) {
+    return res.status(404).json({
+      message: "Recruiter Profile not found",
+    });
+  };
 
   const company = await Company.findOne({ owner: recruiterProfile.id });
-
 
   if (!company) {
     return res.status(404).json({
@@ -126,6 +130,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
     });
   };
 
+  
   let filter = {
     createdBy: company._id, status: { $ne: "draft" }
   }
