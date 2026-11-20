@@ -113,7 +113,7 @@ export const getSavedJobs = async (req, res) => {
     return res.status(200).json({
       currentPage: page,
       totalPages: Math.ceil(allsavedJobs.length / limit),
-      totalSavedJobs,
+      totalSavedJobs:allsavedJobs,
       count: jobs.length,
       jobs,
     });
