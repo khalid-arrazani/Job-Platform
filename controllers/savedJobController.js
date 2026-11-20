@@ -91,10 +91,6 @@ export const getSavedJobs = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-
-
-
-
     const jobs = savedJobs
       .filter((item) => item.job)
       .map((item) => ({
