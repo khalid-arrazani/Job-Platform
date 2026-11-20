@@ -75,7 +75,7 @@ export const getSavedJobs = async (req, res) => {
 
     // paginated data
     const savedJobs = await SavedJob.find({ user: userId })
-    
+
       .populate({
         path: "job",
         ...(search && {
@@ -105,7 +105,7 @@ export const getSavedJobs = async (req, res) => {
 
     return res.status(200).json({
       currentPage: page,
-      totalPages: Math.ceil(totalSavedJobs / limit),
+      totalPages: Math.ceil(jobs.length / limit),
       totalSavedJobs,
       count: jobs.length,
       jobs,
