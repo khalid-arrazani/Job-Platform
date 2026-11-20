@@ -103,12 +103,12 @@ export const getSavedJobs = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-      const filteredsavedJobsWithNullObject = savedJobsWithNullObject.filter(
+      const filteredsavedJobsWithoutNullObject = savedJobsWithNullObject.filter(
       (savedJob) => savedJob.job !== null
     );
 
 
-    const jobs = filteredsavedJobsWithNullObject
+    const jobs = filteredsavedJobsWithoutNullObject
       .filter((item) => item.job)
       .map((item) => ({
         ...item.job._doc,
@@ -119,7 +119,7 @@ export const getSavedJobs = async (req, res) => {
     return res.status(200).json({
       currentPage: page,
       totalPages: Math.ceil(filteredSavedJobs.length / limit),
-      totalSavedJobs: allsavedJobs,
+      totalSavedJobs: filteredSavedJobs,
       count: jobs.length,
       jobs,
     });
