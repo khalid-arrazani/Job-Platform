@@ -62,7 +62,8 @@ export const getSavedJobs = async (req, res) => {
     const limit = 5;
     const skip = (page - 1) * limit;
 
-
+    const search = req.query.search || ""
+    const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
 
     // total count
     const allsavedJobs = await SavedJob.find({ user: userId })
@@ -79,13 +80,12 @@ export const getSavedJobs = async (req, res) => {
       })
 
 
-    const search = req.query.search || ""
-    const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
+
 
 
 
     // paginated data
-    const savedJobs = await SavedJob.find({ user: userId }) 
+    const savedJobs = await SavedJob.find({ user: userId })
       .populate({
         path: "job",
         ...(search && {
@@ -112,7 +112,7 @@ export const getSavedJobs = async (req, res) => {
     return res.status(200).json({
       currentPage: page,
       totalPages: Math.ceil(allsavedJobs.length / limit),
-      totalSavedJobs:allsavedJobs,
+      totalSavedJobs: allsavedJobs,
       count: jobs.length,
       jobs,
     });
