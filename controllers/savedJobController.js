@@ -85,8 +85,7 @@ export const getSavedJobs = async (req, res) => {
 
 
     // paginated data
-    const savedJobs = await SavedJob.find({ user: userId })
-
+    const savedJobs = await SavedJob.find({ user: userId }) 
       .populate({
         path: "job",
         ...(search && {
