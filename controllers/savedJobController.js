@@ -151,14 +151,14 @@ export const toggleSaveJob = async (req, res) => {
 //         $limit: limit,
 //       }
 //     );
-    
+
 //     const savedJobs = await SavedJob.aggregate(pipeline);
 
 //     await SavedJob.populate(savedJobs, {
 //       path: "job.createdBy",
 //     });
 
-    
+
 
 
 //     const jobs = filteredsavedJobsWithoutNullObject
@@ -273,10 +273,13 @@ export const getSavedJobs = async (req, res) => {
       },
     ]);
 
-    // Populate Company information
+    console.log("BEFORE:", savedJobs[0]?.job?.createdBy);
+
     await SavedJob.populate(savedJobs, {
       path: "job.createdBy",
     });
+
+    console.log("AFTER:", savedJobs[0]?.job?.createdBy);
 
     // Prepare jobs for frontend
     const jobs = savedJobs.map((item) => ({
