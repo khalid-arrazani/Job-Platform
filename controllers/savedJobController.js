@@ -276,27 +276,12 @@ export const getSavedJobs = async (req, res) => {
     ]);
 
 
-
-    console.log("Company Model:", Company.modelName);
-    console.log("Company Collection:", Company.collection.name);
-
-    const company = await Company.findById(
-      "6a7e24b8bde1cd2ec489aea4"
-    );
-    console.log("Found Company:", company?.name);
-
-    console.log("BEFORE:", savedJobs[0]?.job?.createdBy);
-
-
-
     await Job.populate(
       savedJobs.map((item) => item.job),
       {
         path: "createdBy",
       }
     );
-
-    console.log("AFTER:", savedJobs[0]?.job?.createdBy);
 
     // Prepare jobs for frontend
     const jobs = savedJobs.map((item) => ({
