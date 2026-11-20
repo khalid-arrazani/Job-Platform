@@ -65,7 +65,17 @@ export const getSavedJobs = async (req, res) => {
     // total count
     const totalSavedJobs = await SavedJob.countDocuments({
       user: userId,
-    });
+    }) .populate({
+        path: "job",
+        ...(search && {
+          match: {
+            title: { $regex: search, $options: "i" },
+          },
+        }),
+        populate: {
+          path: "createdBy",
+        },
+      });
 
 
     const search = req.query.search || ""
@@ -101,7 +111,7 @@ export const getSavedJobs = async (req, res) => {
 
     return res.status(200).json({
       currentPage: page,
-      totalPages: Math.ceil(jobs.length / limit),
+      totalPages: Math.ceil(totalSavedJobs / limit),
       totalSavedJobs,
       count: jobs.length,
       jobs,
