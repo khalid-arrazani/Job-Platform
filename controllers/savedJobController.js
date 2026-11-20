@@ -79,7 +79,7 @@ export const getSavedJobs = async (req, res) => {
         },
       })
 
-      console.log("this chicke jobs with search",allsavedJobs );
+    console.log("this chicke jobs with search", allsavedJobs);
 
     const filteredSavedJobs = allsavedJobs.filter(
       (savedJob) => savedJob.job !== null
@@ -103,9 +103,60 @@ export const getSavedJobs = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-      const filteredsavedJobsWithoutNullObject = savedJobsWithNullObject.filter(
+    const filteredsavedJobsWithoutNullObject = savedJobsWithNullObject.filter(
       (savedJob) => savedJob.job !== null
     );
+
+
+    const pipeline = [
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(userId),
+        },
+      },
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "job",
+          foreignField: "_id",
+          as: "job",
+        },
+      },
+      {
+        $unwind: "$job",
+      },
+    ];
+
+    if (search) {
+      pipeline.push({
+        $match: {
+          "job.title": {
+            $regex: search,
+            $options: "i",
+          },
+        },
+      });
+    }
+
+    pipeline.push(
+      {
+        $sort: {
+          createdAt: sort,
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      }
+    );
+
+    const savedJobs = await SavedJob.aggregate(pipeline);
+
+    await SavedJob.populate(savedJobs, {
+      path: "job.createdBy",
+    });
 
 
     const jobs = filteredsavedJobsWithoutNullObject
@@ -121,6 +172,7 @@ export const getSavedJobs = async (req, res) => {
       totalPages: Math.ceil(filteredSavedJobs.length / limit),
       totalSavedJobs: filteredSavedJobs,
       count: jobs.length,
+      savedJobs,
       jobs,
     });
 
