@@ -63,11 +63,10 @@ export const getSavedJobs = async (req, res) => {
     const skip = (page - 1) * limit;
 
 
-    
+
     // total count
-    const totalSavedJobs = await SavedJob.countDocuments({
-      user: userId,
-    }) .populate({
+    const allsavedJobs = await SavedJob.find({ user: userId })
+      .populate({
         path: "job",
         ...(search && {
           match: {
@@ -77,7 +76,7 @@ export const getSavedJobs = async (req, res) => {
         populate: {
           path: "createdBy",
         },
-      });
+      })
 
 
     const search = req.query.search || ""
@@ -113,7 +112,7 @@ export const getSavedJobs = async (req, res) => {
 
     return res.status(200).json({
       currentPage: page,
-      totalPages: Math.ceil(totalSavedJobs / limit),
+      totalPages: Math.ceil(allsavedJobs.length / limit),
       totalSavedJobs,
       count: jobs.length,
       jobs,
