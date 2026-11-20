@@ -1,4 +1,5 @@
 import { Company } from "../models/Company.js";
+import Job from "../models/Job.js";
 import SavedJob, { saveJobValidator } from "../models/SavedJob.js";
 import mongoose from "mongoose";
 
@@ -291,10 +292,13 @@ export const getSavedJobs = async (req, res) => {
 
 
 
-    
-    await SavedJob.populate(savedJobs, {
-      path: "job.createdBy",
-    });
+
+    await Job.populate(
+      savedJobs.map((item) => item.job),
+      {
+        path: "createdBy",
+      }
+    );
 
     console.log("AFTER:", savedJobs[0]?.job?.createdBy);
 
