@@ -79,13 +79,11 @@ export const getSavedJobs = async (req, res) => {
         },
       })
 
+      console.log("this chicke jobs with search",allsavedJobs );
+
     const filteredSavedJobs = allsavedJobs.filter(
       (savedJob) => savedJob.job !== null
     );
-
-
-
-
 
 
     // paginated data
@@ -104,6 +102,8 @@ export const getSavedJobs = async (req, res) => {
       .sort({ createdAt: sort })
       .skip(skip)
       .limit(limit);
+
+      console.log("this chicke the secund jobs with search",savedJobs );
 
     const jobs = savedJobs
       .filter((item) => item.job)
