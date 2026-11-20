@@ -87,7 +87,7 @@ export const getSavedJobs = async (req, res) => {
 
 
     // paginated data
-    const savedJobs = await SavedJob.find({ user: userId })
+    const savedJobsWithNullObject = await SavedJob.find({ user: userId })
       .populate({
         path: "job",
         ...(search && {
@@ -103,9 +103,12 @@ export const getSavedJobs = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-      console.log("this chicke the secund jobs with search",savedJobs );
+      const filteredsavedJobsWithNullObject = savedJobsWithNullObject.filter(
+      (savedJob) => savedJob.job !== null
+    );
 
-    const jobs = savedJobs
+
+    const jobs = filteredsavedJobsWithNullObject
       .filter((item) => item.job)
       .map((item) => ({
         ...item.job._doc,
