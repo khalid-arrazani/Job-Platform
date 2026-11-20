@@ -1,3 +1,4 @@
+import { Company } from "../models/Company.js";
 import SavedJob, { saveJobValidator } from "../models/SavedJob.js";
 import mongoose from "mongoose";
 
