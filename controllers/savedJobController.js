@@ -289,10 +289,6 @@ export const getSavedJobs = async (req, res) => {
 
 
 
-
-
-
-
     await Job.populate(
       savedJobs.map((item) => item.job),
       {
