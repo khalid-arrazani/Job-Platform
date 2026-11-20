@@ -56,8 +56,6 @@ export const toggleSaveJob = async (req, res) => {
 export const getSavedJobs = async (req, res) => {
   try {
 
-    console.log(req.query);
-
     const userId = req.user.id;
 
     const page = parseInt(req.query.page) || 1;
@@ -77,6 +75,7 @@ export const getSavedJobs = async (req, res) => {
 
     // paginated data
     const savedJobs = await SavedJob.find({ user: userId })
+    
       .populate({
         path: "job",
         ...(search && {
