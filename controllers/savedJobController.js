@@ -79,6 +79,10 @@ export const getSavedJobs = async (req, res) => {
         },
       })
 
+    const filteredSavedJobs = allsavedJobs.filter(
+      (savedJob) => savedJob.job !== null
+    );
+
 
 
 
