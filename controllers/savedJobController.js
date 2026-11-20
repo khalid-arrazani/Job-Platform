@@ -1,5 +1,5 @@
 import SavedJob, { saveJobValidator } from "../models/SavedJob.js";
-
+import mongoose from "mongoose";
 
 // SAVE / UNSAVE TOGGLE
 export const toggleSaveJob = async (req, res) => {
