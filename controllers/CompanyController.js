@@ -97,7 +97,7 @@ export const getMyCompany = asyncHandler(async (req, res) => {
     });
   }
 
-  const jobs = await Job.find({ createdBy: company._id });
+  const jobs = await Job.find({ createdBy: company._id }).populate("createdBy", "companyLogo name description");
 
   // Total Jobs
   const totalJobs = jobs.length;
