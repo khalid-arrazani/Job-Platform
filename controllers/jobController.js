@@ -17,7 +17,7 @@ export const getAllJobs = asyncHandler(async (req, res) => {
   const search = req.query.search || "";
 
   const limit = 8;
-  const filter = {};
+  const filter = { status: "active"};
 
   if (search) {
     filter.$or = [
@@ -130,7 +130,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
     });
   };
 
-  
+
   let filter = {
     createdBy: company._id, status: { $ne: "draft" }
   }
@@ -500,15 +500,12 @@ export const toggleStatus = asyncHandler(async (req, res) => {
 
 //get all Companies jobs by Company Id  
 export const getCompaniesJobs = asyncHandler(async (req, res) => {
-
-  
-
   const page = parseInt(req.query.page) || 1;
 
 
   const search = req.query.search || ""
   const sort = req.query.sort == "Newest First" ? -1 : req.query.sort == "Oldest First" ? 1 : 1
-  const limit = 3;
+  const limit = 7;
 
 
   const CompanyId = req.query.CompanyId;
