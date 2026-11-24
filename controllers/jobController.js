@@ -111,7 +111,7 @@ export const getMyJobs = asyncHandler(async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
 
-  const limit = 3;
+  const limit = 7;
 
   const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,
