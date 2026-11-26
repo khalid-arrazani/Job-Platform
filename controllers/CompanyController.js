@@ -23,39 +23,39 @@ export const getAllCompanies = asyncHandler(async (req, res) => {
   const search = req.query.search || ""
 
   const companies = await Company.find({
-  name: {
-    $regex: search,
-    $options: "i",
-  },
- })
-  .populate("owner", "email role")
-  .skip((page - 1) * limit)
-  .limit(limit)
- 
+    name: {
+      $regex: search,
+      $options: "i",
+    },
+  })
+    .populate("owner", "email role")
+    .skip((page - 1) * limit)
+    .limit(limit)
+
   const JobsWithApply = await Promise.all(
     companies.map(async (company) => {
       const applicationsCount = await Apply.countDocuments({
         company: company._id,
       });
 
-       const jobsCount = await Job.countDocuments({
+      const jobsCount = await Job.countDocuments({
         createdBy: company._id,
       });
 
       return {
         ...company.toObject(),
-        applicationsCount,jobsCount
+        applicationsCount, jobsCount
       };
     })
   );
 
   const totalJobs = await Company.countDocuments({
-  name: {
-    $regex: search,
-    $options: "i",
-  },
- })
-  
+    name: {
+      $regex: search,
+      $options: "i",
+    },
+  })
+
   res.status(200).json({
     totalPages: Math.ceil(totalJobs / limit),
     success: true,
@@ -215,7 +215,7 @@ export const getCompanyById = asyncHandler(async (req, res) => {
     activeJobs,
     companyViews,
     totalActiveJobs
-});
+  });
 
 });
 
@@ -425,9 +425,13 @@ export const updateCompanyLogo = asyncHandler(async (req, res) => {
    UPDATE COMPANY BANNER
 ====================== */
 export const updateCompanyBanner = asyncHandler(async (req, res) => {
+
+
   const recruiterProfile = await RecruiterProfile.findOne({
     userId: req.user.id,
   });
+
+
   if (!recruiterProfile) {
     return res.status(404).json({
       message: "Recruiter Profile not found",
