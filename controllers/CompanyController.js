@@ -424,90 +424,198 @@ export const updateCompanyLogo = asyncHandler(async (req, res) => {
 /* ======================
    UPDATE COMPANY BANNER
 ====================== */
-export const updateCompanyBanner = asyncHandler(async (req, res) => {
+// export const updateCompanyBanner = asyncHandler(async (req, res) => {
 
 
-  const recruiterProfile = await RecruiterProfile.findOne({
-    userId: req.user.id,
-  });
+//   const recruiterProfile = await RecruiterProfile.findOne({
+//     userId: req.user.id,
+//   });
 
 
-  if (!recruiterProfile) {
-    return res.status(404).json({
-      message: "Recruiter Profile not found",
+//   if (!recruiterProfile) {
+//     return res.status(404).json({
+//       message: "Recruiter Profile not found",
+//     });
+//   }
+
+//   const company = await Company.findOne({ owner: recruiterProfile._id });
+
+//   if (!company) {
+//     return res.status(404).json({
+//       message: "Company not found",
+//     });
+//   }
+
+//   if (req.body.backgroundType === "upload" && !req.files?.companyBackground?.[0] || req.body.backgroundType === "banner" &&
+//     req.body.bannerId == null) {
+//     return res.status(400).json({
+//       message: "Banner image is required",
+//     });
+//   }
+
+//   let companyBackground
+
+//   if (req.body.backgroundType === "banner") {
+
+//     if (Number(req.body.bannerId) === Number(company.companyBackground.bannerId)) {
+//       return res.status(400).json({
+//         message: "You need to change the banner before save",
+//       });
+//     }
+
+
+//     companyBackground = {
+//       backgroundType: "banner",
+//       bannerId: Number(req.body.bannerId),
+//       url: "",
+//       public_id: "",
+//     };
+
+//   }
+
+//   if (
+//     req.body.backgroundType === "upload" &&
+//     req.files?.companyBackground?.length
+//   ) {
+
+//     const result = await uploadToCloudinary(
+//       req.files.companyBackground[0].buffer
+//     );
+
+//     companyBackground = {
+//       backgroundType: "upload",
+//       bannerId: null,
+//       url: result.secure_url,
+//       public_id: result.public_id,
+//     };
+//   }
+
+//   if (company.companyBackground?.public_id) {
+//     await cloudinary.uploader.destroy(company.companyBackground?.public_id);
+//     console.log("this mf is destroy");
+//   }
+
+//   const updated = await Company.findByIdAndUpdate(
+//     company._id,
+//     {
+//       companyBackground
+//     },
+//     { returnDocument: "after" }
+//   );
+
+//   res.status(200).json({
+//     success: true,
+//     message: "Company Banner updated successfully",
+//   });
+// });
+
+export const updateCompanyBanner = async (req, res) => {
+  try {
+    const recruiterProfile = await RecruiterProfile.findOne({
+      userId: req.user.id,
     });
-  }
 
-  const company = await Company.findOne({ owner: recruiterProfile._id });
-
-  if (!company) {
-    return res.status(404).json({
-      message: "Company not found",
-    });
-  }
-
-  if (req.body.backgroundType === "upload" && !req.files?.companyBackground?.[0] || req.body.backgroundType === "banner" &&
-    req.body.bannerId == null) {
-    return res.status(400).json({
-      message: "Banner image is required",
-    });
-  }
-
-  let companyBackground
-
-  if (req.body.backgroundType === "banner") {
-
-    if (Number(req.body.bannerId) === Number(company.companyBackground.bannerId)) {
-      return res.status(400).json({
-        message: "You need to change the banner before save",
+    if (!recruiterProfile) {
+      return res.status(404).json({
+        message: "Recruiter Profile not found",
       });
     }
 
+    const company = await Company.findOne({
+      owner: recruiterProfile._id,
+    });
 
-    companyBackground = {
-      backgroundType: "banner",
-      bannerId: Number(req.body.bannerId),
-      url: "",
-      public_id: "",
-    };
+    if (!company) {
+      return res.status(404).json({
+        message: "Company not found",
+      });
+    }
 
-  }
+    if (
+      (req.body.backgroundType === "upload" &&
+        !req.files?.companyBackground?.[0]) ||
+      (req.body.backgroundType === "banner" &&
+        req.body.bannerId == null)
+    ) {
+      return res.status(400).json({
+        message: "Banner image is required",
+      });
+    }
 
-  if (
-    req.body.backgroundType === "upload" &&
-    req.files?.companyBackground?.length
-  ) {
+    let companyBackground;
 
-    const result = await uploadToCloudinary(
-      req.files.companyBackground[0].buffer
+    if (req.body.backgroundType === "banner") {
+      if (
+        Number(req.body.bannerId) ===
+        Number(company.companyBackground?.bannerId)
+      ) {
+        return res.status(400).json({
+          message: "You need to change the banner before save",
+        });
+      }
+
+      companyBackground = {
+        backgroundType: "banner",
+        bannerId: Number(req.body.bannerId),
+        url: "",
+        public_id: "",
+      };
+    }
+
+    if (
+      req.body.backgroundType === "upload" &&
+      req.files?.companyBackground?.length
+    ) {
+      const result = await uploadToCloudinary(
+        req.files.companyBackground[0].buffer
+      );
+
+      companyBackground = {
+        backgroundType: "upload",
+        bannerId: null,
+        url: result.secure_url,
+        public_id: result.public_id,
+      };
+    }
+
+    const oldPublicId = company.companyBackground?.public_id;
+
+    const updated = await Company.findByIdAndUpdate(
+      company._id,
+      {
+        companyBackground,
+      },
+      { returnDocument: "after" }
     );
 
-    companyBackground = {
-      backgroundType: "upload",
-      bannerId: null,
-      url: result.secure_url,
-      public_id: result.public_id,
-    };
+    if (!updated) {
+      return res.status(500).json({
+        message: "Failed to update company banner",
+      });
+    }
+
+    if (oldPublicId) {
+      try {
+        await cloudinary.uploader.destroy(oldPublicId);
+      } catch (cloudinaryError) {
+        console.error("Cloudinary delete error:", cloudinaryError);
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Company Banner updated successfully",
+    });
+  } catch (err) {
+    console.error("Update Company Banner Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error while updating company banner",
+      error: err.message,
+    });
   }
-
-  if (company.companyBackground?.public_id) {
-    await cloudinary.uploader.destroy(company.companyBackground?.public_id);
-    console.log("this mf is destroy");
-  }
-
-  const updated = await Company.findByIdAndUpdate(
-    company._id,
-    {
-      companyBackground
-    },
-    { returnDocument: "after" }
-  );
-
-  res.status(200).json({
-    success: true,
-    message: "Company Banner updated successfully",
-  });
-});
+};
 
 
 /* ======================
